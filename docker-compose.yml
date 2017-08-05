@@ -1,0 +1,30 @@
+
+version: '2'
+services:
+  shell:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+      - USR_ID=1000
+      - GRP_ID=1000
+    volumes:
+    - ".:/go/src/baster"
+    - "$SSH_AUTH_SOCK:$SSH_AUTH_SOCK"
+    environment:
+      SSH_AUTH_SOCK: $SSH_AUTH_SOCK
+
+  godoc:
+    container_name: baster-godoc
+    extends:
+      service: shell
+    command: godoc -http :6060
+    ports:
+    - "6060:6060"
+
+  server:
+    container_name: baster-server
+    extends:
+      service: shell
+    ports:
+    - "9000:9000"
