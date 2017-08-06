@@ -1,4 +1,4 @@
 
 # baster
 
-Reverse proxy with LetsEncrypt and Kubernetes capabilities.
+Reverse proxy with LetsEncrypt capabilities.
