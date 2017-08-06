@@ -77,6 +77,7 @@ func run() error {
 		mux.HandleFunc("/errors/404", ProxyError(http.StatusNotFound))
 		mux.HandleFunc("/errors/502", ProxyError(http.StatusBadGateway))
 		mux.HandleFunc("/redirects/secure", ProxyRedirect)
+		mux.HandleFunc("/health", ProxyHealth)
 
 		log.WithFields(log.Fields{"address": "localhost:5000"}).Info("run errors server")
 		server := &http.Server{

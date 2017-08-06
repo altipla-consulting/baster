@@ -20,6 +20,11 @@ func ProxyRequestDirector(cnf *Config, secure bool) func(*http.Request) {
 		r.Header.Set("X-Baster-Start", time.Now().Format(time.RFC3339Nano))
 		r.Header.Set("X-Baster-Url", r.URL.String())
 
+		if r.URL.Path == "/health" {
+			serveHealth(r)
+			return
+		}
+
 		service, ok := servicesByHostname[r.Host]
 		if !ok {
 			log.WithFields(log.Fields{"hostname": r.Host}).Warning("host not found")
@@ -102,6 +107,15 @@ func serveSecureRedirect(r *http.Request) {
 	r.Header.Set("X-Baster-Backend", "baster:redirect")
 }
 
+func serveHealth(r *http.Request) {
+	r.URL.Scheme = "http"
+	r.URL.Host = "localhost:5000"
+	r.URL.Path = "/health"
+	r.URL.RawQuery = ""
+
+	r.Header.Set("X-Baster-Backend", "baster:health")
+}
+
 func ProxyError(statusCode int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("%d %s", statusCode, http.StatusText(statusCode)), statusCode)
@@ -132,4 +146,8 @@ func ProxyRedirect(w http.ResponseWriter, r *http.Request) {
 	u.Host = r.Header.Get("X-Forwarded-Host")
 
 	http.Redirect(w, r, u.String(), http.StatusMovedPermanently)
+}
+
+func ProxyHealth(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "baster is ok")
 }
