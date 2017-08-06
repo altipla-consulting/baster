@@ -5,3 +5,10 @@ import:
 - package: github.com/juju/errors
 - package: github.com/naoina/toml
   version: ^0.1.1
+- package: golang.org/x/crypto
+  subpackages:
+  - acme/autocert
+- package: cloud.google.com/go
+  version: ^0.11.0
+  subpackages:
+  - datastore
