@@ -14,8 +14,9 @@ var (
 )
 
 type Config struct {
-	Service   []Service
-	ACMEEmail string `toml:"acme-email"`
+	Service              []Service
+	ACMEEmail            string `toml:"acme-email"`
+	GoogleServiceAccount string `toml:"google-service-account"`
 }
 
 type Service struct {

@@ -8,6 +8,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juju/errors"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/option"
 )
 
 const (
@@ -37,7 +39,11 @@ func NewDatastoreCache(cnf *Config) (*DatastoreCache, error) {
 		return nil, errors.Trace(err)
 	}
 
-	client, err := datastore.NewClient(context.Background(), project)
+	config, err := google.JWTConfigFromJSON([]byte(cnf.GoogleServiceAccount), datastore.ScopeDatastore)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	client, err := datastore.NewClient(context.Background(), project, option.WithTokenSource(config.TokenSource(context.Background())))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

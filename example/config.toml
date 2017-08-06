@@ -1,5 +1,11 @@
 
 acme-email = "foo@example.com"
+google-service-account = '''
+  {
+    "type": "service_account",
+    ...
+  }
+'''
 
 [[service]]
 name = "all-urls"
