@@ -14,9 +14,6 @@ func main() {
 }
 
 func run() error {
-	watcher := NewKubernetesWatcher()
-	watcher.Run()
-
 	server := &http.Server{
 		Addr:         ":9000",
 		ReadTimeout:  5 * time.Second,
