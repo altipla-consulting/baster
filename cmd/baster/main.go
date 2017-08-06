@@ -65,8 +65,8 @@ func run() error {
 		log.WithFields(log.Fields{"address": "localhost:9080"}).Info("run insecure server")
 		server := &http.Server{
 			Addr:         ":9080",
-			ReadTimeout:  5 * time.Second,
-			WriteTimeout: 5 * time.Second,
+			ReadTimeout:  30 * time.Second,
+			WriteTimeout: 30 * time.Second,
 			Handler:      proxy,
 		}
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
