@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"net/http"
 	"net/http/httputil"
@@ -8,6 +9,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/juju/errors"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -33,6 +35,21 @@ func run() error {
 		FlushInterval:  60 * time.Second,
 		ModifyResponse: ProxyModifyResponse,
 		Transport:      NewProxyTransport(),
+	}
+
+	hosts := []string{}
+	for _, service := range cnf.Service {
+		hosts = append(hosts, service.Hostname)
+	}
+	cache, err := NewDatastoreCache(cnf)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	manager := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(hosts...),
+		Email:      cnf.ACMEEmail,
+		Cache:      cache,
 	}
 
 	go func() {
@@ -65,14 +82,22 @@ func run() error {
 		}
 	}()
 
-	log.WithFields(log.Fields{"address": "localhost:9443"}).Info("run secure server")
+	log.WithFields(log.Fields{
+		"address":    "localhost:9443",
+		"acme-email": cnf.ACMEEmail,
+		"hosts":      hosts,
+	}).Info("run secure server")
+
 	server := &http.Server{
 		Addr:         ":9443",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		Handler:      proxy,
+		TLSConfig: &tls.Config{
+			GetCertificate: manager.GetCertificate,
+		},
 	}
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+	if err := server.ListenAndServeTLS("", ""); err != http.ErrServerClosed {
 		return errors.Trace(err)
 	}
 

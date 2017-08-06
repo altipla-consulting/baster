@@ -1,4 +1,6 @@
 
+acme-email = "foo@example.com"
+
 [[service]]
 name = "all-urls"
 k8s_service = "all-urls"
