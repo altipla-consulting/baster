@@ -22,9 +22,10 @@ services:
     ports:
     - "6060:6060"
 
-  server:
-    container_name: baster-server
+  serve:
+    container_name: baster-serve
     extends:
       service: shell
+    command: rerun baster/cmd/baster --config example/config.toml
     ports:
-    - "9000:9000"
+    - "9443:9443"

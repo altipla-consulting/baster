@@ -8,6 +8,8 @@ RUN curl -L -S -o glide.tar.gz https://github.com/Masterminds/glide/releases/dow
     mv linux-amd64/glide /usr/bin/glide && \
     rm -r linux-amd64
 
+RUN go get github.com/skelterjohn/rerun
+
 # UID & GID inside the container
 ARG USR_ID=0
 ARG GRP_ID=0
@@ -17,11 +19,9 @@ RUN groupadd --gid $GRP_ID -r local -o && \
     chown local:local /home/local && \
     chown -R local:local /go
 
-RUN go get github.com/skelterjohn/rerun
-
 ENV GLIDE_HOME /tmp
 ENV HOME /home/local
 
 USER local
 WORKDIR /go/src/baster
-CMD rerun baster
+CMD bash
