@@ -2,8 +2,7 @@
 acme-email = "foo@example.com"
 google-service-account = '''
   {
-    "type": "service_account",
-    ...
+    "type": "service_account"
   }
 '''
 

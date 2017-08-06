@@ -34,9 +34,13 @@ type DatastoreCache struct {
 }
 
 func NewDatastoreCache(cnf *Config) (*DatastoreCache, error) {
-	project, err := metadata.ProjectID()
-	if err != nil {
-		return nil, errors.Trace(err)
+	project := "test-project"
+	if !IsDebug() {
+		var err error
+		project, err = metadata.ProjectID()
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
 	}
 
 	config, err := google.JWTConfigFromJSON([]byte(cnf.GoogleServiceAccount), datastore.ScopeDatastore)

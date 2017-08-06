@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"time"
-	"os"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/juju/errors"
@@ -23,9 +22,9 @@ func main() {
 func run() error {
 	flag.Parse()
 
-	if os.Getenv("DEBUG") == "true" {
+	if IsDebug() {
 		log.SetFormatter(&log.TextFormatter{
-			ForceColors: true,
+			ForceColors:   true,
 			FullTimestamp: true,
 		})
 	}
