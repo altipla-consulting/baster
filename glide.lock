@@ -1,0 +1,18 @@
+hash: 4271c88cf05863ee5e0d34f224b591afe4c558130251c4bf4bfc0f8f911bd4f4
+updated: 2017-08-06T08:03:16.264798005Z
+imports:
+- name: github.com/juju/errors
+  version: c7d06af17c68cd34c835053720b21f6549d9b0ee
+- name: github.com/naoina/go-stringutil
+  version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
+- name: github.com/naoina/toml
+  version: e6f5723bf2a66af014955e0888881314cf294129
+  subpackages:
+  - ast
+- name: github.com/Sirupsen/logrus
+  version: a3f95b5c423586578a4e099b11a46c2479628cac
+- name: golang.org/x/sys
+  version: d8f5ea21b9295e315e612b4bcf4bedea93454d4d
+  subpackages:
+  - unix
+testImports: []
