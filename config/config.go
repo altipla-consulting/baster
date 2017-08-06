@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"flag"
@@ -32,7 +32,7 @@ type Route struct {
 	Insecure   bool
 }
 
-func LoadConfig() (*Config, error) {
+func Load() (*Config, error) {
 	log.WithFields(log.Fields{"path": *configPath}).Info("load config file")
 
 	f, err := os.Open(*configPath)

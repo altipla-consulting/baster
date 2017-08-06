@@ -10,6 +10,8 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
+
+	"baster/config"
 )
 
 const (
@@ -33,9 +35,9 @@ type DatastoreCache struct {
 	client *datastore.Client
 }
 
-func NewDatastoreCache(cnf *Config) (*DatastoreCache, error) {
+func NewDatastoreCache(cnf *config.Config) (*DatastoreCache, error) {
 	project := "test-project"
-	if !IsDebug() {
+	if !config.IsDebug() {
 		var err error
 		project, err = metadata.ProjectID()
 		if err != nil {
@@ -43,12 +45,12 @@ func NewDatastoreCache(cnf *Config) (*DatastoreCache, error) {
 		}
 	}
 
-	config, err := google.JWTConfigFromJSON([]byte(cnf.GoogleServiceAccount), datastore.ScopeDatastore)
+	jwtconfig, err := google.JWTConfigFromJSON([]byte(cnf.GoogleServiceAccount), datastore.ScopeDatastore)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 	ctx := context.Background()
-	client, err := datastore.NewClient(ctx, project, option.WithTokenSource(config.TokenSource(ctx)))
+	client, err := datastore.NewClient(ctx, project, option.WithTokenSource(jwtconfig.TokenSource(ctx)))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

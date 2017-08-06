@@ -8,10 +8,12 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+
+	"baster/config"
 )
 
-func ProxyRequestDirector(cnf *Config, secure bool) func(*http.Request) {
-	servicesByHostname := map[string]Service{}
+func ProxyRequestDirector(cnf *config.Config, secure bool) func(*http.Request) {
+	servicesByHostname := map[string]config.Service{}
 	for _, service := range cnf.Service {
 		servicesByHostname[service.Hostname] = service
 	}

@@ -11,6 +11,8 @@ import (
 	"github.com/juju/errors"
 	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
+
+	"baster/config"
 )
 
 func main() {
@@ -22,14 +24,14 @@ func main() {
 func run() error {
 	flag.Parse()
 
-	if IsDebug() {
+	if config.IsDebug() {
 		log.SetFormatter(&log.TextFormatter{
 			ForceColors:   true,
 			FullTimestamp: true,
 		})
 	}
 
-	cnf, err := LoadConfig()
+	cnf, err := config.Load()
 	if err != nil {
 		return errors.Trace(err)
 	}
@@ -48,7 +50,7 @@ func run() error {
 		Email:      cnf.ACMEEmail,
 		Cache:      cache,
 	}
-	if IsDebug() {
+	if config.IsDebug() {
 		manager.Client = &acme.Client{
 			DirectoryURL: "https://acme-staging.api.letsencrypt.org/directory",
 		}
