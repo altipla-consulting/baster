@@ -43,7 +43,8 @@ func NewDatastoreCache(cnf *Config) (*DatastoreCache, error) {
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	client, err := datastore.NewClient(context.Background(), project, option.WithTokenSource(config.TokenSource(context.Background())))
+	ctx := context.Background()
+	client, err := datastore.NewClient(ctx, project, option.WithTokenSource(config.TokenSource(ctx)))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

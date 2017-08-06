@@ -9,6 +9,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/juju/errors"
+	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -50,6 +51,9 @@ func run() error {
 		HostPolicy: autocert.HostWhitelist(hosts...),
 		Email:      cnf.ACMEEmail,
 		Cache:      cache,
+		Client: &acme.Client{
+			DirectoryURL: "https://acme-staging.api.letsencrypt.org/directory",
+		},
 	}
 
 	go func() {
