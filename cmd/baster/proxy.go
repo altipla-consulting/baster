@@ -53,10 +53,10 @@ func ProxyRequestDirector(cnf *Config, secure bool) func(*http.Request) {
 			}
 		}
 
+		r.Header.Set("X-Baster-Backend", backend)
+
 		r.URL.Scheme = "http"
 		r.URL.Host = backend
-
-		r.Header.Set("X-Baster-Backend", backend)
 	}
 }
 
@@ -90,7 +90,7 @@ func serveStatusCode(r *http.Request, statusCode int) {
 	r.URL.Path = fmt.Sprintf("/errors/%d", statusCode)
 	r.URL.RawQuery = ""
 
-	r.Header.Set("X-Baster-Backend", "baster: errors")
+	r.Header.Set("X-Baster-Backend", "baster:errors")
 }
 
 func serveSecureRedirect(r *http.Request) {
@@ -99,7 +99,7 @@ func serveSecureRedirect(r *http.Request) {
 	r.URL.Path = "/redirects/secure"
 	r.URL.RawQuery = ""
 
-	r.Header.Set("X-Baster-Backend", "baster: redirect")
+	r.Header.Set("X-Baster-Backend", "baster:redirect")
 }
 
 func ProxyError(statusCode int) http.HandlerFunc {
@@ -127,9 +127,7 @@ func (transport *ProxyTransport) RoundTrip(r *http.Request) (*http.Response, err
 }
 
 func ProxyRedirect(w http.ResponseWriter, r *http.Request) {
-	u := new(url.URL)
-	*u = *r.URL
-
+	u, _ := url.Parse(r.Header.Get("X-Baster-Url"))
 	u.Scheme = "https"
 	u.Host = r.Header.Get("X-Forwarded-Host")
 
