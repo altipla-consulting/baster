@@ -21,6 +21,7 @@ RUN groupadd --gid $GRP_ID -r local -o && \
 
 ENV GLIDE_HOME /tmp
 ENV HOME /home/local
+ENV DEBUG true
 
 USER local
 WORKDIR /go/src/baster
