@@ -34,13 +34,6 @@ func run() error {
 		return errors.Trace(err)
 	}
 
-	proxy := &httputil.ReverseProxy{
-		Director:       ProxyRequestDirector(cnf),
-		FlushInterval:  60 * time.Second,
-		ModifyResponse: ProxyModifyResponse,
-		Transport:      NewProxyTransport(),
-	}
-
 	hosts := []string{}
 	for _, service := range cnf.Service {
 		hosts = append(hosts, service.Hostname)
@@ -67,7 +60,12 @@ func run() error {
 			Addr:         ":9080",
 			ReadTimeout:  30 * time.Second,
 			WriteTimeout: 30 * time.Second,
-			Handler:      proxy,
+			Handler: &httputil.ReverseProxy{
+				Director:       ProxyRequestDirector(cnf, false),
+				FlushInterval:  60 * time.Second,
+				ModifyResponse: ProxyModifyResponse,
+				Transport:      NewProxyTransport(),
+			},
 		}
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatal(errors.ErrorStack(err))
@@ -78,6 +76,7 @@ func run() error {
 		mux := http.NewServeMux()
 		mux.HandleFunc("/errors/404", ProxyError(http.StatusNotFound))
 		mux.HandleFunc("/errors/502", ProxyError(http.StatusBadGateway))
+		mux.HandleFunc("/redirects/secure", ProxyRedirect)
 
 		log.WithFields(log.Fields{"address": "localhost:5000"}).Info("run errors server")
 		server := &http.Server{
@@ -101,7 +100,12 @@ func run() error {
 		Addr:         ":9443",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
-		Handler:      proxy,
+		Handler: &httputil.ReverseProxy{
+			Director:       ProxyRequestDirector(cnf, true),
+			FlushInterval:  60 * time.Second,
+			ModifyResponse: ProxyModifyResponse,
+			Transport:      NewProxyTransport(),
+		},
 		TLSConfig: &tls.Config{
 			GetCertificate: manager.GetCertificate,
 		},

@@ -29,6 +29,7 @@ type Service struct {
 type Route struct {
 	URL        string
 	K8sService string
+	Insecure   bool
 }
 
 func LoadConfig() (*Config, error) {
