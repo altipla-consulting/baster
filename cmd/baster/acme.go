@@ -62,13 +62,16 @@ func (cache *DatastoreCache) Get(ctx context.Context, key string) ([]byte, error
 	model := new(CacheModel)
 	if err := cache.client.Get(ctx, model.Key(key), model); err != nil {
 		if err == datastore.ErrNoSuchEntity {
+			log.Info("miss")
 			return nil, autocert.ErrCacheMiss
 		}
 
+		log.Error(err)
 		return nil, errors.Trace(err)
 	}
 
-	return model.Data, autocert.ErrCacheMiss
+	log.Info("all ok")
+	return model.Data, nil
 }
 
 func (cache *DatastoreCache) Put(ctx context.Context, key string, data []byte) error {
@@ -78,9 +81,11 @@ func (cache *DatastoreCache) Put(ctx context.Context, key string, data []byte) e
 		Data: data,
 	}
 	if _, err := cache.client.Put(ctx, model.Key(key), model); err != nil {
+		log.Error(err)
 		return errors.Trace(err)
 	}
 
+	log.Info("all ok")
 	return nil
 }
 
@@ -89,8 +94,10 @@ func (cache *DatastoreCache) Delete(ctx context.Context, key string) error {
 
 	model := new(CacheModel)
 	if err := cache.client.Delete(ctx, model.Key(key)); err != nil {
+		log.Error(err)
 		return errors.Trace(err)
 	}
 
+	log.Info("all ok")
 	return nil
 }
