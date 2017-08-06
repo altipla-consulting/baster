@@ -5,7 +5,7 @@ MAINTAINER Ernesto Alejo <ernesto@altiplaconsulting.com>
 COPY ./cmd /go/src/cmd
 COPY ./vendor /go/src/vendor
 
-RUN go install ./cmd/baster
+RUN go install baster/cmd/baster
 
 WORKDIR /go/src/baster
 CMD baster
