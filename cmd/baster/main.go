@@ -54,9 +54,11 @@ func run() error {
 		HostPolicy: autocert.HostWhitelist(hosts...),
 		Email:      cnf.ACMEEmail,
 		Cache:      cache,
-		Client: &acme.Client{
+	}
+	if IsDebug() {
+		manager.Client = &acme.Client{
 			DirectoryURL: "https://acme-staging.api.letsencrypt.org/directory",
-		},
+		}
 	}
 
 	go func() {
