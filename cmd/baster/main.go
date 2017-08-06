@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"flag"
 	"net/http"
-	"net/http/httputil"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -13,6 +12,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 
 	"baster/config"
+	"baster/proxy"
 )
 
 func main() {
@@ -62,31 +62,7 @@ func run() error {
 			Addr:         ":9080",
 			ReadTimeout:  30 * time.Second,
 			WriteTimeout: 30 * time.Second,
-			Handler: &httputil.ReverseProxy{
-				Director:       ProxyRequestDirector(cnf, false),
-				FlushInterval:  60 * time.Second,
-				ModifyResponse: ProxyModifyResponse,
-				Transport:      NewProxyTransport(),
-			},
-		}
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatal(errors.ErrorStack(err))
-		}
-	}()
-
-	go func() {
-		mux := http.NewServeMux()
-		mux.HandleFunc("/errors/404", ProxyError(http.StatusNotFound))
-		mux.HandleFunc("/errors/502", ProxyError(http.StatusBadGateway))
-		mux.HandleFunc("/redirects/secure", ProxyRedirect)
-		mux.HandleFunc("/health", ProxyHealth)
-
-		log.WithFields(log.Fields{"address": "localhost:5000"}).Info("run errors server")
-		server := &http.Server{
-			Addr:         ":5000",
-			ReadTimeout:  5 * time.Second,
-			WriteTimeout: 5 * time.Second,
-			Handler:      mux,
+			Handler:      proxy.NewInsecureHandler(cnf),
 		}
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatal(errors.ErrorStack(err))
@@ -103,12 +79,7 @@ func run() error {
 		Addr:         ":9443",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
-		Handler: &httputil.ReverseProxy{
-			Director:       ProxyRequestDirector(cnf, true),
-			FlushInterval:  60 * time.Second,
-			ModifyResponse: ProxyModifyResponse,
-			Transport:      NewProxyTransport(),
-		},
+		Handler:      proxy.NewSecureHandler(cnf),
 		TLSConfig: &tls.Config{
 			GetCertificate: manager.GetCertificate,
 		},
