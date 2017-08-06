@@ -105,7 +105,7 @@ func newHandler(cnf *config.Config, secure bool) http.Handler {
 			"secure":        secure,
 			"status":        response.StatusCode,
 			"time":          time.Now().Format(time.RFC3339),
-			"uri":           r.URL.String(),
+			"uri":           reqURL.String(),
 			"user-agent":    r.Header.Get("User-Agent"),
 		}).Info("request")
 	})
