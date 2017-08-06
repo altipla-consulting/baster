@@ -29,3 +29,4 @@ services:
     command: rerun baster/cmd/baster --config example/config.toml
     ports:
     - "9443:9443"
+    - "9080:9080"

@@ -11,4 +11,4 @@ hostname = "custom-url.example.com"
 
   [[service.route]]
   url = "/path/foo/"
-  k8s_service = "custom-url"
+  k8s_service = "custom-url2"
