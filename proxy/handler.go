@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -93,6 +94,11 @@ func newHandler(cnf *config.Config, secure bool) http.Handler {
 			},
 		}
 		proxy.ServeHTTP(w, r)
+
+		length := response.ContentLength
+		if length == -1 {
+			length, _ = strconv.ParseInt(response.Header.Get("Content-Length"), 10, 64)
+		}
 
 		log.WithFields(log.Fields{
 			"backend":       backend,
