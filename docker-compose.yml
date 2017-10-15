@@ -21,12 +21,3 @@ services:
     command: godoc -http :6060
     ports:
     - "6060:6060"
-
-  serve:
-    container_name: baster-serve
-    extends:
-      service: shell
-    command: rerun baster/cmd/baster --config example/config.toml
-    ports:
-    - "9443:9443"
-    - "9080:9080"

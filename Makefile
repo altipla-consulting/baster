@@ -6,9 +6,6 @@ FILES = $(shell find . -not -path "*vendor*" -type f -name '*.go')
 build:
 	$(DC) build
 
-serve:
-	@$(DC) up serve
-
 shell:
 	@$(DC_SHELL)
 

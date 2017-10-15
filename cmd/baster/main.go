@@ -2,17 +2,16 @@ package main
 
 import (
 	"crypto/tls"
-	"flag"
 	"net/http"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/juju/errors"
-	"golang.org/x/crypto/acme"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 
-	"baster/config"
-	"baster/proxy"
+	"baster/pkg/config"
+	"baster/pkg/proxy"
+	"baster/pkg/store"
 )
 
 func main() {
@@ -22,8 +21,6 @@ func main() {
 }
 
 func run() error {
-	flag.Parse()
-
 	if config.IsDebug() {
 		log.SetFormatter(&log.TextFormatter{
 			ForceColors:   true,
@@ -31,55 +28,63 @@ func run() error {
 		})
 	}
 
-	cnf, err := config.Load()
-	if err != nil {
-		return errors.Trace(err)
+	var cnf *config.Config
+	for {
+		var err error
+		cnf, err = config.Load()
+		if err != nil {
+			return errors.Trace(err)
+		}
+
+		if cnf == nil {
+			log.Errorf("no configmap with the name baster found, retrying in 15 seconds")
+			time.Sleep(15 * time.Second)
+			continue
+		}
+
+		if err := cnf.IsValid(); err != nil {
+			log.WithFields(log.Fields{"error": err}).Errorf("configuration is not valid, retrying in 15 seconds")
+			time.Sleep(15 * time.Second)
+			continue
+		}
+
+		break
 	}
 
-	hosts := []string{}
-	for _, service := range cnf.Service {
-		hosts = append(hosts, service.Hostname)
-	}
-	cache, err := NewDatastoreCache(cnf)
+	ctrl := cnf.NewController()
+
+	cache, err := store.NewDatastore()
 	if err != nil {
 		return errors.Trace(err)
 	}
 	manager := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(hosts...),
-		Email:      cnf.ACMEEmail,
+		Email:      cnf.ACME.Email,
 		Cache:      cache,
-	}
-	if config.IsDebug() {
-		manager.Client = &acme.Client{
-			DirectoryURL: "https://acme-staging.api.letsencrypt.org/directory",
-		}
+		HostPolicy: ctrl.HostPolicy(),
 	}
 
+	go ctrl.AutoUpdate()
+
 	go func() {
-		log.WithFields(log.Fields{"address": "localhost:9080"}).Info("run insecure server")
+		log.WithFields(log.Fields{"address": "localhost:80"}).Info("run insecure server")
 		server := &http.Server{
-			Addr:         ":9080",
+			Addr:         ":80",
 			ReadTimeout:  30 * time.Second,
 			WriteTimeout: 30 * time.Second,
-			Handler:      proxy.NewInsecureHandler(cnf),
+			Handler:      proxy.NewInsecureHandler(ctrl),
 		}
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatal(errors.ErrorStack(err))
 		}
 	}()
 
-	log.WithFields(log.Fields{
-		"address":    "localhost:9443",
-		"acme-email": cnf.ACMEEmail,
-		"hosts":      hosts,
-	}).Info("run secure server")
-
+	log.WithFields(log.Fields{"address": "localhost:443", "acme-email": cnf.ACME.Email}).Info("run secure server")
 	server := &http.Server{
-		Addr:         ":9443",
+		Addr:         ":443",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
-		Handler:      proxy.NewSecureHandler(cnf),
+		Handler:      proxy.NewSecureHandler(ctrl),
 		TLSConfig: &tls.Config{
 			GetCertificate: manager.GetCertificate,
 		},
