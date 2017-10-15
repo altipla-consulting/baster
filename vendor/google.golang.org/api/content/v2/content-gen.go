@@ -230,6 +230,14 @@ type Account struct {
 	// WebsiteUrl: The merchant's website.
 	WebsiteUrl string `json:"websiteUrl,omitempty"`
 
+	// YoutubeChannelLinks: List of linked YouTube channels that are active
+	// or pending approval. To create a new link request, add a new link
+	// with status active to the list. It will remain in a pending state
+	// until approved or rejected in the YT Creator Studio interface. To
+	// delete an active link, or to cancel a link request, remove it from
+	// the list.
+	YoutubeChannelLinks []*AccountYouTubeChannelLink `json:"youtubeChannelLinks,omitempty"`
+
 	// ServerResponse contains the HTTP response code and headers from the
 	// server.
 	googleapi.ServerResponse `json:"-"`
@@ -627,6 +635,45 @@ func (s *AccountUser) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+type AccountYouTubeChannelLink struct {
+	// ChannelId: Channel ID.
+	ChannelId string `json:"channelId,omitempty"`
+
+	// Status: Status of the link between this Merchant Center account and
+	// the YouTube channel. Upon retrieval, it represents the actual status
+	// of the link and can be either active if it was approved in YT Creator
+	// Studio or pending if it's pending approval. Upon insertion, it
+	// represents the intended status of the link. Re-uploading a link with
+	// status active when it's still pending or with status pending when
+	// it's already active will have no effect: the status will remain
+	// unchanged. Re-uploading a link with deprecated status inactive is
+	// equivalent to not submitting the link at all and will delete the link
+	// if it was active or cancel the link request if it was pending.
+	Status string `json:"status,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "ChannelId") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "ChannelId") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *AccountYouTubeChannelLink) MarshalJSON() ([]byte, error) {
+	type noMethod AccountYouTubeChannelLink
+	raw := noMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 type AccountsAuthInfoResponse struct {
 	// AccountIdentifiers: The account identifiers corresponding to the
 	// authenticated user.
@@ -740,6 +787,10 @@ type AccountsCustomBatchRequestEntry struct {
 
 	// BatchId: An entry ID, unique within the batch request.
 	BatchId int64 `json:"batchId,omitempty"`
+
+	// Force: Whether the account should be deleted if the account has
+	// offers. Only applicable if the method is delete.
+	Force bool `json:"force,omitempty"`
 
 	// MerchantId: The ID of the managing account.
 	MerchantId uint64 `json:"merchantId,omitempty,string"`
@@ -1335,8 +1386,9 @@ type Datafeed struct {
 	// attributes are defined in the data feed.
 	AttributeLanguage string `json:"attributeLanguage,omitempty"`
 
-	// ContentLanguage: The two-letter ISO 639-1 language of the items in
-	// the feed. Must be a valid language for targetCountry.
+	// ContentLanguage: [DEPRECATED] Please use targets[].language instead.
+	// The two-letter ISO 639-1 language of the items in the feed. Must be a
+	// valid language for targetCountry.
 	ContentLanguage string `json:"contentLanguage,omitempty"`
 
 	// ContentType: The type of data feed. For product inventory feeds, only
@@ -1356,8 +1408,9 @@ type Datafeed struct {
 	// Id: The ID of the data feed.
 	Id int64 `json:"id,omitempty,string"`
 
-	// IntendedDestinations: The list of intended destinations (corresponds
-	// to checked check boxes in Merchant Center).
+	// IntendedDestinations: [DEPRECATED] Please use
+	// targets[].includedDestinations instead. The list of intended
+	// destinations (corresponds to checked check boxes in Merchant Center).
 	IntendedDestinations []string `json:"intendedDestinations,omitempty"`
 
 	// Kind: Identifies what kind of resource this is. Value: the fixed
@@ -1367,9 +1420,14 @@ type Datafeed struct {
 	// Name: A descriptive name of the data feed.
 	Name string `json:"name,omitempty"`
 
-	// TargetCountry: The country where the items in the feed will be
-	// included in the search index, represented as a CLDR territory code.
+	// TargetCountry: [DEPRECATED] Please use targets[].country instead. The
+	// country where the items in the feed will be included in the search
+	// index, represented as a CLDR territory code.
 	TargetCountry string `json:"targetCountry,omitempty"`
+
+	// Targets: The targets this feed should apply to (country, language,
+	// destinations).
+	Targets []*DatafeedTarget `json:"targets,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
 	// server.
@@ -1503,6 +1561,10 @@ func (s *DatafeedFormat) MarshalJSON() ([]byte, error) {
 // last retrieval of the datafeed computed asynchronously when the feed
 // processing is finished.
 type DatafeedStatus struct {
+	// Country: The country for which the status is reported, represented as
+	// a  CLDR territory code.
+	Country string `json:"country,omitempty"`
+
 	// DatafeedId: The ID of the feed for which the status is reported.
 	DatafeedId uint64 `json:"datafeedId,omitempty,string"`
 
@@ -1519,6 +1581,10 @@ type DatafeedStatus struct {
 	// string "content#datafeedStatus".
 	Kind string `json:"kind,omitempty"`
 
+	// Language: The two-letter ISO 639-1 language for which the status is
+	// reported.
+	Language string `json:"language,omitempty"`
+
 	// LastUploadDate: The last date at which the feed was uploaded.
 	LastUploadDate string `json:"lastUploadDate,omitempty"`
 
@@ -1532,7 +1598,7 @@ type DatafeedStatus struct {
 	// server.
 	googleapi.ServerResponse `json:"-"`
 
-	// ForceSendFields is a list of field names (e.g. "DatafeedId") to
+	// ForceSendFields is a list of field names (e.g. "Country") to
 	// unconditionally include in API requests. By default, fields with
 	// empty values are omitted from API requests. However, any non-pointer,
 	// non-interface field appearing in ForceSendFields will be sent to the
@@ -1540,7 +1606,7 @@ type DatafeedStatus struct {
 	// used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
-	// NullFields is a list of field names (e.g. "DatafeedId") to include in
+	// NullFields is a list of field names (e.g. "Country") to include in
 	// API requests with the JSON null value. By default, fields with empty
 	// values are omitted from API requests. However, any field with an
 	// empty value appearing in NullFields will be sent to the server as
@@ -1624,6 +1690,48 @@ type DatafeedStatusExample struct {
 
 func (s *DatafeedStatusExample) MarshalJSON() ([]byte, error) {
 	type noMethod DatafeedStatusExample
+	raw := noMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type DatafeedTarget struct {
+	// Country: The country where the items in the feed will be included in
+	// the search index, represented as a  CLDR territory code.
+	Country string `json:"country,omitempty"`
+
+	// ExcludedDestinations: The list of destinations to exclude for this
+	// target (corresponds to unchecked check boxes in Merchant Center).
+	ExcludedDestinations []string `json:"excludedDestinations,omitempty"`
+
+	// IncludedDestinations: The list of destinations to include for this
+	// target (corresponds to checked check boxes in Merchant Center).
+	// Default destinations are always included unless provided in the
+	// excluded_destination field.
+	IncludedDestinations []string `json:"includedDestinations,omitempty"`
+
+	// Language: The two-letter ISO 639-1 language of the items in the feed.
+	// Must be a valid language for targets[].country.
+	Language string `json:"language,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Country") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Country") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *DatafeedTarget) MarshalJSON() ([]byte, error) {
+	type noMethod DatafeedTarget
 	raw := noMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
@@ -1837,8 +1945,18 @@ type DatafeedstatusesCustomBatchRequestEntry struct {
 	// BatchId: An entry ID, unique within the batch request.
 	BatchId int64 `json:"batchId,omitempty"`
 
-	// DatafeedId: The ID of the data feed to get or delete.
+	// Country: The country for which to get the datafeed status. If this
+	// parameter is provided then language must also be provided. Note that
+	// for multi-target datafeeds this parameter is required.
+	Country string `json:"country,omitempty"`
+
+	// DatafeedId: The ID of the data feed to get.
 	DatafeedId uint64 `json:"datafeedId,omitempty,string"`
+
+	// Language: The language for which to get the datafeed status. If this
+	// parameter is provided then country must also be provided. Note that
+	// for multi-target datafeeds this parameter is required.
+	Language string `json:"language,omitempty"`
 
 	// MerchantId: The ID of the managing account.
 	MerchantId uint64 `json:"merchantId,omitempty,string"`
@@ -2102,18 +2220,20 @@ type Headers struct {
 	// if all other fields are not set.
 	PostalCodeGroupNames []string `json:"postalCodeGroupNames,omitempty"`
 
-	// Prices: be "infinity". For example [{"value": "10", "currency":
-	// "USD"}, {"value": "500", "currency": "USD"}, {"value": "infinity",
-	// "currency": "USD"}] represents the headers "<= $10", " $500". All
-	// prices within a service must have the same currency. Must be
-	// non-empty. Can only be set if all other fields are not set.
+	// Prices: A list of inclusive order price upper bounds. The last
+	// price's value can be "infinity". For example [{"value": "10",
+	// "currency": "USD"}, {"value": "500", "currency": "USD"}, {"value":
+	// "infinity", "currency": "USD"}] represents the headers "<= $10", "
+	// $500". All prices within a service must have the same currency. Must
+	// be non-empty. Can only be set if all other fields are not set.
 	Prices []*Price `json:"prices,omitempty"`
 
-	// Weights: be "infinity". For example [{"value": "10", "unit": "kg"},
-	// {"value": "50", "unit": "kg"}, {"value": "infinity", "unit": "kg"}]
-	// represents the headers "<= 10kg", " 50kg". All weights within a
-	// service must have the same unit. Must be non-empty. Can only be set
-	// if all other fields are not set.
+	// Weights: A list of inclusive order weight upper bounds. The last
+	// weight's value can be "infinity". For example [{"value": "10",
+	// "unit": "kg"}, {"value": "50", "unit": "kg"}, {"value": "infinity",
+	// "unit": "kg"}] represents the headers "<= 10kg", " 50kg". All weights
+	// within a service must have the same unit. Must be non-empty. Can only
+	// be set if all other fields are not set.
 	Weights []*Weight `json:"weights,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Locations") to
@@ -2845,6 +2965,10 @@ type OrderLineItem struct {
 	// Cancellations: Cancellations of the line item.
 	Cancellations []*OrderCancellation `json:"cancellations,omitempty"`
 
+	// ChannelType: The channel type of the order: "purchaseOnGoogle" or
+	// "googleExpress".
+	ChannelType string `json:"channelType,omitempty"`
+
 	// Id: The id of the line item.
 	Id string `json:"id,omitempty"`
 
@@ -3081,7 +3205,8 @@ func (s *OrderLineItemShippingDetails) MarshalJSON() ([]byte, error) {
 }
 
 type OrderLineItemShippingDetailsMethod struct {
-	// Carrier: The carrier for the shipping. Optional.
+	// Carrier: The carrier for the shipping. Optional. See
+	// shipments[].carrier for a list of acceptable values.
 	Carrier string `json:"carrier,omitempty"`
 
 	// MaxDaysInTransit: Maximum transit time.
@@ -3133,7 +3258,16 @@ type OrderPaymentMethod struct {
 	// PhoneNumber: The billing phone number.
 	PhoneNumber string `json:"phoneNumber,omitempty"`
 
-	// Type: The type of instrument (VISA, Mastercard, etc).
+	// Type: The type of instrument.
+	//
+	// Acceptable values are:
+	// - "AMEX"
+	// - "DISCOVER"
+	// - "JCB"
+	// - "MASTERCARD"
+	// - "UNIONPAY"
+	// - "VISA"
+	// - ""
 	Type string `json:"type,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "BillingAddress") to
@@ -3339,6 +3473,30 @@ func (s *OrderReturn) MarshalJSON() ([]byte, error) {
 
 type OrderShipment struct {
 	// Carrier: The carrier handling the shipment.
+	//
+	// Acceptable values are:
+	// - "gsx"
+	// - "ups"
+	// - "united parcel service"
+	// - "usps"
+	// - "united states postal service"
+	// - "fedex"
+	// - "dhl"
+	// - "ecourier"
+	// - "cxt"
+	// - "google"
+	// - "on trac"
+	// - "ontrac"
+	// - "on-trac"
+	// - "on_trac"
+	// - "delvic"
+	// - "dynamex"
+	// - "lasership"
+	// - "smartpost"
+	// - "fedex smartpost"
+	// - "mpx"
+	// - "uds"
+	// - "united delivery service"
 	Carrier string `json:"carrier,omitempty"`
 
 	// CreationDate: Date on which the shipment has been created, in ISO
@@ -3962,16 +4120,25 @@ func (s *OrdersCustomBatchRequestEntryReturnLineItem) MarshalJSON() ([]byte, err
 }
 
 type OrdersCustomBatchRequestEntryShipLineItems struct {
-	// Carrier: The carrier handling the shipment.
+	// Carrier: Deprecated. Please use shipmentInfo instead. The carrier
+	// handling the shipment. See shipments[].carrier in the  Orders
+	// resource representation for a list of acceptable values.
 	Carrier string `json:"carrier,omitempty"`
 
 	// LineItems: Line items to ship.
 	LineItems []*OrderShipmentLineItemShipment `json:"lineItems,omitempty"`
 
-	// ShipmentId: The ID of the shipment.
+	// ShipmentId: Deprecated. Please use shipmentInfo instead. The ID of
+	// the shipment.
 	ShipmentId string `json:"shipmentId,omitempty"`
 
-	// TrackingId: The tracking id for the shipment.
+	// ShipmentInfos: Shipment information. This field is repeated because a
+	// single line item can be shipped in several packages (and have several
+	// tracking IDs).
+	ShipmentInfos []*OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo `json:"shipmentInfos,omitempty"`
+
+	// TrackingId: Deprecated. Please use shipmentInfo instead. The tracking
+	// id for the shipment.
 	TrackingId string `json:"trackingId,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Carrier") to
@@ -3997,8 +4164,45 @@ func (s *OrdersCustomBatchRequestEntryShipLineItems) MarshalJSON() ([]byte, erro
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+type OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo struct {
+	// Carrier: The carrier handling the shipment. See shipments[].carrier
+	// in the  Orders resource representation for a list of acceptable
+	// values.
+	Carrier string `json:"carrier,omitempty"`
+
+	// ShipmentId: The ID of the shipment.
+	ShipmentId string `json:"shipmentId,omitempty"`
+
+	// TrackingId: The tracking id for the shipment.
+	TrackingId string `json:"trackingId,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Carrier") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Carrier") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo) MarshalJSON() ([]byte, error) {
+	type noMethod OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo
+	raw := noMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 type OrdersCustomBatchRequestEntryUpdateShipment struct {
 	// Carrier: The carrier handling the shipment. Not updated if missing.
+	// See shipments[].carrier in the  Orders resource representation for a
+	// list of acceptable values.
 	Carrier string `json:"carrier,omitempty"`
 
 	// ShipmentId: The ID of the shipment.
@@ -4369,7 +4573,9 @@ func (s *OrdersReturnLineItemResponse) MarshalJSON() ([]byte, error) {
 }
 
 type OrdersShipLineItemsRequest struct {
-	// Carrier: The carrier handling the shipment.
+	// Carrier: Deprecated. Please use shipmentInfo instead. The carrier
+	// handling the shipment. See shipments[].carrier in the  Orders
+	// resource representation for a list of acceptable values.
 	Carrier string `json:"carrier,omitempty"`
 
 	// LineItems: Line items to ship.
@@ -4379,10 +4585,17 @@ type OrdersShipLineItemsRequest struct {
 	// for a given order.
 	OperationId string `json:"operationId,omitempty"`
 
-	// ShipmentId: The ID of the shipment.
+	// ShipmentId: Deprecated. Please use shipmentInfo instead. The ID of
+	// the shipment.
 	ShipmentId string `json:"shipmentId,omitempty"`
 
-	// TrackingId: The tracking id for the shipment.
+	// ShipmentInfos: Shipment information. This field is repeated because a
+	// single line item can be shipped in several packages (and have several
+	// tracking IDs).
+	ShipmentInfos []*OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo `json:"shipmentInfos,omitempty"`
+
+	// TrackingId: Deprecated. Please use shipmentInfo instead. The tracking
+	// id for the shipment.
 	TrackingId string `json:"trackingId,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Carrier") to
@@ -4515,6 +4728,8 @@ func (s *OrdersUpdateMerchantOrderIdResponse) MarshalJSON() ([]byte, error) {
 
 type OrdersUpdateShipmentRequest struct {
 	// Carrier: The carrier handling the shipment. Not updated if missing.
+	// See shipments[].carrier in the  Orders resource representation for a
+	// list of acceptable values.
 	Carrier string `json:"carrier,omitempty"`
 
 	// OperationId: The ID of the operation. Unique across all operations
@@ -6023,6 +6238,11 @@ type Service struct {
 	// delivery of the product. Required.
 	DeliveryTime *DeliveryTime `json:"deliveryTime,omitempty"`
 
+	// MinimumOrderValue: Minimum order value for this service. If set,
+	// indicates that customers will have to spend at least this amount. All
+	// prices within a service must have the same currency.
+	MinimumOrderValue *Price `json:"minimumOrderValue,omitempty"`
+
 	// Name: Free-form name of the service. Must be unique within target
 	// account. Required.
 	Name string `json:"name,omitempty"`
@@ -6815,9 +7035,10 @@ func (r *AccountsService) Claimwebsite(merchantId uint64, accountId uint64) *Acc
 	return c
 }
 
-// Overwrite sets the optional parameter "overwrite": Flag to remove any
-// existing claim on the requested website by another account and
-// replace it with a claim from this account.
+// Overwrite sets the optional parameter "overwrite": Only available to
+// selected merchants. When set to True, this flag removes any existing
+// claim on the requested website by another account and replaces it
+// with a claim from this account.
 func (c *AccountsClaimwebsiteCall) Overwrite(overwrite bool) *AccountsClaimwebsiteCall {
 	c.urlParams_.Set("overwrite", fmt.Sprint(overwrite))
 	return c
@@ -6928,7 +7149,7 @@ func (c *AccountsClaimwebsiteCall) Do(opts ...googleapi.CallOption) (*AccountsCl
 	//       "type": "string"
 	//     },
 	//     "overwrite": {
-	//       "description": "Flag to remove any existing claim on the requested website by another account and replace it with a claim from this account.",
+	//       "description": "Only available to selected merchants. When set to True, this flag removes any existing claim on the requested website by another account and replaces it with a claim from this account.",
 	//       "location": "query",
 	//       "type": "boolean"
 	//     }
@@ -7103,6 +7324,13 @@ func (c *AccountsDeleteCall) DryRun(dryRun bool) *AccountsDeleteCall {
 	return c
 }
 
+// Force sets the optional parameter "force": Flag to delete
+// sub-accounts with products. The default value is false.
+func (c *AccountsDeleteCall) Force(force bool) *AccountsDeleteCall {
+	c.urlParams_.Set("force", fmt.Sprint(force))
+	return c
+}
+
 // Fields allows partial responses to be retrieved. See
 // https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
 // for more information.
@@ -7177,6 +7405,12 @@ func (c *AccountsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//     },
 	//     "dryRun": {
 	//       "description": "Flag to run the request in dry-run mode.",
+	//       "location": "query",
+	//       "type": "boolean"
+	//     },
+	//     "force": {
+	//       "default": "false",
+	//       "description": "Flag to delete sub-accounts with products. The default value is false.",
 	//       "location": "query",
 	//       "type": "boolean"
 	//     },
@@ -10433,6 +10667,26 @@ func (r *DatafeedstatusesService) Get(merchantId uint64, datafeedId uint64) *Dat
 	return c
 }
 
+// Country sets the optional parameter "country": The country for which
+// to get the datafeed status. If this parameter is provided then
+// language must also be provided. Note that this parameter is required
+// for feeds targeting multiple countries and languages, since a feed
+// may have a different status for each target.
+func (c *DatafeedstatusesGetCall) Country(country string) *DatafeedstatusesGetCall {
+	c.urlParams_.Set("country", country)
+	return c
+}
+
+// Language sets the optional parameter "language": The language for
+// which to get the datafeed status. If this parameter is provided then
+// country must also be provided. Note that this parameter is required
+// for feeds targeting multiple countries and languages, since a feed
+// may have a different status for each target.
+func (c *DatafeedstatusesGetCall) Language(language string) *DatafeedstatusesGetCall {
+	c.urlParams_.Set("language", language)
+	return c
+}
+
 // Fields allows partial responses to be retrieved. See
 // https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
 // for more information.
@@ -10536,10 +10790,20 @@ func (c *DatafeedstatusesGetCall) Do(opts ...googleapi.CallOption) (*DatafeedSta
 	//     "datafeedId"
 	//   ],
 	//   "parameters": {
+	//     "country": {
+	//       "description": "The country for which to get the datafeed status. If this parameter is provided then language must also be provided. Note that this parameter is required for feeds targeting multiple countries and languages, since a feed may have a different status for each target.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
 	//     "datafeedId": {
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "language": {
+	//       "description": "The language for which to get the datafeed status. If this parameter is provided then country must also be provided. Note that this parameter is required for feeds targeting multiple countries and languages, since a feed may have a different status for each target.",
+	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "merchantId": {

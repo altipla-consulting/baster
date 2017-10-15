@@ -197,8 +197,8 @@ func (s *LongRunningRecognizeRequest) MarshalJSON() ([]byte, error) {
 type Operation struct {
 	// Done: If the value is `false`, it means the operation is still in
 	// progress.
-	// If true, the operation is completed, and either `error` or `response`
-	// is
+	// If `true`, the operation is completed, and either `error` or
+	// `response` is
 	// available.
 	Done bool `json:"done,omitempty"`
 
@@ -572,8 +572,9 @@ type SpeechRecognitionAlternative struct {
 	// hypothesis, and
 	// only for `is_final=true` results. Clients should not rely on
 	// the
-	// `confidence` field as it is not guaranteed to be accurate or
-	// consistent.
+	// `confidence` field as it is not guaranteed to be accurate, or even
+	// set, in
+	// any of the results.
 	// The default of 0.0 is a sentinel value indicating `confidence` was
 	// not set.
 	Confidence float64 `json:"confidence,omitempty"`

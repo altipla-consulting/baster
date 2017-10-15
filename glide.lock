@@ -1,16 +1,17 @@
-hash: dc5417b44a4e3cb0b4a943a394329f54a5315ba09e0875cc57d21f424f08a747
-updated: 2017-08-06T10:41:58.793415629Z
+hash: 9cfc9fb3bb8a329e91905a2ace76fe7aebbc88f9465969614629caf31d1dddef
+updated: 2017-10-15T12:09:04.775530739Z
 imports:
 - name: cloud.google.com/go
-  version: 44bcd0b2078ba5e7fedbeb36808d1ed893534750
+  version: eaddaf6dd7ee35fd3c2420c8d27478db176b0485
   subpackages:
   - compute/metadata
   - datastore
+  - internal
   - internal/atomiccache
   - internal/fields
   - internal/version
 - name: github.com/golang/protobuf
-  version: 748d386b5c1ea99658fd69fe9f03991ce86a90c1
+  version: 130e6b02ab059e7b717a096f397c5b60111cae74
   subpackages:
   - proto
   - protoc-gen-go/descriptor
@@ -20,24 +21,35 @@ imports:
   - ptypes/struct
   - ptypes/timestamp
   - ptypes/wrappers
+- name: github.com/googleapis/gax-go
+  version: 317e0006254c44a0ac427cc52a0e083ff0b9622f
+- name: github.com/hashicorp/hcl
+  version: 42e33e2d55a0ff1d6263f738896ea8c13571a8d0
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
 - name: github.com/juju/errors
   version: c7d06af17c68cd34c835053720b21f6549d9b0ee
-- name: github.com/naoina/go-stringutil
-  version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
 - name: github.com/naoina/toml
   version: e6f5723bf2a66af014955e0888881314cf294129
-  subpackages:
-  - ast
+- name: github.com/sirupsen/logrus
+  version: f006c2ac4710855cf0f916dd6b77acf6b048dc6e
 - name: github.com/Sirupsen/logrus
-  version: a3f95b5c423586578a4e099b11a46c2479628cac
+  version: 89742aefa4b206dcf400792f3bd35b542998eb3b
 - name: golang.org/x/crypto
-  version: 42ff06aea7c329876e5a0fe94acc96902accf0ad
+  version: 9419663f5a44be8b34ca85f08abc5fe1be11f8a3
   subpackages:
   - acme
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/net
-  version: f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f
+  version: a04bdaca5b32abe1c069418fb7088ae607de5bd0
   subpackages:
   - context
   - context/ctxhttp
@@ -48,33 +60,33 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/oauth2
-  version: 96fca6c793ec32f068f97942ae3c7c073810dfc1
+  version: bb50c06baba3d0c76f9d125c0719093e315b5b44
   subpackages:
   - google
   - internal
   - jws
   - jwt
 - name: golang.org/x/sys
-  version: d8f5ea21b9295e315e612b4bcf4bedea93454d4d
+  version: 686000749eaec0b8855b8eef5336cf63899fe51d
   subpackages:
   - unix
   - windows
 - name: golang.org/x/text
-  version: 3bd178b88a8180be2df394a1fbb81313916f0e7b
+  version: c01e4764d870b77f8abe5096ee19ad20d80e8075
   subpackages:
   - secure/bidirule
   - transform
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/api
-  version: 93a219feb72690ca01348faec80d5a076a32f688
+  version: 9e2045da407b8bc1df9bc5c14d4d1a7e7e182e05
   subpackages:
   - internal
   - iterator
   - option
   - transport/grpc
 - name: google.golang.org/appengine
-  version: c5a90ac045b779001847fec87403f5cba090deae
+  version: a2e0dc829727a4f957a7428b1f322805cfc1f362
   subpackages:
   - internal
   - internal/app_identity
@@ -88,25 +100,28 @@ imports:
   - socket
   - urlfetch
 - name: google.golang.org/genproto
-  version: 09f6ed296fc66555a25fe4ce95173148778dfa85
+  version: f676e0f3ac6395ff1a529ae59a6670878a8371a6
   subpackages:
   - googleapis/api/annotations
   - googleapis/datastore/v1
   - googleapis/rpc/status
   - googleapis/type/latlng
 - name: google.golang.org/grpc
-  version: 963eb485d85690cc992e3d02f9dd2a81d5fb0923
+  version: c209cdff16049a924bef4aa5c6f7588f0b42b2fa
   subpackages:
+  - balancer
   - codes
+  - connectivity
   - credentials
   - credentials/oauth
-  - grpclb/grpc_lb_v1
+  - grpclb/grpc_lb_v1/messages
   - grpclog
   - internal
   - keepalive
   - metadata
   - naming
   - peer
+  - resolver
   - stats
   - status
   - tap

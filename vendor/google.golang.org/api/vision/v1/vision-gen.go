@@ -1795,7 +1795,11 @@ func (s *Property) MarshalJSON() ([]byte, error) {
 // medical,
 // violence).
 type SafeSearchAnnotation struct {
-	// Adult: Represents the adult content likelihood for the image.
+	// Adult: Represents the adult content likelihood for the image. Adult
+	// content may
+	// contain elements such as nudity, pornographic images or cartoons,
+	// or
+	// sexual activities.
 	//
 	// Possible values:
 	//   "UNKNOWN" - Unknown likelihood.
@@ -1845,7 +1849,7 @@ type SafeSearchAnnotation struct {
 	// specified vertical.
 	Spoof string `json:"spoof,omitempty"`
 
-	// Violence: Violence likelihood.
+	// Violence: Likelihood that this image contains violent content.
 	//
 	// Possible values:
 	//   "UNKNOWN" - Unknown likelihood.
@@ -2262,8 +2266,7 @@ func (s *WebEntity) UnmarshalJSON(data []byte) error {
 
 // WebImage: Metadata for online images.
 type WebImage struct {
-	// Score: Overall relevancy score for the image.
-	// Not normalized and not comparable across different image queries.
+	// Score: (Deprecated) Overall relevancy score for the image.
 	Score float64 `json:"score,omitempty"`
 
 	// Url: The result image URL.
@@ -2308,8 +2311,7 @@ func (s *WebImage) UnmarshalJSON(data []byte) error {
 
 // WebPage: Metadata for web pages.
 type WebPage struct {
-	// Score: Overall relevancy score for the web page.
-	// Not normalized and not comparable across different image queries.
+	// Score: (Deprecated) Overall relevancy score for the web page.
 	Score float64 `json:"score,omitempty"`
 
 	// Url: The result web page URL.

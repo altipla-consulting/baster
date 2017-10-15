@@ -17,14 +17,13 @@ package bigquery
 import (
 	"testing"
 
-	"cloud.google.com/go/internal/testutil"
-
 	"golang.org/x/net/context"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
 func defaultCopyJob() *bq.Job {
 	return &bq.Job{
+		JobReference: &bq.JobReference{JobId: "RANDOM", ProjectId: "client-project-id"},
 		Configuration: &bq.JobConfiguration{
 			Copy: &bq.JobConfigurationTableCopy{
 				DestinationTable: &bq.TableReference{
@@ -45,6 +44,7 @@ func defaultCopyJob() *bq.Job {
 }
 
 func TestCopy(t *testing.T) {
+	defer fixRandomJobID("RANDOM")()
 	testCases := []struct {
 		dst    *Table
 		srcs   []*Table
@@ -106,16 +106,13 @@ func TestCopy(t *testing.T) {
 			config: CopyConfig{JobID: "job-id"},
 			want: func() *bq.Job {
 				j := defaultCopyJob()
-				j.JobReference = &bq.JobReference{
-					JobId:     "job-id",
-					ProjectId: "client-project-id",
-				}
+				j.JobReference.JobId = "job-id"
 				return j
 			}(),
 		},
 	}
 
-	for _, tc := range testCases {
+	for i, tc := range testCases {
 		s := &testService{}
 		c := &Client{
 			service:   s,
@@ -127,11 +124,9 @@ func TestCopy(t *testing.T) {
 		tc.config.Dst = tc.dst
 		copier.CopyConfig = tc.config
 		if _, err := copier.Run(context.Background()); err != nil {
-			t.Errorf("err calling Run: %v", err)
+			t.Errorf("#%d: err calling Run: %v", i, err)
 			continue
 		}
-		if !testutil.Equal(s.Job, tc.want) {
-			t.Errorf("copying: got:\n%v\nwant:\n%v", s.Job, tc.want)
-		}
+		checkJob(t, i, s.Job, tc.want)
 	}
 }

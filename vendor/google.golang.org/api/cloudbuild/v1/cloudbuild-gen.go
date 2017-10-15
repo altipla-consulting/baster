@@ -141,6 +141,7 @@ type ProjectsTriggersService struct {
 // - $REVISION_ID or $COMMIT_SHA: the commit SHA specified by RepoSource
 // or
 //   resolved from the specified branch or tag.
+// - $SHORT_SHA: first 7 characters of $REVISION_ID or $COMMIT_SHA.
 type Build struct {
 	// BuildTriggerId: The ID of the BuildTrigger that triggered this build,
 	// if it was
@@ -792,8 +793,8 @@ func (s *ListOperationsResponse) MarshalJSON() ([]byte, error) {
 type Operation struct {
 	// Done: If the value is `false`, it means the operation is still in
 	// progress.
-	// If true, the operation is completed, and either `error` or `response`
-	// is
+	// If `true`, the operation is completed, and either `error` or
+	// `response` is
 	// available.
 	Done bool `json:"done,omitempty"`
 
@@ -990,9 +991,8 @@ type Source struct {
 	// Repo.
 	RepoSource *RepoSource `json:"repoSource,omitempty"`
 
-	// StorageSource: If provided, get the source from this location in in
-	// Google Cloud
-	// Storage.
+	// StorageSource: If provided, get the source from this location in
+	// Google Cloud Storage.
 	StorageSource *StorageSource `json:"storageSource,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "RepoSource") to

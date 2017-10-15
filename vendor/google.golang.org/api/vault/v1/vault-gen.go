@@ -1,6 +1,6 @@
 // Package vault provides access to the Google Vault API.
 //
-// See https://apps.google.com/products/vault/
+// See https://developers.google.com/vault
 //
 // Usage example:
 //
@@ -44,6 +44,15 @@ const apiId = "vault:v1"
 const apiName = "vault"
 const apiVersion = "v1"
 const basePath = "https://vault.googleapis.com/"
+
+// OAuth2 scopes used by this API.
+const (
+	// Manage your eDiscovery data
+	EdiscoveryScope = "https://www.googleapis.com/auth/ediscovery"
+
+	// View your eDiscovery data
+	EdiscoveryReadonlyScope = "https://www.googleapis.com/auth/ediscovery.readonly"
+)
 
 func New(client *http.Client) (*Service, error) {
 	if client == nil {
@@ -241,8 +250,7 @@ type Empty struct {
 // corpus.
 type HeldAccount struct {
 	// AccountId: The account's ID as provided by the
-	// <a
-	// href="https://developers.google.com/admin-sdk/">Admin SDK</a>.
+	// <a href="https://developers.google.com/admin-sdk/">Admin SDK</a>.
 	AccountId string `json:"accountId,omitempty"`
 
 	// HoldTime: When the account was put on hold.
@@ -886,7 +894,10 @@ func (c *MattersAddPermissionsCall) Do(opts ...googleapi.CallOption) (*MatterPer
 	//   },
 	//   "response": {
 	//     "$ref": "MatterPermission"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -1018,7 +1029,10 @@ func (c *MattersCloseCall) Do(opts ...googleapi.CallOption) (*CloseMatterRespons
 	//   },
 	//   "response": {
 	//     "$ref": "CloseMatterResponse"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -1033,8 +1047,11 @@ type MattersCreateCall struct {
 	header_    http.Header
 }
 
-// Create: Creates a new matter. Returns created matter with default
-// view.
+// Create: Creates a new matter with the given name and description. The
+// initial state
+// is open, and the owner is the method caller. Returns the created
+// matter
+// with default view.
 func (r *MattersService) Create(matter *Matter) *MattersCreateCall {
 	c := &MattersCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.matter = matter
@@ -1124,7 +1141,7 @@ func (c *MattersCreateCall) Do(opts ...googleapi.CallOption) (*Matter, error) {
 	}
 	return ret, nil
 	// {
-	//   "description": "Creates a new matter. Returns created matter with default view.",
+	//   "description": "Creates a new matter with the given name and description. The initial state\nis open, and the owner is the method caller. Returns the created matter\nwith default view.",
 	//   "flatPath": "v1/matters",
 	//   "httpMethod": "POST",
 	//   "id": "vault.matters.create",
@@ -1136,7 +1153,10 @@ func (c *MattersCreateCall) Do(opts ...googleapi.CallOption) (*Matter, error) {
 	//   },
 	//   "response": {
 	//     "$ref": "Matter"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -1258,7 +1278,10 @@ func (c *MattersDeleteCall) Do(opts ...googleapi.CallOption) (*Matter, error) {
 	//   "path": "v1/matters/{matterId}",
 	//   "response": {
 	//     "$ref": "Matter"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -1415,7 +1438,11 @@ func (c *MattersGetCall) Do(opts ...googleapi.CallOption) (*Matter, error) {
 	//   "path": "v1/matters/{matterId}",
 	//   "response": {
 	//     "$ref": "Matter"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery",
+	//     "https://www.googleapis.com/auth/ediscovery.readonly"
+	//   ]
 	// }
 
 }
@@ -1448,6 +1475,20 @@ func (c *MattersListCall) PageSize(pageSize int64) *MattersListCall {
 // token as returned in the response.
 func (c *MattersListCall) PageToken(pageToken string) *MattersListCall {
 	c.urlParams_.Set("pageToken", pageToken)
+	return c
+}
+
+// State sets the optional parameter "state": If set, list only matters
+// with that specific state. The default is listing
+// matters of all states.
+//
+// Possible values:
+//   "STATE_UNSPECIFIED"
+//   "OPEN"
+//   "CLOSED"
+//   "DELETED"
+func (c *MattersListCall) State(state string) *MattersListCall {
+	c.urlParams_.Set("state", state)
 	return c
 }
 
@@ -1571,6 +1612,17 @@ func (c *MattersListCall) Do(opts ...googleapi.CallOption) (*ListMattersResponse
 	//       "location": "query",
 	//       "type": "string"
 	//     },
+	//     "state": {
+	//       "description": "If set, list only matters with that specific state. The default is listing\nmatters of all states.",
+	//       "enum": [
+	//         "STATE_UNSPECIFIED",
+	//         "OPEN",
+	//         "CLOSED",
+	//         "DELETED"
+	//       ],
+	//       "location": "query",
+	//       "type": "string"
+	//     },
 	//     "view": {
 	//       "description": "Specifies which parts of the matter to return in response.",
 	//       "enum": [
@@ -1585,7 +1637,11 @@ func (c *MattersListCall) Do(opts ...googleapi.CallOption) (*ListMattersResponse
 	//   "path": "v1/matters",
 	//   "response": {
 	//     "$ref": "ListMattersResponse"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery",
+	//     "https://www.googleapis.com/auth/ediscovery.readonly"
+	//   ]
 	// }
 
 }
@@ -1737,7 +1793,10 @@ func (c *MattersRemovePermissionsCall) Do(opts ...googleapi.CallOption) (*Empty,
 	//   },
 	//   "response": {
 	//     "$ref": "Empty"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -1869,7 +1928,10 @@ func (c *MattersReopenCall) Do(opts ...googleapi.CallOption) (*ReopenMatterRespo
 	//   },
 	//   "response": {
 	//     "$ref": "ReopenMatterResponse"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -2001,7 +2063,10 @@ func (c *MattersUndeleteCall) Do(opts ...googleapi.CallOption) (*Matter, error) 
 	//   },
 	//   "response": {
 	//     "$ref": "Matter"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -2136,7 +2201,10 @@ func (c *MattersUpdateCall) Do(opts ...googleapi.CallOption) (*Matter, error) {
 	//   },
 	//   "response": {
 	//     "$ref": "Matter"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -2267,7 +2335,10 @@ func (c *MattersHoldsCreateCall) Do(opts ...googleapi.CallOption) (*Hold, error)
 	//   },
 	//   "response": {
 	//     "$ref": "Hold"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -2399,7 +2470,10 @@ func (c *MattersHoldsDeleteCall) Do(opts ...googleapi.CallOption) (*Empty, error
 	//   "path": "v1/matters/{matterId}/holds/{holdId}",
 	//   "response": {
 	//     "$ref": "Empty"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -2544,7 +2618,11 @@ func (c *MattersHoldsGetCall) Do(opts ...googleapi.CallOption) (*Hold, error) {
 	//   "path": "v1/matters/{matterId}/holds/{holdId}",
 	//   "response": {
 	//     "$ref": "Hold"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery",
+	//     "https://www.googleapis.com/auth/ediscovery.readonly"
+	//   ]
 	// }
 
 }
@@ -2708,7 +2786,11 @@ func (c *MattersHoldsListCall) Do(opts ...googleapi.CallOption) (*ListHoldsRespo
 	//   "path": "v1/matters/{matterId}/holds",
 	//   "response": {
 	//     "$ref": "ListHoldsResponse"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery",
+	//     "https://www.googleapis.com/auth/ediscovery.readonly"
+	//   ]
 	// }
 
 }
@@ -2874,7 +2956,10 @@ func (c *MattersHoldsUpdateCall) Do(opts ...googleapi.CallOption) (*Hold, error)
 	//   },
 	//   "response": {
 	//     "$ref": "Hold"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -3019,7 +3104,10 @@ func (c *MattersHoldsAccountsCreateCall) Do(opts ...googleapi.CallOption) (*Held
 	//   },
 	//   "response": {
 	//     "$ref": "HeldAccount"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -3162,7 +3250,10 @@ func (c *MattersHoldsAccountsDeleteCall) Do(opts ...googleapi.CallOption) (*Empt
 	//   "path": "v1/matters/{matterId}/holds/{holdId}/accounts/{accountId}",
 	//   "response": {
 	//     "$ref": "Empty"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery"
+	//   ]
 	// }
 
 }
@@ -3181,8 +3272,8 @@ type MattersHoldsAccountsListCall struct {
 
 // List: Lists HeldAccounts for a hold. This will only list individually
 // specified
-// held accounts. If the hold is on an OU, then use the
-// <ahref="https://developers.google.com/admin-sdk/">Admin SDK</a>
+// held accounts. If the hold is on an OU, then use
+// <a href="https://developers.google.com/admin-sdk/">Admin SDK</a>
 // to enumerate its members.
 func (r *MattersHoldsAccountsService) List(matterId string, holdId string) *MattersHoldsAccountsListCall {
 	c := &MattersHoldsAccountsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
@@ -3286,7 +3377,7 @@ func (c *MattersHoldsAccountsListCall) Do(opts ...googleapi.CallOption) (*ListHe
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists HeldAccounts for a hold. This will only list individually specified\nheld accounts. If the hold is on an OU, then use the \u003cahref=\"https://developers.google.com/admin-sdk/\"\u003eAdmin SDK\u003c/a\u003e\nto enumerate its members.",
+	//   "description": "Lists HeldAccounts for a hold. This will only list individually specified\nheld accounts. If the hold is on an OU, then use\n\u003ca href=\"https://developers.google.com/admin-sdk/\"\u003eAdmin SDK\u003c/a\u003e\nto enumerate its members.",
 	//   "flatPath": "v1/matters/{matterId}/holds/{holdId}/accounts",
 	//   "httpMethod": "GET",
 	//   "id": "vault.matters.holds.accounts.list",
@@ -3311,7 +3402,11 @@ func (c *MattersHoldsAccountsListCall) Do(opts ...googleapi.CallOption) (*ListHe
 	//   "path": "v1/matters/{matterId}/holds/{holdId}/accounts",
 	//   "response": {
 	//     "$ref": "ListHeldAccountsResponse"
-	//   }
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/ediscovery",
+	//     "https://www.googleapis.com/auth/ediscovery.readonly"
+	//   ]
 	// }
 
 }
