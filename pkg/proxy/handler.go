@@ -164,7 +164,7 @@ func newHandler(ctrl *config.Controller, secure bool) http.Handler {
 			"method":        r.Method,
 			"referer":       r.Header.Get("Referer"),
 			"request-size":  r.ContentLength,
-			"response-size": response.ContentLength,
+			"response-size": length,
 			"secure":        secure,
 			"status":        response.StatusCode,
 			"time":          time.Now().Format(time.RFC3339),
