@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -82,5 +83,10 @@ func (client *Client) call(method, path string, body []byte) (*http.Response, er
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-	return http.DefaultClient.Do(req)
+	hc := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	return hc.Do(req)
 }
