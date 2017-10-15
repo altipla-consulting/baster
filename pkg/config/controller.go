@@ -47,18 +47,15 @@ func (ctrl *Controller) AutoUpdate() {
 			continue
 		}
 
-		ctrl.RLock()
 		if ctrl.cnf.Version == cnf.Version {
-			ctrl.RUnlock()
 			time.Sleep(1 * time.Minute)
 			continue
 		}
-		ctrl.RUnlock()
 
+		log.Infof("config updated from version %s to %s of baster configmap", ctrl.cnf.Version, cnf.Version)
 		ctrl.Lock()
 		ctrl.cnf = cnf
 		ctrl.Unlock()
-		log.Infof("config updated from version %s of baster configmap", cnf.Version)
 		time.Sleep(1 * time.Minute)
 	}
 }
