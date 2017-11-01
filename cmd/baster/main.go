@@ -28,30 +28,17 @@ func run() error {
 		})
 	}
 
-	var cnf *config.Config
-	for {
-		var err error
-		cnf, err = config.Load()
-		if err != nil {
-			return errors.Trace(err)
-		}
+	updates := make(chan *config.Config, 1)
+	go config.AutoUpdate(updates)
 
-		if cnf == nil {
-			log.Errorf("no configmap with the name baster found, retrying in 15 seconds")
-			time.Sleep(15 * time.Second)
-			continue
-		}
+	// We need the config for the ACME email
+	cnf := <-updates
 
-		if err := cnf.IsValid(); err != nil {
-			log.WithFields(log.Fields{"error": err}).Errorf("configuration is not valid, retrying in 15 seconds")
-			time.Sleep(15 * time.Second)
-			continue
-		}
+	p := proxy.New(updates)
+	handler := p.Handler()
 
-		break
-	}
-
-	ctrl := cnf.NewController()
+	// Restore the config in the queue again to receive it in the proxy controller.
+	updates <- cnf
 
 	cache, err := store.NewDatastore()
 	if err != nil {
@@ -61,10 +48,8 @@ func run() error {
 		Prompt:     autocert.AcceptTOS,
 		Email:      cnf.ACME.Email,
 		Cache:      cache,
-		HostPolicy: ctrl.HostPolicy(),
+		HostPolicy: p.HostPolicy(),
 	}
-
-	go ctrl.AutoUpdate()
 
 	go func() {
 		log.WithFields(log.Fields{"address": "localhost:80"}).Info("run insecure server")
@@ -72,7 +57,7 @@ func run() error {
 			Addr:         ":80",
 			ReadTimeout:  30 * time.Second,
 			WriteTimeout: 30 * time.Second,
-			Handler:      proxy.NewInsecureHandler(ctrl),
+			Handler:      handler,
 		}
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatal(errors.ErrorStack(err))
@@ -84,7 +69,7 @@ func run() error {
 		Addr:         ":443",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
-		Handler:      proxy.NewSecureHandler(ctrl),
+		Handler:      handler,
 		TLSConfig: &tls.Config{
 			GetCertificate: manager.GetCertificate,
 		},
