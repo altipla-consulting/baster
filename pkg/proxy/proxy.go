@@ -90,7 +90,6 @@ func New(configUpdates chan *config.Config) *Proxy {
 
 				// Default fallback route for all services.
 				routes = append(routes, &Route{
-					URL:           "/",
 					AllowInsecure: service.AllowInsecure,
 					Endpoint:      service.Endpoint,
 					CORSEnabled:   service.CORSEnabled,
