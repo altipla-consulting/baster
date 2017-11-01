@@ -68,7 +68,6 @@ func New(configUpdates chan *config.Config) *Proxy {
 			cnf := <-configUpdates
 
 			ctrl.Lock()
-			defer ctrl.Unlock()
 
 			ctrl.services = map[string]*Service{}
 			for name, service := range cnf.Services {
@@ -104,6 +103,8 @@ func New(configUpdates chan *config.Config) *Proxy {
 					Routes:   routes,
 				}
 			}
+			
+			ctrl.Unlock()
 		}
 	}()
 
