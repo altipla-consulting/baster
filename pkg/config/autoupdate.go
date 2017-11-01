@@ -17,7 +17,7 @@ func AutoUpdate(updates chan *Config) {
 		return
 	}
 
-	var lastVersion string
+	lastVersion := "[started]"
 	for {
 		cm, err := k8sclient.GetConfigMap("baster")
 		if err != nil {
