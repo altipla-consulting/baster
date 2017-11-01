@@ -59,7 +59,9 @@ func (route *Route) Matches(search string) bool {
 }
 
 func New(configUpdates chan *config.Config) *Proxy {
-	ctrl := new(Proxy)
+	ctrl := &Proxy{
+		RWMutex: new(sync.RWMutex),
+	}
 
 	go func() {
 		for {
