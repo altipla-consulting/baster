@@ -37,6 +37,9 @@ type ACME struct {
 }
 
 type Service struct {
+	// Autofilled from the map key when loaded.
+	Name string `hcl:"-"`
+
 	Endpoint      string   `hcl:"endpoint"`
 	Hostname      string   `hcl:"hostname"`
 	AllowInsecure bool     `hcl:"allow-insecure"`
@@ -51,29 +54,25 @@ type Route struct {
 	ExactMatch    bool   `hcl:"exact-match"`
 }
 
-func Load() (*Config, error) {
-	client, err := k8s.NewPodClient()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-
-	cm, err := client.GetConfigMap("baster")
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if cm == nil {
-		return nil, nil
-	}
-	if cm.Data["config.hcl"] == "" {
-		return nil, nil
-	}
-
+func Load(data string) (*Config, error) {
 	cnf := new(Config)
-	if err := hcl.Decode(cnf, cm.Data["config.hcl"]); err != nil {
+	if err := hcl.Decode(cnf, data); err != nil {
 		return nil, errors.Trace(err)
 	}
 
 	cnf.Version = cm.Metadata.ResourceVersion
+	for name, service := range cnf.Services {
+		service.Name = name
+
+		for _, route := range service.Routes {
+			if !route.AllowInsecure && service.AllowInsecure {
+				route.AllowInsecure = true
+			}
+			if route.Endpoint == "" {
+				route.Endpoint = service.Endpoint
+			}
+		}
+	}
 
 	return cnf, nil
 }
