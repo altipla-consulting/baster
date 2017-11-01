@@ -191,7 +191,7 @@ func (ctrl *Proxy) Handler() http.Handler {
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 
-			log.WithFields(log.Fields{
+			reqLogger.WithFields(log.Fields{
 				"latency-ms": int64(time.Since(start) / time.Millisecond),
 				"status":     http.StatusOK,
 			}).Info("cors authorization")
@@ -220,7 +220,7 @@ func (ctrl *Proxy) Handler() http.Handler {
 			length, _ = strconv.ParseInt(response.Header.Get("Content-Length"), 10, 64)
 		}
 
-		log.WithFields(log.Fields{
+		reqLogger.WithFields(log.Fields{
 			"latency-ms":    int64(time.Since(start) / time.Millisecond),
 			"response-size": length,
 			"status":        response.StatusCode,
