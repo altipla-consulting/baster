@@ -44,6 +44,7 @@ func run() error {
 	if err != nil {
 		return errors.Trace(err)
 	}
+	log.WithFields(log.Fields{"email": cnf.ACME.Email}).Info("acme account")
 	manager := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		Email:      cnf.ACME.Email,
