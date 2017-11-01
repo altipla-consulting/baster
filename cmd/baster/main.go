@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"net/http"
 	"time"
 
@@ -9,8 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"baster/pkg/config"
-	"baster/pkg/proxy"
-	"baster/pkg/store"
 )
 
 func main() {
@@ -43,14 +40,25 @@ func run() error {
 	for {
 		cnf, changed, err := detectConfigChange()
 		if err != nil {
-		  return errors.Trace(err)
+			return errors.Trace(err)
 		}
 
 		if changed {
 			log.WithFields(log.Fields{"version": cnf.Version}).Info("new configmap version loaded")
 
+			log.Info("first reload of nginx")
 			if err := reloadNginxConfig(cnf); err != nil {
-			  return errors.Trace(err)
+				return errors.Trace(err)
+			}
+
+			log.Info("renew certificates")
+			if err := verifyCertificates(cnf); err != nil {
+				return errors.Trace(err)
+			}
+
+			log.Info("final reload of nginx")
+			if err := reloadNginxConfig(cnf); err != nil {
+				return errors.Trace(err)
 			}
 		}
 	}

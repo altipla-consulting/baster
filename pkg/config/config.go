@@ -1,12 +1,8 @@
 package config
 
 import (
-	"sync"
-
 	"github.com/hashicorp/hcl"
 	"github.com/juju/errors"
-
-	"baster/pkg/external/k8s"
 )
 
 type Config struct {
@@ -25,13 +21,6 @@ func (cnf *Config) IsValid() error {
 	return nil
 }
 
-func (cnf *Config) NewController() *Controller {
-	return &Controller{
-		RWMutex: new(sync.RWMutex),
-		cnf:     cnf,
-	}
-}
-
 type ACME struct {
 	Email string `hcl:"email"`
 }
@@ -42,6 +31,7 @@ type Service struct {
 
 	Endpoint      string   `hcl:"endpoint"`
 	Hostname      string   `hcl:"hostname"`
+	Snakeoil      bool     `hcl:"snakeoil"`
 	AllowInsecure bool     `hcl:"allow-insecure"`
 	CORSEnabled   bool     `hcl:"cors-enabled"`
 	Routes        []*Route `hcl:"route"`
@@ -54,13 +44,13 @@ type Route struct {
 	ExactMatch    bool   `hcl:"exact-match"`
 }
 
-func Load(data string) (*Config, error) {
+func Load(version, data string) (*Config, error) {
 	cnf := new(Config)
 	if err := hcl.Decode(cnf, data); err != nil {
 		return nil, errors.Trace(err)
 	}
 
-	cnf.Version = cm.Metadata.ResourceVersion
+	cnf.Version = version
 	for name, service := range cnf.Services {
 		service.Name = name
 
