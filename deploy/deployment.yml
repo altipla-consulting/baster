@@ -1,0 +1,57 @@
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: baster
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: baster
+    spec:
+      containers:
+      - name: baster
+        image: eu.gcr.io/myapp/baster:latest
+        volumeMounts:
+        - name: service-account
+          mountPath: /etc/service-account
+        - name: settings
+          mountPath: /etc/baster
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        env:
+        - name: VERSION
+          value: latest
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/service-account/service-account.json
+        resources:
+          requests:
+            cpu: 10m
+            memory: 50Mi
+          limits:
+            memory: 50Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          timeoutSeconds: 5
+      volumes:
+      - name: service-account
+        configMap:
+          name: baster-service-account
+      - name: settings
+        configMap:
+          name: baster-settings

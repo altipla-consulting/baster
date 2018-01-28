@@ -1,0 +1,14 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: baster-settings
+data:
+  config.yml: |
+    acme:
+      email: foo@example.com
+
+    domains:
+    - name: foo
+      hostname: foo.example.com
+      service: foo
