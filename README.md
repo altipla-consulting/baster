@@ -60,6 +60,6 @@ domains:
 
 #### Configuración de Kubernetes
 
-Tenemos una carpeta de ejemplo con configuraciones que con algunos mínimos cambios (el nombre del contenedor o la configuración) pueden desplegar baster dentro de un cluster de Kubernetes en Google Cloud.
+Tenemos [una carpeta de ejemplo](deploy) con configuraciones que con algunos mínimos cambios (el nombre del contenedor o la configuración) pueden desplegar baster dentro de un cluster de Kubernetes en Google Cloud.
 
 La configuración de ejemplo incluye la cuenta de servicio que necesita baster para guardar los certificados en datastore.
