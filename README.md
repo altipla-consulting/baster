@@ -6,7 +6,7 @@
 
 ### Estado
 
-**NOTA**: Este proxy está mantenido y es para uso interno (tiene poca documentación). Recomendamos al público general usar [Traefik](https://traefik.io/)
+Este proxy está mantenido y es para uso interno (tiene poca documentación). Recomendamos al público general usar [Traefik](https://traefik.io/)
 
 
 ### Características
