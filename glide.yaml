@@ -1,15 +1,18 @@
-package: baster
+package: github.com/altipla-consulting/baster
 import:
-- package: github.com/sirupsen/logrus
-  version: ^1.0.2
+- package: cloud.google.com/go
+  version: ^0.18.0
+  subpackages:
+  - compute/metadata
+  - datastore
+- package: github.com/altipla-consulting/collections
+  version: ^0.2.1
 - package: github.com/juju/errors
-- package: github.com/naoina/toml
-  version: ^0.1.1
+- package: github.com/julienschmidt/httprouter
+  version: ^1.1.0
+- package: github.com/sirupsen/logrus
+  version: ^1.0.4
 - package: golang.org/x/crypto
   subpackages:
   - acme/autocert
-- package: cloud.google.com/go
-  version: ^0.11.0
-  subpackages:
-  - datastore
-- package: github.com/hashicorp/hcl
+- package: gopkg.in/yaml.v2

@@ -205,6 +205,10 @@ type Account struct {
 	// remove it from the list.
 	AdwordsLinks []*AccountAdwordsLink `json:"adwordsLinks,omitempty"`
 
+	// GoogleMyBusinessLink: The GMB account which is linked or in the
+	// process of being linked with the Merchant Center accounnt.
+	GoogleMyBusinessLink *AccountGoogleMyBusinessLink `json:"googleMyBusinessLink,omitempty"`
+
 	// Id: Merchant Center account ID.
 	Id uint64 `json:"id,omitempty,string"`
 
@@ -260,8 +264,8 @@ type Account struct {
 }
 
 func (s *Account) MarshalJSON() ([]byte, error) {
-	type noMethod Account
-	raw := noMethod(*s)
+	type NoMethod Account
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -299,8 +303,39 @@ type AccountAdwordsLink struct {
 }
 
 func (s *AccountAdwordsLink) MarshalJSON() ([]byte, error) {
-	type noMethod AccountAdwordsLink
-	raw := noMethod(*s)
+	type NoMethod AccountAdwordsLink
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type AccountGoogleMyBusinessLink struct {
+	// GmbEmail: The GMB email address.
+	GmbEmail string `json:"gmbEmail,omitempty"`
+
+	// Status: Status of the link between this Merchant Center account and
+	// the GMB account.
+	Status string `json:"status,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "GmbEmail") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "GmbEmail") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *AccountGoogleMyBusinessLink) MarshalJSON() ([]byte, error) {
+	type NoMethod AccountGoogleMyBusinessLink
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -331,8 +366,8 @@ type AccountIdentifier struct {
 }
 
 func (s *AccountIdentifier) MarshalJSON() ([]byte, error) {
-	type noMethod AccountIdentifier
-	raw := noMethod(*s)
+	type NoMethod AccountIdentifier
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -378,8 +413,8 @@ type AccountStatus struct {
 }
 
 func (s *AccountStatus) MarshalJSON() ([]byte, error) {
-	type noMethod AccountStatus
-	raw := noMethod(*s)
+	type NoMethod AccountStatus
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -417,8 +452,8 @@ type AccountStatusAccountLevelIssue struct {
 }
 
 func (s *AccountStatusAccountLevelIssue) MarshalJSON() ([]byte, error) {
-	type noMethod AccountStatusAccountLevelIssue
-	raw := noMethod(*s)
+	type NoMethod AccountStatusAccountLevelIssue
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -472,8 +507,8 @@ type AccountStatusDataQualityIssue struct {
 }
 
 func (s *AccountStatusDataQualityIssue) MarshalJSON() ([]byte, error) {
-	type noMethod AccountStatusDataQualityIssue
-	raw := noMethod(*s)
+	type NoMethod AccountStatusDataQualityIssue
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -514,8 +549,8 @@ type AccountStatusExampleItem struct {
 }
 
 func (s *AccountStatusExampleItem) MarshalJSON() ([]byte, error) {
-	type noMethod AccountStatusExampleItem
-	raw := noMethod(*s)
+	type NoMethod AccountStatusExampleItem
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -556,8 +591,8 @@ type AccountTax struct {
 }
 
 func (s *AccountTax) MarshalJSON() ([]byte, error) {
-	type noMethod AccountTax
-	raw := noMethod(*s)
+	type NoMethod AccountTax
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -600,8 +635,8 @@ type AccountTaxTaxRule struct {
 }
 
 func (s *AccountTaxTaxRule) MarshalJSON() ([]byte, error) {
-	type noMethod AccountTaxTaxRule
-	raw := noMethod(*s)
+	type NoMethod AccountTaxTaxRule
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -630,8 +665,8 @@ type AccountUser struct {
 }
 
 func (s *AccountUser) MarshalJSON() ([]byte, error) {
-	type noMethod AccountUser
-	raw := noMethod(*s)
+	type NoMethod AccountUser
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -669,8 +704,8 @@ type AccountYouTubeChannelLink struct {
 }
 
 func (s *AccountYouTubeChannelLink) MarshalJSON() ([]byte, error) {
-	type noMethod AccountYouTubeChannelLink
-	raw := noMethod(*s)
+	type NoMethod AccountYouTubeChannelLink
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -710,8 +745,8 @@ type AccountsAuthInfoResponse struct {
 }
 
 func (s *AccountsAuthInfoResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsAuthInfoResponse
-	raw := noMethod(*s)
+	type NoMethod AccountsAuthInfoResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -742,8 +777,8 @@ type AccountsClaimWebsiteResponse struct {
 }
 
 func (s *AccountsClaimWebsiteResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsClaimWebsiteResponse
-	raw := noMethod(*s)
+	type NoMethod AccountsClaimWebsiteResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -769,8 +804,8 @@ type AccountsCustomBatchRequest struct {
 }
 
 func (s *AccountsCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod AccountsCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -820,8 +855,8 @@ type AccountsCustomBatchRequestEntry struct {
 }
 
 func (s *AccountsCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod AccountsCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -855,8 +890,8 @@ type AccountsCustomBatchResponse struct {
 }
 
 func (s *AccountsCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod AccountsCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -895,8 +930,8 @@ type AccountsCustomBatchResponseEntry struct {
 }
 
 func (s *AccountsCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod AccountsCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -933,8 +968,8 @@ type AccountsListResponse struct {
 }
 
 func (s *AccountsListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccountsListResponse
-	raw := noMethod(*s)
+	type NoMethod AccountsListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -960,8 +995,8 @@ type AccountstatusesCustomBatchRequest struct {
 }
 
 func (s *AccountstatusesCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod AccountstatusesCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod AccountstatusesCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -998,8 +1033,8 @@ type AccountstatusesCustomBatchRequestEntry struct {
 }
 
 func (s *AccountstatusesCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod AccountstatusesCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod AccountstatusesCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1033,8 +1068,8 @@ type AccountstatusesCustomBatchResponse struct {
 }
 
 func (s *AccountstatusesCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccountstatusesCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod AccountstatusesCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1069,8 +1104,8 @@ type AccountstatusesCustomBatchResponseEntry struct {
 }
 
 func (s *AccountstatusesCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod AccountstatusesCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod AccountstatusesCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1107,8 +1142,8 @@ type AccountstatusesListResponse struct {
 }
 
 func (s *AccountstatusesListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccountstatusesListResponse
-	raw := noMethod(*s)
+	type NoMethod AccountstatusesListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1134,8 +1169,8 @@ type AccounttaxCustomBatchRequest struct {
 }
 
 func (s *AccounttaxCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod AccounttaxCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod AccounttaxCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1176,8 +1211,8 @@ type AccounttaxCustomBatchRequestEntry struct {
 }
 
 func (s *AccounttaxCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod AccounttaxCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod AccounttaxCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1211,8 +1246,8 @@ type AccounttaxCustomBatchResponse struct {
 }
 
 func (s *AccounttaxCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccounttaxCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod AccounttaxCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1250,8 +1285,8 @@ type AccounttaxCustomBatchResponseEntry struct {
 }
 
 func (s *AccounttaxCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod AccounttaxCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod AccounttaxCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1288,8 +1323,8 @@ type AccounttaxListResponse struct {
 }
 
 func (s *AccounttaxListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod AccounttaxListResponse
-	raw := noMethod(*s)
+	type NoMethod AccounttaxListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1340,8 +1375,8 @@ type CarrierRate struct {
 }
 
 func (s *CarrierRate) MarshalJSON() ([]byte, error) {
-	type noMethod CarrierRate
-	raw := noMethod(*s)
+	type NoMethod CarrierRate
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1375,8 +1410,8 @@ type CarriersCarrier struct {
 }
 
 func (s *CarriersCarrier) MarshalJSON() ([]byte, error) {
-	type noMethod CarriersCarrier
-	raw := noMethod(*s)
+	type NoMethod CarriersCarrier
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1452,8 +1487,8 @@ type Datafeed struct {
 }
 
 func (s *Datafeed) MarshalJSON() ([]byte, error) {
-	type noMethod Datafeed
-	raw := noMethod(*s)
+	type NoMethod Datafeed
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1513,8 +1548,8 @@ type DatafeedFetchSchedule struct {
 }
 
 func (s *DatafeedFetchSchedule) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedFetchSchedule
-	raw := noMethod(*s)
+	type NoMethod DatafeedFetchSchedule
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1552,8 +1587,8 @@ type DatafeedFormat struct {
 }
 
 func (s *DatafeedFormat) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedFormat
-	raw := noMethod(*s)
+	type NoMethod DatafeedFormat
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1616,8 +1651,8 @@ type DatafeedStatus struct {
 }
 
 func (s *DatafeedStatus) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedStatus
-	raw := noMethod(*s)
+	type NoMethod DatafeedStatus
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1655,8 +1690,8 @@ type DatafeedStatusError struct {
 }
 
 func (s *DatafeedStatusError) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedStatusError
-	raw := noMethod(*s)
+	type NoMethod DatafeedStatusError
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1689,8 +1724,8 @@ type DatafeedStatusExample struct {
 }
 
 func (s *DatafeedStatusExample) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedStatusExample
-	raw := noMethod(*s)
+	type NoMethod DatafeedStatusExample
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1731,8 +1766,8 @@ type DatafeedTarget struct {
 }
 
 func (s *DatafeedTarget) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedTarget
-	raw := noMethod(*s)
+	type NoMethod DatafeedTarget
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1758,8 +1793,8 @@ type DatafeedsCustomBatchRequest struct {
 }
 
 func (s *DatafeedsCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedsCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod DatafeedsCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1798,8 +1833,8 @@ type DatafeedsCustomBatchRequestEntry struct {
 }
 
 func (s *DatafeedsCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedsCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod DatafeedsCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1833,8 +1868,8 @@ type DatafeedsCustomBatchResponse struct {
 }
 
 func (s *DatafeedsCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedsCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod DatafeedsCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1869,8 +1904,8 @@ type DatafeedsCustomBatchResponseEntry struct {
 }
 
 func (s *DatafeedsCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedsCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod DatafeedsCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1907,8 +1942,8 @@ type DatafeedsListResponse struct {
 }
 
 func (s *DatafeedsListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedsListResponse
-	raw := noMethod(*s)
+	type NoMethod DatafeedsListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1934,8 +1969,8 @@ type DatafeedstatusesCustomBatchRequest struct {
 }
 
 func (s *DatafeedstatusesCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedstatusesCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod DatafeedstatusesCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -1981,8 +2016,8 @@ type DatafeedstatusesCustomBatchRequestEntry struct {
 }
 
 func (s *DatafeedstatusesCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedstatusesCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod DatafeedstatusesCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2016,8 +2051,8 @@ type DatafeedstatusesCustomBatchResponse struct {
 }
 
 func (s *DatafeedstatusesCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedstatusesCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod DatafeedstatusesCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2052,8 +2087,8 @@ type DatafeedstatusesCustomBatchResponseEntry struct {
 }
 
 func (s *DatafeedstatusesCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedstatusesCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod DatafeedstatusesCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2090,12 +2125,16 @@ type DatafeedstatusesListResponse struct {
 }
 
 func (s *DatafeedstatusesListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod DatafeedstatusesListResponse
-	raw := noMethod(*s)
+	type NoMethod DatafeedstatusesListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type DeliveryTime struct {
+	// HolidayCutoffs: Holiday cutoff definitions. If configured, they
+	// specify order cutoff times for holiday-specific shipping.
+	HolidayCutoffs []*HolidayCutoff `json:"holidayCutoffs,omitempty"`
+
 	// MaxTransitTimeInDays: Maximum number of business days that is spent
 	// in transit. 0 means same day delivery, 1 means next day delivery.
 	// Must be greater than or equal to minTransitTimeInDays. Required.
@@ -2106,16 +2145,15 @@ type DeliveryTime struct {
 	// Required.
 	MinTransitTimeInDays int64 `json:"minTransitTimeInDays,omitempty"`
 
-	// ForceSendFields is a list of field names (e.g.
-	// "MaxTransitTimeInDays") to unconditionally include in API requests.
-	// By default, fields with empty values are omitted from API requests.
-	// However, any non-pointer, non-interface field appearing in
-	// ForceSendFields will be sent to the server regardless of whether the
-	// field is empty or not. This may be used to include empty fields in
-	// Patch requests.
+	// ForceSendFields is a list of field names (e.g. "HolidayCutoffs") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
-	// NullFields is a list of field names (e.g. "MaxTransitTimeInDays") to
+	// NullFields is a list of field names (e.g. "HolidayCutoffs") to
 	// include in API requests with the JSON null value. By default, fields
 	// with empty values are omitted from API requests. However, any field
 	// with an empty value appearing in NullFields will be sent to the
@@ -2126,8 +2164,8 @@ type DeliveryTime struct {
 }
 
 func (s *DeliveryTime) MarshalJSON() ([]byte, error) {
-	type noMethod DeliveryTime
-	raw := noMethod(*s)
+	type NoMethod DeliveryTime
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2160,8 +2198,8 @@ type Error struct {
 }
 
 func (s *Error) MarshalJSON() ([]byte, error) {
-	type noMethod Error
-	raw := noMethod(*s)
+	type NoMethod Error
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2194,8 +2232,8 @@ type Errors struct {
 }
 
 func (s *Errors) MarshalJSON() ([]byte, error) {
-	type noMethod Errors
-	raw := noMethod(*s)
+	type NoMethod Errors
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2254,8 +2292,107 @@ type Headers struct {
 }
 
 func (s *Headers) MarshalJSON() ([]byte, error) {
-	type noMethod Headers
-	raw := noMethod(*s)
+	type NoMethod Headers
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type HolidayCutoff struct {
+	// DeadlineDate: Date of the order deadline, in ISO 8601 format. E.g.
+	// "2016-11-29" for 29th November 2016. Required.
+	DeadlineDate string `json:"deadlineDate,omitempty"`
+
+	// DeadlineHour: Hour of the day on the deadline date until which the
+	// order has to be placed to qualify for the delivery guarantee.
+	// Possible values are: 0 (midnight), 1, ..., 12 (noon), 13, ..., 23.
+	// Required.
+	DeadlineHour int64 `json:"deadlineHour,omitempty"`
+
+	// DeadlineTimezone: Timezone identifier for the deadline hour. A list
+	// of identifiers can be found in  the AdWords API documentation. E.g.
+	// "Europe/Zurich". Required.
+	DeadlineTimezone string `json:"deadlineTimezone,omitempty"`
+
+	// HolidayId: Unique identifier for the holiday. Required.
+	HolidayId string `json:"holidayId,omitempty"`
+
+	// VisibleFromDate: Date on which the deadline will become visible to
+	// consumers in ISO 8601 format. E.g. "2016-10-31" for 31st October
+	// 2016. Required.
+	VisibleFromDate string `json:"visibleFromDate,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "DeadlineDate") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "DeadlineDate") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *HolidayCutoff) MarshalJSON() ([]byte, error) {
+	type NoMethod HolidayCutoff
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type HolidaysHoliday struct {
+	// CountryCode: The CLDR territory code of the country in which the
+	// holiday is available. E.g. "US", "DE", "GB". A holiday cutoff can
+	// only be configured in a shipping settings service with matching
+	// delivery country. Always present.
+	CountryCode string `json:"countryCode,omitempty"`
+
+	// Date: Date of the holiday, in ISO 8601 format. E.g. "2016-12-25" for
+	// Christmas 2016. Always present.
+	Date string `json:"date,omitempty"`
+
+	// DeliveryGuaranteeDate: Date on which the order has to arrive at the
+	// customer's, in ISO 8601 format. E.g. "2016-12-24" for 24th December
+	// 2016. Always present.
+	DeliveryGuaranteeDate string `json:"deliveryGuaranteeDate,omitempty"`
+
+	// DeliveryGuaranteeHour: Hour of the day in the delivery location's
+	// timezone on the guaranteed delivery date by which the order has to
+	// arrive at the customer's. Possible values are: 0 (midnight), 1, ...,
+	// 12 (noon), 13, ..., 23. Always present.
+	DeliveryGuaranteeHour uint64 `json:"deliveryGuaranteeHour,omitempty,string"`
+
+	// Id: Unique identifier for the holiday to be used when configuring
+	// holiday cutoffs. Always present.
+	Id string `json:"id,omitempty"`
+
+	// Type: The holiday type. Always present.
+	Type string `json:"type,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "CountryCode") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "CountryCode") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *HolidaysHoliday) MarshalJSON() ([]byte, error) {
+	type NoMethod HolidaysHoliday
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2284,8 +2421,8 @@ type Installment struct {
 }
 
 func (s *Installment) MarshalJSON() ([]byte, error) {
-	type noMethod Installment
-	raw := noMethod(*s)
+	type NoMethod Installment
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2350,8 +2487,8 @@ type Inventory struct {
 }
 
 func (s *Inventory) MarshalJSON() ([]byte, error) {
-	type noMethod Inventory
-	raw := noMethod(*s)
+	type NoMethod Inventory
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2377,8 +2514,8 @@ type InventoryCustomBatchRequest struct {
 }
 
 func (s *InventoryCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod InventoryCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod InventoryCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2421,8 +2558,8 @@ type InventoryCustomBatchRequestEntry struct {
 }
 
 func (s *InventoryCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod InventoryCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod InventoryCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2456,8 +2593,8 @@ type InventoryCustomBatchResponse struct {
 }
 
 func (s *InventoryCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod InventoryCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod InventoryCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2492,8 +2629,8 @@ type InventoryCustomBatchResponseEntry struct {
 }
 
 func (s *InventoryCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod InventoryCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod InventoryCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2527,8 +2664,8 @@ type InventoryPickup struct {
 }
 
 func (s *InventoryPickup) MarshalJSON() ([]byte, error) {
-	type noMethod InventoryPickup
-	raw := noMethod(*s)
+	type NoMethod InventoryPickup
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2589,8 +2726,8 @@ type InventorySetRequest struct {
 }
 
 func (s *InventorySetRequest) MarshalJSON() ([]byte, error) {
-	type noMethod InventorySetRequest
-	raw := noMethod(*s)
+	type NoMethod InventorySetRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2621,8 +2758,8 @@ type InventorySetResponse struct {
 }
 
 func (s *InventorySetResponse) MarshalJSON() ([]byte, error) {
-	type noMethod InventorySetResponse
-	raw := noMethod(*s)
+	type NoMethod InventorySetResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2649,8 +2786,8 @@ type LocationIdSet struct {
 }
 
 func (s *LocationIdSet) MarshalJSON() ([]byte, error) {
-	type noMethod LocationIdSet
-	raw := noMethod(*s)
+	type NoMethod LocationIdSet
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2685,18 +2822,18 @@ type LoyaltyPoints struct {
 }
 
 func (s *LoyaltyPoints) MarshalJSON() ([]byte, error) {
-	type noMethod LoyaltyPoints
-	raw := noMethod(*s)
+	type NoMethod LoyaltyPoints
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 func (s *LoyaltyPoints) UnmarshalJSON(data []byte) error {
-	type noMethod LoyaltyPoints
+	type NoMethod LoyaltyPoints
 	var s1 struct {
 		Ratio gensupport.JSONFloat64 `json:"ratio"`
-		*noMethod
+		*NoMethod
 	}
-	s1.noMethod = (*noMethod)(s)
+	s1.NoMethod = (*NoMethod)(s)
 	if err := json.Unmarshal(data, &s1); err != nil {
 		return err
 	}
@@ -2791,8 +2928,8 @@ type Order struct {
 }
 
 func (s *Order) MarshalJSON() ([]byte, error) {
-	type noMethod Order
-	raw := noMethod(*s)
+	type NoMethod Order
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2846,8 +2983,8 @@ type OrderAddress struct {
 }
 
 func (s *OrderAddress) MarshalJSON() ([]byte, error) {
-	type noMethod OrderAddress
-	raw := noMethod(*s)
+	type NoMethod OrderAddress
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2889,8 +3026,8 @@ type OrderCancellation struct {
 }
 
 func (s *OrderCancellation) MarshalJSON() ([]byte, error) {
-	type noMethod OrderCancellation
-	raw := noMethod(*s)
+	type NoMethod OrderCancellation
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2926,8 +3063,8 @@ type OrderCustomer struct {
 }
 
 func (s *OrderCustomer) MarshalJSON() ([]byte, error) {
-	type noMethod OrderCustomer
-	raw := noMethod(*s)
+	type NoMethod OrderCustomer
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -2956,18 +3093,17 @@ type OrderDeliveryDetails struct {
 }
 
 func (s *OrderDeliveryDetails) MarshalJSON() ([]byte, error) {
-	type noMethod OrderDeliveryDetails
-	raw := noMethod(*s)
+	type NoMethod OrderDeliveryDetails
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type OrderLineItem struct {
+	// Annotations: Annotations that are attached to the line item.
+	Annotations []*OrderMerchantProvidedAnnotation `json:"annotations,omitempty"`
+
 	// Cancellations: Cancellations of the line item.
 	Cancellations []*OrderCancellation `json:"cancellations,omitempty"`
-
-	// ChannelType: The channel type of the order: "purchaseOnGoogle" or
-	// "googleExpress".
-	ChannelType string `json:"channelType,omitempty"`
 
 	// Id: The id of the line item.
 	Id string `json:"id,omitempty"`
@@ -3011,7 +3147,7 @@ type OrderLineItem struct {
 	// will be $4.
 	Tax *Price `json:"tax,omitempty"`
 
-	// ForceSendFields is a list of field names (e.g. "Cancellations") to
+	// ForceSendFields is a list of field names (e.g. "Annotations") to
 	// unconditionally include in API requests. By default, fields with
 	// empty values are omitted from API requests. However, any non-pointer,
 	// non-interface field appearing in ForceSendFields will be sent to the
@@ -3019,7 +3155,7 @@ type OrderLineItem struct {
 	// used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
-	// NullFields is a list of field names (e.g. "Cancellations") to include
+	// NullFields is a list of field names (e.g. "Annotations") to include
 	// in API requests with the JSON null value. By default, fields with
 	// empty values are omitted from API requests. However, any field with
 	// an empty value appearing in NullFields will be sent to the server as
@@ -3029,8 +3165,8 @@ type OrderLineItem struct {
 }
 
 func (s *OrderLineItem) MarshalJSON() ([]byte, error) {
-	type noMethod OrderLineItem
-	raw := noMethod(*s)
+	type NoMethod OrderLineItem
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3103,8 +3239,8 @@ type OrderLineItemProduct struct {
 }
 
 func (s *OrderLineItemProduct) MarshalJSON() ([]byte, error) {
-	type noMethod OrderLineItemProduct
-	raw := noMethod(*s)
+	type NoMethod OrderLineItemProduct
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3133,8 +3269,8 @@ type OrderLineItemProductVariantAttribute struct {
 }
 
 func (s *OrderLineItemProductVariantAttribute) MarshalJSON() ([]byte, error) {
-	type noMethod OrderLineItemProductVariantAttribute
-	raw := noMethod(*s)
+	type NoMethod OrderLineItemProductVariantAttribute
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3166,8 +3302,8 @@ type OrderLineItemReturnInfo struct {
 }
 
 func (s *OrderLineItemReturnInfo) MarshalJSON() ([]byte, error) {
-	type noMethod OrderLineItemReturnInfo
-	raw := noMethod(*s)
+	type NoMethod OrderLineItemReturnInfo
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3199,8 +3335,8 @@ type OrderLineItemShippingDetails struct {
 }
 
 func (s *OrderLineItemShippingDetails) MarshalJSON() ([]byte, error) {
-	type noMethod OrderLineItemShippingDetails
-	raw := noMethod(*s)
+	type NoMethod OrderLineItemShippingDetails
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3236,8 +3372,40 @@ type OrderLineItemShippingDetailsMethod struct {
 }
 
 func (s *OrderLineItemShippingDetailsMethod) MarshalJSON() ([]byte, error) {
-	type noMethod OrderLineItemShippingDetailsMethod
-	raw := noMethod(*s)
+	type NoMethod OrderLineItemShippingDetailsMethod
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrderMerchantProvidedAnnotation struct {
+	// Key: Key for additional merchant provided (as key-value pairs)
+	// annotation about the line item.
+	Key string `json:"key,omitempty"`
+
+	// Value: Value for additional merchant provided (as key-value pairs)
+	// annotation about the line item.
+	Value string `json:"value,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Key") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Key") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrderMerchantProvidedAnnotation) MarshalJSON() ([]byte, error) {
+	type NoMethod OrderMerchantProvidedAnnotation
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3289,8 +3457,8 @@ type OrderPaymentMethod struct {
 }
 
 func (s *OrderPaymentMethod) MarshalJSON() ([]byte, error) {
-	type noMethod OrderPaymentMethod
-	raw := noMethod(*s)
+	type NoMethod OrderPaymentMethod
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3342,8 +3510,8 @@ type OrderPromotion struct {
 }
 
 func (s *OrderPromotion) MarshalJSON() ([]byte, error) {
-	type noMethod OrderPromotion
-	raw := noMethod(*s)
+	type NoMethod OrderPromotion
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3386,8 +3554,8 @@ type OrderPromotionBenefit struct {
 }
 
 func (s *OrderPromotionBenefit) MarshalJSON() ([]byte, error) {
-	type noMethod OrderPromotionBenefit
-	raw := noMethod(*s)
+	type NoMethod OrderPromotionBenefit
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3426,8 +3594,8 @@ type OrderRefund struct {
 }
 
 func (s *OrderRefund) MarshalJSON() ([]byte, error) {
-	type noMethod OrderRefund
-	raw := noMethod(*s)
+	type NoMethod OrderRefund
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3466,8 +3634,8 @@ type OrderReturn struct {
 }
 
 func (s *OrderReturn) MarshalJSON() ([]byte, error) {
-	type noMethod OrderReturn
-	raw := noMethod(*s)
+	type NoMethod OrderReturn
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3477,26 +3645,20 @@ type OrderShipment struct {
 	// Acceptable values are:
 	// - "gsx"
 	// - "ups"
-	// - "united parcel service"
 	// - "usps"
-	// - "united states postal service"
 	// - "fedex"
 	// - "dhl"
 	// - "ecourier"
 	// - "cxt"
 	// - "google"
-	// - "on trac"
 	// - "ontrac"
-	// - "on-trac"
-	// - "on_trac"
-	// - "delvic"
+	// - "emsy"
+	// - "ont"
+	// - "deliv"
 	// - "dynamex"
 	// - "lasership"
-	// - "smartpost"
-	// - "fedex smartpost"
 	// - "mpx"
 	// - "uds"
-	// - "united delivery service"
 	Carrier string `json:"carrier,omitempty"`
 
 	// CreationDate: Date on which the shipment has been created, in ISO
@@ -3537,14 +3699,19 @@ type OrderShipment struct {
 }
 
 func (s *OrderShipment) MarshalJSON() ([]byte, error) {
-	type noMethod OrderShipment
-	raw := noMethod(*s)
+	type NoMethod OrderShipment
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type OrderShipmentLineItemShipment struct {
-	// LineItemId: The id of the line item that is shipped.
+	// LineItemId: The id of the line item that is shipped. Either
+	// lineItemId or productId is required.
 	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to ship. This is the REST ID used in
+	// the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
 
 	// Quantity: The quantity that is shipped.
 	Quantity int64 `json:"quantity,omitempty"`
@@ -3567,8 +3734,8 @@ type OrderShipmentLineItemShipment struct {
 }
 
 func (s *OrderShipmentLineItemShipment) MarshalJSON() ([]byte, error) {
-	type noMethod OrderShipmentLineItemShipment
-	raw := noMethod(*s)
+	type NoMethod OrderShipmentLineItemShipment
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3595,8 +3762,8 @@ type OrdersAcknowledgeRequest struct {
 }
 
 func (s *OrdersAcknowledgeRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersAcknowledgeRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersAcknowledgeRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3631,8 +3798,8 @@ type OrdersAcknowledgeResponse struct {
 }
 
 func (s *OrdersAcknowledgeResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersAcknowledgeResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersAcknowledgeResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3663,8 +3830,8 @@ type OrdersAdvanceTestOrderResponse struct {
 }
 
 func (s *OrdersAdvanceTestOrderResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersAdvanceTestOrderResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersAdvanceTestOrderResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3675,12 +3842,27 @@ type OrdersCancelLineItemRequest struct {
 	// left on the order.
 	Amount *Price `json:"amount,omitempty"`
 
-	// LineItemId: The ID of the line item to cancel.
+	// AmountPretax: Amount to refund for the cancelation. Optional. If not
+	// set, Google will calculate the default based on the price and tax of
+	// the items involved. The amount must not be larger than the net amount
+	// left on the order.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to cancellation amount in
+	// amountPretax.
+	AmountTax *Price `json:"amountTax,omitempty"`
+
+	// LineItemId: The ID of the line item to cancel. Either lineItemId or
+	// productId is required.
 	LineItemId string `json:"lineItemId,omitempty"`
 
 	// OperationId: The ID of the operation. Unique across all operations
 	// for a given order.
 	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to cancel. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
 
 	// Quantity: The quantity to cancel.
 	Quantity int64 `json:"quantity,omitempty"`
@@ -3709,8 +3891,8 @@ type OrdersCancelLineItemRequest struct {
 }
 
 func (s *OrdersCancelLineItemRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCancelLineItemRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersCancelLineItemRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3745,8 +3927,8 @@ type OrdersCancelLineItemResponse struct {
 }
 
 func (s *OrdersCancelLineItemResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCancelLineItemResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersCancelLineItemResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3779,8 +3961,8 @@ type OrdersCancelRequest struct {
 }
 
 func (s *OrdersCancelRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCancelRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersCancelRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3815,8 +3997,8 @@ type OrdersCancelResponse struct {
 }
 
 func (s *OrdersCancelResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCancelResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersCancelResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3847,8 +4029,8 @@ type OrdersCreateTestOrderRequest struct {
 }
 
 func (s *OrdersCreateTestOrderRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCreateTestOrderRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersCreateTestOrderRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3882,8 +4064,8 @@ type OrdersCreateTestOrderResponse struct {
 }
 
 func (s *OrdersCreateTestOrderResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCreateTestOrderResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersCreateTestOrderResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3909,8 +4091,8 @@ type OrdersCustomBatchRequest struct {
 }
 
 func (s *OrdersCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -3923,6 +4105,9 @@ type OrdersCustomBatchRequestEntry struct {
 
 	// CancelLineItem: Required for cancelLineItem method.
 	CancelLineItem *OrdersCustomBatchRequestEntryCancelLineItem `json:"cancelLineItem,omitempty"`
+
+	// InStoreRefundLineItem: Required for inStoreReturnLineItem method.
+	InStoreRefundLineItem *OrdersCustomBatchRequestEntryInStoreRefundLineItem `json:"inStoreRefundLineItem,omitempty"`
 
 	// MerchantId: The ID of the managing account.
 	MerchantId uint64 `json:"merchantId,omitempty,string"`
@@ -3946,11 +4131,24 @@ type OrdersCustomBatchRequestEntry struct {
 	// Refund: Required for refund method.
 	Refund *OrdersCustomBatchRequestEntryRefund `json:"refund,omitempty"`
 
+	// RejectReturnLineItem: Required for rejectReturnLineItem method.
+	RejectReturnLineItem *OrdersCustomBatchRequestEntryRejectReturnLineItem `json:"rejectReturnLineItem,omitempty"`
+
 	// ReturnLineItem: Required for returnLineItem method.
 	ReturnLineItem *OrdersCustomBatchRequestEntryReturnLineItem `json:"returnLineItem,omitempty"`
 
+	// ReturnRefundLineItem: Required for returnRefundLineItem method.
+	ReturnRefundLineItem *OrdersCustomBatchRequestEntryReturnRefundLineItem `json:"returnRefundLineItem,omitempty"`
+
+	// SetLineItemMetadata: Required for setLineItemMetadata method.
+	SetLineItemMetadata *OrdersCustomBatchRequestEntrySetLineItemMetadata `json:"setLineItemMetadata,omitempty"`
+
 	// ShipLineItems: Required for shipLineItems method.
 	ShipLineItems *OrdersCustomBatchRequestEntryShipLineItems `json:"shipLineItems,omitempty"`
+
+	// UpdateLineItemShippingDetails: Required for
+	// updateLineItemShippingDate method.
+	UpdateLineItemShippingDetails *OrdersCustomBatchRequestEntryUpdateLineItemShippingDetails `json:"updateLineItemShippingDetails,omitempty"`
 
 	// UpdateShipment: Required for updateShipment method.
 	UpdateShipment *OrdersCustomBatchRequestEntryUpdateShipment `json:"updateShipment,omitempty"`
@@ -3973,8 +4171,8 @@ type OrdersCustomBatchRequestEntry struct {
 }
 
 func (s *OrdersCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4003,8 +4201,8 @@ type OrdersCustomBatchRequestEntryCancel struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryCancel) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryCancel
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryCancel
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4015,8 +4213,23 @@ type OrdersCustomBatchRequestEntryCancelLineItem struct {
 	// left on the order.
 	Amount *Price `json:"amount,omitempty"`
 
-	// LineItemId: The ID of the line item to cancel.
+	// AmountPretax: Amount to refund for the cancelation. Optional. If not
+	// set, Google will calculate the default based on the price and tax of
+	// the items involved. The amount must not be larger than the net amount
+	// left on the order.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to cancellation amount in
+	// amountPretax.
+	AmountTax *Price `json:"amountTax,omitempty"`
+
+	// LineItemId: The ID of the line item to cancel. Either lineItemId or
+	// productId is required.
 	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to cancel. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
 
 	// Quantity: The quantity to cancel.
 	Quantity int64 `json:"quantity,omitempty"`
@@ -4045,14 +4258,70 @@ type OrdersCustomBatchRequestEntryCancelLineItem struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryCancelLineItem) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryCancelLineItem
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryCancelLineItem
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersCustomBatchRequestEntryInStoreRefundLineItem struct {
+	// AmountPretax: The amount that is refunded. Required.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to refund amount in
+	// amountPretax. Required.
+	AmountTax *Price `json:"amountTax,omitempty"`
+
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
+
+	// Quantity: The quantity to return and refund.
+	Quantity int64 `json:"quantity,omitempty"`
+
+	// Reason: The reason for the return.
+	Reason string `json:"reason,omitempty"`
+
+	// ReasonText: The explanation of the reason.
+	ReasonText string `json:"reasonText,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "AmountPretax") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "AmountPretax") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersCustomBatchRequestEntryInStoreRefundLineItem) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersCustomBatchRequestEntryInStoreRefundLineItem
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type OrdersCustomBatchRequestEntryRefund struct {
 	// Amount: The amount that is refunded.
 	Amount *Price `json:"amount,omitempty"`
+
+	// AmountPretax: The amount that is refunded. Either amount or
+	// amountPretax and amountTax should be filled.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to refund amount in
+	// amountPretax.
+	AmountTax *Price `json:"amountTax,omitempty"`
 
 	// Reason: The reason for the refund.
 	Reason string `json:"reason,omitempty"`
@@ -4078,14 +4347,60 @@ type OrdersCustomBatchRequestEntryRefund struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryRefund) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryRefund
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryRefund
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersCustomBatchRequestEntryRejectReturnLineItem struct {
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
+
+	// Quantity: The quantity to return and refund.
+	Quantity int64 `json:"quantity,omitempty"`
+
+	// Reason: The reason for the return.
+	Reason string `json:"reason,omitempty"`
+
+	// ReasonText: The explanation of the reason.
+	ReasonText string `json:"reasonText,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "LineItemId") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "LineItemId") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersCustomBatchRequestEntryRejectReturnLineItem) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersCustomBatchRequestEntryRejectReturnLineItem
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type OrdersCustomBatchRequestEntryReturnLineItem struct {
-	// LineItemId: The ID of the line item to return.
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
 	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
 
 	// Quantity: The quantity to return.
 	Quantity int64 `json:"quantity,omitempty"`
@@ -4114,8 +4429,92 @@ type OrdersCustomBatchRequestEntryReturnLineItem struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryReturnLineItem) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryReturnLineItem
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryReturnLineItem
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersCustomBatchRequestEntryReturnRefundLineItem struct {
+	// AmountPretax: The amount that is refunded. Optional, but if filled
+	// then both amountPretax and amountTax must be set.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to refund amount in
+	// amountPretax.
+	AmountTax *Price `json:"amountTax,omitempty"`
+
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
+
+	// Quantity: The quantity to return and refund.
+	Quantity int64 `json:"quantity,omitempty"`
+
+	// Reason: The reason for the return.
+	Reason string `json:"reason,omitempty"`
+
+	// ReasonText: The explanation of the reason.
+	ReasonText string `json:"reasonText,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "AmountPretax") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "AmountPretax") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersCustomBatchRequestEntryReturnRefundLineItem) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersCustomBatchRequestEntryReturnRefundLineItem
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersCustomBatchRequestEntrySetLineItemMetadata struct {
+	Annotations []*OrderMerchantProvidedAnnotation `json:"annotations,omitempty"`
+
+	// LineItemId: The ID of the line item to set metadata. Either
+	// lineItemId or productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to set metadata. This is the REST ID
+	// used in the products service. Either lineItemId or productId is
+	// required.
+	ProductId string `json:"productId,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Annotations") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Annotations") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersCustomBatchRequestEntrySetLineItemMetadata) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersCustomBatchRequestEntrySetLineItemMetadata
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4159,8 +4558,8 @@ type OrdersCustomBatchRequestEntryShipLineItems struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryShipLineItems) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryShipLineItems
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryShipLineItems
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4194,8 +4593,49 @@ type OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersCustomBatchRequestEntryUpdateLineItemShippingDetails struct {
+	// DeliverByDate: Updated delivery by date, in ISO 8601 format. If not
+	// specified only ship by date is updated.
+	DeliverByDate string `json:"deliverByDate,omitempty"`
+
+	// LineItemId: The ID of the line item to set metadata. Either
+	// lineItemId or productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// ProductId: The ID of the product to set metadata. This is the REST ID
+	// used in the products service. Either lineItemId or productId is
+	// required.
+	ProductId string `json:"productId,omitempty"`
+
+	// ShipByDate: Updated ship by date, in ISO 8601 format. If not
+	// specified only deliver by date is updated.
+	ShipByDate string `json:"shipByDate,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "DeliverByDate") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "DeliverByDate") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersCustomBatchRequestEntryUpdateLineItemShippingDetails) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersCustomBatchRequestEntryUpdateLineItemShippingDetails
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4232,8 +4672,8 @@ type OrdersCustomBatchRequestEntryUpdateShipment struct {
 }
 
 func (s *OrdersCustomBatchRequestEntryUpdateShipment) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchRequestEntryUpdateShipment
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchRequestEntryUpdateShipment
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4267,8 +4707,8 @@ type OrdersCustomBatchResponse struct {
 }
 
 func (s *OrdersCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4310,8 +4750,8 @@ type OrdersCustomBatchResponseEntry struct {
 }
 
 func (s *OrdersCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod OrdersCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4345,8 +4785,8 @@ type OrdersGetByMerchantOrderIdResponse struct {
 }
 
 func (s *OrdersGetByMerchantOrderIdResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersGetByMerchantOrderIdResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersGetByMerchantOrderIdResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4380,8 +4820,96 @@ type OrdersGetTestOrderTemplateResponse struct {
 }
 
 func (s *OrdersGetTestOrderTemplateResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersGetTestOrderTemplateResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersGetTestOrderTemplateResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersInStoreRefundLineItemRequest struct {
+	// AmountPretax: The amount that is refunded. Required.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to refund amount in
+	// amountPretax. Required.
+	AmountTax *Price `json:"amountTax,omitempty"`
+
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// OperationId: The ID of the operation. Unique across all operations
+	// for a given order.
+	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
+
+	// Quantity: The quantity to return and refund.
+	Quantity int64 `json:"quantity,omitempty"`
+
+	// Reason: The reason for the return.
+	Reason string `json:"reason,omitempty"`
+
+	// ReasonText: The explanation of the reason.
+	ReasonText string `json:"reasonText,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "AmountPretax") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "AmountPretax") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersInStoreRefundLineItemRequest) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersInStoreRefundLineItemRequest
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersInStoreRefundLineItemResponse struct {
+	// ExecutionStatus: The status of the execution.
+	ExecutionStatus string `json:"executionStatus,omitempty"`
+
+	// Kind: Identifies what kind of resource this is. Value: the fixed
+	// string "content#ordersInStoreRefundLineItemResponse".
+	Kind string `json:"kind,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "ExecutionStatus") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "ExecutionStatus") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersInStoreRefundLineItemResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersInStoreRefundLineItemResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4418,14 +4946,22 @@ type OrdersListResponse struct {
 }
 
 func (s *OrdersListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersListResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type OrdersRefundRequest struct {
 	// Amount: The amount that is refunded.
 	Amount *Price `json:"amount,omitempty"`
+
+	// AmountPretax: The amount that is refunded. Either amount or
+	// amountPretax and amountTax should be filled.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to refund amount in
+	// amountPretax.
+	AmountTax *Price `json:"amountTax,omitempty"`
 
 	// OperationId: The ID of the operation. Unique across all operations
 	// for a given order.
@@ -4455,8 +4991,8 @@ type OrdersRefundRequest struct {
 }
 
 func (s *OrdersRefundRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersRefundRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersRefundRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4491,18 +5027,104 @@ type OrdersRefundResponse struct {
 }
 
 func (s *OrdersRefundResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersRefundResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersRefundResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
-type OrdersReturnLineItemRequest struct {
-	// LineItemId: The ID of the line item to return.
+type OrdersRejectReturnLineItemRequest struct {
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
 	LineItemId string `json:"lineItemId,omitempty"`
 
 	// OperationId: The ID of the operation. Unique across all operations
 	// for a given order.
 	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
+
+	// Quantity: The quantity to return and refund.
+	Quantity int64 `json:"quantity,omitempty"`
+
+	// Reason: The reason for the return.
+	Reason string `json:"reason,omitempty"`
+
+	// ReasonText: The explanation of the reason.
+	ReasonText string `json:"reasonText,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "LineItemId") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "LineItemId") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersRejectReturnLineItemRequest) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersRejectReturnLineItemRequest
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersRejectReturnLineItemResponse struct {
+	// ExecutionStatus: The status of the execution.
+	ExecutionStatus string `json:"executionStatus,omitempty"`
+
+	// Kind: Identifies what kind of resource this is. Value: the fixed
+	// string "content#ordersRejectReturnLineItemResponse".
+	Kind string `json:"kind,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "ExecutionStatus") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "ExecutionStatus") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersRejectReturnLineItemResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersRejectReturnLineItemResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersReturnLineItemRequest struct {
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// OperationId: The ID of the operation. Unique across all operations
+	// for a given order.
+	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
 
 	// Quantity: The quantity to return.
 	Quantity int64 `json:"quantity,omitempty"`
@@ -4531,8 +5153,8 @@ type OrdersReturnLineItemRequest struct {
 }
 
 func (s *OrdersReturnLineItemRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersReturnLineItemRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersReturnLineItemRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4567,8 +5189,172 @@ type OrdersReturnLineItemResponse struct {
 }
 
 func (s *OrdersReturnLineItemResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersReturnLineItemResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersReturnLineItemResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersReturnRefundLineItemRequest struct {
+	// AmountPretax: The amount that is refunded. Optional, but if filled
+	// then both amountPretax and amountTax must be set.
+	AmountPretax *Price `json:"amountPretax,omitempty"`
+
+	// AmountTax: Tax amount that correspond to refund amount in
+	// amountPretax.
+	AmountTax *Price `json:"amountTax,omitempty"`
+
+	// LineItemId: The ID of the line item to return. Either lineItemId or
+	// productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// OperationId: The ID of the operation. Unique across all operations
+	// for a given order.
+	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to return. This is the REST ID used
+	// in the products service. Either lineItemId or productId is required.
+	ProductId string `json:"productId,omitempty"`
+
+	// Quantity: The quantity to return and refund.
+	Quantity int64 `json:"quantity,omitempty"`
+
+	// Reason: The reason for the return.
+	Reason string `json:"reason,omitempty"`
+
+	// ReasonText: The explanation of the reason.
+	ReasonText string `json:"reasonText,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "AmountPretax") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "AmountPretax") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersReturnRefundLineItemRequest) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersReturnRefundLineItemRequest
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersReturnRefundLineItemResponse struct {
+	// ExecutionStatus: The status of the execution.
+	ExecutionStatus string `json:"executionStatus,omitempty"`
+
+	// Kind: Identifies what kind of resource this is. Value: the fixed
+	// string "content#ordersReturnRefundLineItemResponse".
+	Kind string `json:"kind,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "ExecutionStatus") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "ExecutionStatus") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersReturnRefundLineItemResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersReturnRefundLineItemResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersSetLineItemMetadataRequest struct {
+	Annotations []*OrderMerchantProvidedAnnotation `json:"annotations,omitempty"`
+
+	// LineItemId: The ID of the line item to set metadata. Either
+	// lineItemId or productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// OperationId: The ID of the operation. Unique across all operations
+	// for a given order.
+	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to set metadata. This is the REST ID
+	// used in the products service. Either lineItemId or productId is
+	// required.
+	ProductId string `json:"productId,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Annotations") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Annotations") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersSetLineItemMetadataRequest) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersSetLineItemMetadataRequest
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersSetLineItemMetadataResponse struct {
+	// ExecutionStatus: The status of the execution.
+	ExecutionStatus string `json:"executionStatus,omitempty"`
+
+	// Kind: Identifies what kind of resource this is. Value: the fixed
+	// string "content#ordersSetLineItemMetadataResponse".
+	Kind string `json:"kind,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "ExecutionStatus") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "ExecutionStatus") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersSetLineItemMetadataResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersSetLineItemMetadataResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4616,8 +5402,8 @@ type OrdersShipLineItemsRequest struct {
 }
 
 func (s *OrdersShipLineItemsRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersShipLineItemsRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersShipLineItemsRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4652,8 +5438,89 @@ type OrdersShipLineItemsResponse struct {
 }
 
 func (s *OrdersShipLineItemsResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersShipLineItemsResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersShipLineItemsResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersUpdateLineItemShippingDetailsRequest struct {
+	// DeliverByDate: Updated delivery by date, in ISO 8601 format. If not
+	// specified only ship by date is updated.
+	DeliverByDate string `json:"deliverByDate,omitempty"`
+
+	// LineItemId: The ID of the line item to set metadata. Either
+	// lineItemId or productId is required.
+	LineItemId string `json:"lineItemId,omitempty"`
+
+	// OperationId: The ID of the operation. Unique across all operations
+	// for a given order.
+	OperationId string `json:"operationId,omitempty"`
+
+	// ProductId: The ID of the product to set metadata. This is the REST ID
+	// used in the products service. Either lineItemId or productId is
+	// required.
+	ProductId string `json:"productId,omitempty"`
+
+	// ShipByDate: Updated ship by date, in ISO 8601 format. If not
+	// specified only deliver by date is updated.
+	ShipByDate string `json:"shipByDate,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "DeliverByDate") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "DeliverByDate") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersUpdateLineItemShippingDetailsRequest) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersUpdateLineItemShippingDetailsRequest
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type OrdersUpdateLineItemShippingDetailsResponse struct {
+	// ExecutionStatus: The status of the execution.
+	ExecutionStatus string `json:"executionStatus,omitempty"`
+
+	// Kind: Identifies what kind of resource this is. Value: the fixed
+	// string "content#ordersUpdateLineItemShippingDetailsResponse".
+	Kind string `json:"kind,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "ExecutionStatus") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "ExecutionStatus") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *OrdersUpdateLineItemShippingDetailsResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod OrdersUpdateLineItemShippingDetailsResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4685,8 +5552,8 @@ type OrdersUpdateMerchantOrderIdRequest struct {
 }
 
 func (s *OrdersUpdateMerchantOrderIdRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersUpdateMerchantOrderIdRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersUpdateMerchantOrderIdRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4721,8 +5588,8 @@ type OrdersUpdateMerchantOrderIdResponse struct {
 }
 
 func (s *OrdersUpdateMerchantOrderIdResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersUpdateMerchantOrderIdResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersUpdateMerchantOrderIdResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4763,8 +5630,8 @@ type OrdersUpdateShipmentRequest struct {
 }
 
 func (s *OrdersUpdateShipmentRequest) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersUpdateShipmentRequest
-	raw := noMethod(*s)
+	type NoMethod OrdersUpdateShipmentRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4799,8 +5666,8 @@ type OrdersUpdateShipmentResponse struct {
 }
 
 func (s *OrdersUpdateShipmentResponse) MarshalJSON() ([]byte, error) {
-	type noMethod OrdersUpdateShipmentResponse
-	raw := noMethod(*s)
+	type NoMethod OrdersUpdateShipmentResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4834,8 +5701,8 @@ type PostalCodeGroup struct {
 }
 
 func (s *PostalCodeGroup) MarshalJSON() ([]byte, error) {
-	type noMethod PostalCodeGroup
-	raw := noMethod(*s)
+	type NoMethod PostalCodeGroup
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4875,8 +5742,8 @@ type PostalCodeRange struct {
 }
 
 func (s *PostalCodeRange) MarshalJSON() ([]byte, error) {
-	type noMethod PostalCodeRange
-	raw := noMethod(*s)
+	type NoMethod PostalCodeRange
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -4905,8 +5772,8 @@ type Price struct {
 }
 
 func (s *Price) MarshalJSON() ([]byte, error) {
-	type noMethod Price
-	raw := noMethod(*s)
+	type NoMethod Price
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5035,7 +5902,10 @@ type Product struct {
 	// Gtin: Global Trade Item Number (GTIN) of the item.
 	Gtin string `json:"gtin,omitempty"`
 
-	// Id: The REST id of the product.
+	// Id: The REST id of the product. Content API methods that operate on
+	// products take this as their productId parameter.
+	// The REST id for a product is of the form
+	// channel:contentLanguage:targetCountry:offerId.
 	Id string `json:"id,omitempty"`
 
 	// IdentifierExists: False when the item does not have unique product
@@ -5089,10 +5959,12 @@ type Product struct {
 	// multipack.
 	Multipack int64 `json:"multipack,omitempty,string"`
 
-	// OfferId: An identifier of the item. Leading and trailing whitespaces
-	// are stripped and multiple whitespaces are replaced by a single
-	// whitespace upon submission. Only valid unicode characters are
+	// OfferId: A unique identifier for the item. Leading and trailing
+	// whitespaces are stripped and multiple whitespaces are replaced by a
+	// single whitespace upon submission. Only valid unicode characters are
 	// accepted. See the products feed specification for details.
+	// Note: Content API methods that operate on products take the REST id
+	// of the product, not this identifier.
 	OfferId string `json:"offerId,omitempty"`
 
 	// OnlineOnly: Whether an item is available for purchase only online.
@@ -5198,18 +6070,18 @@ type Product struct {
 }
 
 func (s *Product) MarshalJSON() ([]byte, error) {
-	type noMethod Product
-	raw := noMethod(*s)
+	type NoMethod Product
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 func (s *Product) UnmarshalJSON(data []byte) error {
-	type noMethod Product
+	type NoMethod Product
 	var s1 struct {
 		DisplayAdsValue gensupport.JSONFloat64 `json:"displayAdsValue"`
-		*noMethod
+		*NoMethod
 	}
-	s1.noMethod = (*noMethod)(s)
+	s1.NoMethod = (*NoMethod)(s)
 	if err := json.Unmarshal(data, &s1); err != nil {
 		return err
 	}
@@ -5247,8 +6119,8 @@ type ProductAspect struct {
 }
 
 func (s *ProductAspect) MarshalJSON() ([]byte, error) {
-	type noMethod ProductAspect
-	raw := noMethod(*s)
+	type NoMethod ProductAspect
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5285,8 +6157,8 @@ type ProductCustomAttribute struct {
 }
 
 func (s *ProductCustomAttribute) MarshalJSON() ([]byte, error) {
-	type noMethod ProductCustomAttribute
-	raw := noMethod(*s)
+	type NoMethod ProductCustomAttribute
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5316,8 +6188,8 @@ type ProductCustomGroup struct {
 }
 
 func (s *ProductCustomGroup) MarshalJSON() ([]byte, error) {
-	type noMethod ProductCustomGroup
-	raw := noMethod(*s)
+	type NoMethod ProductCustomGroup
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5348,8 +6220,8 @@ type ProductDestination struct {
 }
 
 func (s *ProductDestination) MarshalJSON() ([]byte, error) {
-	type noMethod ProductDestination
-	raw := noMethod(*s)
+	type NoMethod ProductDestination
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5400,8 +6272,8 @@ type ProductShipping struct {
 }
 
 func (s *ProductShipping) MarshalJSON() ([]byte, error) {
-	type noMethod ProductShipping
-	raw := noMethod(*s)
+	type NoMethod ProductShipping
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5435,18 +6307,18 @@ type ProductShippingDimension struct {
 }
 
 func (s *ProductShippingDimension) MarshalJSON() ([]byte, error) {
-	type noMethod ProductShippingDimension
-	raw := noMethod(*s)
+	type NoMethod ProductShippingDimension
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 func (s *ProductShippingDimension) UnmarshalJSON(data []byte) error {
-	type noMethod ProductShippingDimension
+	type NoMethod ProductShippingDimension
 	var s1 struct {
 		Value gensupport.JSONFloat64 `json:"value"`
-		*noMethod
+		*NoMethod
 	}
-	s1.noMethod = (*noMethod)(s)
+	s1.NoMethod = (*NoMethod)(s)
 	if err := json.Unmarshal(data, &s1); err != nil {
 		return err
 	}
@@ -5480,18 +6352,18 @@ type ProductShippingWeight struct {
 }
 
 func (s *ProductShippingWeight) MarshalJSON() ([]byte, error) {
-	type noMethod ProductShippingWeight
-	raw := noMethod(*s)
+	type NoMethod ProductShippingWeight
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 func (s *ProductShippingWeight) UnmarshalJSON(data []byte) error {
-	type noMethod ProductShippingWeight
+	type NoMethod ProductShippingWeight
 	var s1 struct {
 		Value gensupport.JSONFloat64 `json:"value"`
-		*noMethod
+		*NoMethod
 	}
-	s1.noMethod = (*noMethod)(s)
+	s1.NoMethod = (*NoMethod)(s)
 	if err := json.Unmarshal(data, &s1); err != nil {
 		return err
 	}
@@ -5516,6 +6388,9 @@ type ProductStatus struct {
 	// GoogleExpirationDate: Date on which the item expires in Google
 	// Shopping, in ISO 8601 format.
 	GoogleExpirationDate string `json:"googleExpirationDate,omitempty"`
+
+	// ItemLevelIssues: A list of all issues associated with the product.
+	ItemLevelIssues []*ProductStatusItemLevelIssue `json:"itemLevelIssues,omitempty"`
 
 	// Kind: Identifies what kind of resource this is. Value: the fixed
 	// string "content#productStatus".
@@ -5559,8 +6434,8 @@ type ProductStatus struct {
 }
 
 func (s *ProductStatus) MarshalJSON() ([]byte, error) {
-	type noMethod ProductStatus
-	raw := noMethod(*s)
+	type NoMethod ProductStatus
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5608,23 +6483,27 @@ type ProductStatusDataQualityIssue struct {
 }
 
 func (s *ProductStatusDataQualityIssue) MarshalJSON() ([]byte, error) {
-	type noMethod ProductStatusDataQualityIssue
-	raw := noMethod(*s)
+	type NoMethod ProductStatusDataQualityIssue
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 type ProductStatusDestinationStatus struct {
+	// ApprovalPending: Whether the approval status might change due to
+	// further processing.
+	ApprovalPending bool `json:"approvalPending,omitempty"`
+
 	// ApprovalStatus: The destination's approval status.
 	ApprovalStatus string `json:"approvalStatus,omitempty"`
 
 	// Destination: The name of the destination
 	Destination string `json:"destination,omitempty"`
 
-	// Intention: Whether the destination is required, excluded, selected by
-	// default or should be validated.
+	// Intention: Provided for backward compatibility only. Always set to
+	// "required".
 	Intention string `json:"intention,omitempty"`
 
-	// ForceSendFields is a list of field names (e.g. "ApprovalStatus") to
+	// ForceSendFields is a list of field names (e.g. "ApprovalPending") to
 	// unconditionally include in API requests. By default, fields with
 	// empty values are omitted from API requests. However, any non-pointer,
 	// non-interface field appearing in ForceSendFields will be sent to the
@@ -5632,7 +6511,7 @@ type ProductStatusDestinationStatus struct {
 	// used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
-	// NullFields is a list of field names (e.g. "ApprovalStatus") to
+	// NullFields is a list of field names (e.g. "ApprovalPending") to
 	// include in API requests with the JSON null value. By default, fields
 	// with empty values are omitted from API requests. However, any field
 	// with an empty value appearing in NullFields will be sent to the
@@ -5643,8 +6522,48 @@ type ProductStatusDestinationStatus struct {
 }
 
 func (s *ProductStatusDestinationStatus) MarshalJSON() ([]byte, error) {
-	type noMethod ProductStatusDestinationStatus
-	raw := noMethod(*s)
+	type NoMethod ProductStatusDestinationStatus
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ProductStatusItemLevelIssue struct {
+	// AttributeName: The attribute's name, if the issue is caused by a
+	// single attribute.
+	AttributeName string `json:"attributeName,omitempty"`
+
+	// Code: The error code of the issue.
+	Code string `json:"code,omitempty"`
+
+	// Destination: The destination the issue applies to.
+	Destination string `json:"destination,omitempty"`
+
+	// Resolution: Whether the issue can be resolved by the merchant.
+	Resolution string `json:"resolution,omitempty"`
+
+	// Servability: How this issue affects serving of the offer.
+	Servability string `json:"servability,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "AttributeName") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "AttributeName") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ProductStatusItemLevelIssue) MarshalJSON() ([]byte, error) {
+	type NoMethod ProductStatusItemLevelIssue
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5690,18 +6609,18 @@ type ProductTax struct {
 }
 
 func (s *ProductTax) MarshalJSON() ([]byte, error) {
-	type noMethod ProductTax
-	raw := noMethod(*s)
+	type NoMethod ProductTax
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 func (s *ProductTax) UnmarshalJSON(data []byte) error {
-	type noMethod ProductTax
+	type NoMethod ProductTax
 	var s1 struct {
 		Rate gensupport.JSONFloat64 `json:"rate"`
-		*noMethod
+		*NoMethod
 	}
-	s1.noMethod = (*noMethod)(s)
+	s1.NoMethod = (*NoMethod)(s)
 	if err := json.Unmarshal(data, &s1); err != nil {
 		return err
 	}
@@ -5734,8 +6653,8 @@ type ProductUnitPricingBaseMeasure struct {
 }
 
 func (s *ProductUnitPricingBaseMeasure) MarshalJSON() ([]byte, error) {
-	type noMethod ProductUnitPricingBaseMeasure
-	raw := noMethod(*s)
+	type NoMethod ProductUnitPricingBaseMeasure
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5764,18 +6683,18 @@ type ProductUnitPricingMeasure struct {
 }
 
 func (s *ProductUnitPricingMeasure) MarshalJSON() ([]byte, error) {
-	type noMethod ProductUnitPricingMeasure
-	raw := noMethod(*s)
+	type NoMethod ProductUnitPricingMeasure
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 func (s *ProductUnitPricingMeasure) UnmarshalJSON(data []byte) error {
-	type noMethod ProductUnitPricingMeasure
+	type NoMethod ProductUnitPricingMeasure
 	var s1 struct {
 		Value gensupport.JSONFloat64 `json:"value"`
-		*noMethod
+		*NoMethod
 	}
-	s1.noMethod = (*noMethod)(s)
+	s1.NoMethod = (*NoMethod)(s)
 	if err := json.Unmarshal(data, &s1); err != nil {
 		return err
 	}
@@ -5805,8 +6724,8 @@ type ProductsCustomBatchRequest struct {
 }
 
 func (s *ProductsCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod ProductsCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod ProductsCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5847,8 +6766,8 @@ type ProductsCustomBatchRequestEntry struct {
 }
 
 func (s *ProductsCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod ProductsCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod ProductsCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5882,8 +6801,8 @@ type ProductsCustomBatchResponse struct {
 }
 
 func (s *ProductsCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ProductsCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod ProductsCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5922,8 +6841,8 @@ type ProductsCustomBatchResponseEntry struct {
 }
 
 func (s *ProductsCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod ProductsCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod ProductsCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5960,8 +6879,8 @@ type ProductsListResponse struct {
 }
 
 func (s *ProductsListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ProductsListResponse
-	raw := noMethod(*s)
+	type NoMethod ProductsListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -5987,8 +6906,8 @@ type ProductstatusesCustomBatchRequest struct {
 }
 
 func (s *ProductstatusesCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod ProductstatusesCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod ProductstatusesCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6026,8 +6945,8 @@ type ProductstatusesCustomBatchRequestEntry struct {
 }
 
 func (s *ProductstatusesCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod ProductstatusesCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod ProductstatusesCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6061,8 +6980,8 @@ type ProductstatusesCustomBatchResponse struct {
 }
 
 func (s *ProductstatusesCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ProductstatusesCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod ProductstatusesCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6101,8 +7020,8 @@ type ProductstatusesCustomBatchResponseEntry struct {
 }
 
 func (s *ProductstatusesCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod ProductstatusesCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod ProductstatusesCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6139,8 +7058,8 @@ type ProductstatusesListResponse struct {
 }
 
 func (s *ProductstatusesListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ProductstatusesListResponse
-	raw := noMethod(*s)
+	type NoMethod ProductstatusesListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6187,8 +7106,8 @@ type RateGroup struct {
 }
 
 func (s *RateGroup) MarshalJSON() ([]byte, error) {
-	type noMethod RateGroup
-	raw := noMethod(*s)
+	type NoMethod RateGroup
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6216,8 +7135,8 @@ type Row struct {
 }
 
 func (s *Row) MarshalJSON() ([]byte, error) {
-	type noMethod Row
-	raw := noMethod(*s)
+	type NoMethod Row
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6271,8 +7190,8 @@ type Service struct {
 }
 
 func (s *Service) MarshalJSON() ([]byte, error) {
-	type noMethod Service
-	raw := noMethod(*s)
+	type NoMethod Service
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6312,8 +7231,8 @@ type ShippingSettings struct {
 }
 
 func (s *ShippingSettings) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingSettings
-	raw := noMethod(*s)
+	type NoMethod ShippingSettings
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6339,8 +7258,8 @@ type ShippingsettingsCustomBatchRequest struct {
 }
 
 func (s *ShippingsettingsCustomBatchRequest) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingsettingsCustomBatchRequest
-	raw := noMethod(*s)
+	type NoMethod ShippingsettingsCustomBatchRequest
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6381,8 +7300,8 @@ type ShippingsettingsCustomBatchRequestEntry struct {
 }
 
 func (s *ShippingsettingsCustomBatchRequestEntry) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingsettingsCustomBatchRequestEntry
-	raw := noMethod(*s)
+	type NoMethod ShippingsettingsCustomBatchRequestEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6416,8 +7335,8 @@ type ShippingsettingsCustomBatchResponse struct {
 }
 
 func (s *ShippingsettingsCustomBatchResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingsettingsCustomBatchResponse
-	raw := noMethod(*s)
+	type NoMethod ShippingsettingsCustomBatchResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6455,8 +7374,8 @@ type ShippingsettingsCustomBatchResponseEntry struct {
 }
 
 func (s *ShippingsettingsCustomBatchResponseEntry) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingsettingsCustomBatchResponseEntry
-	raw := noMethod(*s)
+	type NoMethod ShippingsettingsCustomBatchResponseEntry
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6490,8 +7409,44 @@ type ShippingsettingsGetSupportedCarriersResponse struct {
 }
 
 func (s *ShippingsettingsGetSupportedCarriersResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingsettingsGetSupportedCarriersResponse
-	raw := noMethod(*s)
+	type NoMethod ShippingsettingsGetSupportedCarriersResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ShippingsettingsGetSupportedHolidaysResponse struct {
+	// Holidays: A list of holidays applicable for delivery guarantees. May
+	// be empty.
+	Holidays []*HolidaysHoliday `json:"holidays,omitempty"`
+
+	// Kind: Identifies what kind of resource this is. Value: the fixed
+	// string "content#shippingsettingsGetSupportedHolidaysResponse".
+	Kind string `json:"kind,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Holidays") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Holidays") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ShippingsettingsGetSupportedHolidaysResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ShippingsettingsGetSupportedHolidaysResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6528,8 +7483,8 @@ type ShippingsettingsListResponse struct {
 }
 
 func (s *ShippingsettingsListResponse) MarshalJSON() ([]byte, error) {
-	type noMethod ShippingsettingsListResponse
-	raw := noMethod(*s)
+	type NoMethod ShippingsettingsListResponse
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6567,8 +7522,8 @@ type Table struct {
 }
 
 func (s *Table) MarshalJSON() ([]byte, error) {
-	type noMethod Table
-	raw := noMethod(*s)
+	type NoMethod Table
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6583,6 +7538,10 @@ type TestOrder struct {
 	// LineItems: Line items that are ordered. At least one line item must
 	// be provided.
 	LineItems []*TestOrderLineItem `json:"lineItems,omitempty"`
+
+	// NotificationMode: Determines if test order must be pulled by merchant
+	// or pushed to merchant via push integration.
+	NotificationMode string `json:"notificationMode,omitempty"`
 
 	// PaymentMethod: The details of the payment method.
 	PaymentMethod *TestOrderPaymentMethod `json:"paymentMethod,omitempty"`
@@ -6622,8 +7581,8 @@ type TestOrder struct {
 }
 
 func (s *TestOrder) MarshalJSON() ([]byte, error) {
-	type noMethod TestOrder
-	raw := noMethod(*s)
+	type NoMethod TestOrder
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6659,8 +7618,8 @@ type TestOrderCustomer struct {
 }
 
 func (s *TestOrderCustomer) MarshalJSON() ([]byte, error) {
-	type noMethod TestOrderCustomer
-	raw := noMethod(*s)
+	type NoMethod TestOrderCustomer
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6698,8 +7657,8 @@ type TestOrderLineItem struct {
 }
 
 func (s *TestOrderLineItem) MarshalJSON() ([]byte, error) {
-	type noMethod TestOrderLineItem
-	raw := noMethod(*s)
+	type NoMethod TestOrderLineItem
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6763,8 +7722,8 @@ type TestOrderLineItemProduct struct {
 }
 
 func (s *TestOrderLineItemProduct) MarshalJSON() ([]byte, error) {
-	type noMethod TestOrderLineItemProduct
-	raw := noMethod(*s)
+	type NoMethod TestOrderLineItemProduct
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6805,8 +7764,8 @@ type TestOrderPaymentMethod struct {
 }
 
 func (s *TestOrderPaymentMethod) MarshalJSON() ([]byte, error) {
-	type noMethod TestOrderPaymentMethod
-	raw := noMethod(*s)
+	type NoMethod TestOrderPaymentMethod
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6856,8 +7815,8 @@ type Value struct {
 }
 
 func (s *Value) MarshalJSON() ([]byte, error) {
-	type noMethod Value
-	raw := noMethod(*s)
+	type NoMethod Value
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6886,8 +7845,8 @@ type Weight struct {
 }
 
 func (s *Weight) MarshalJSON() ([]byte, error) {
-	type noMethod Weight
-	raw := noMethod(*s)
+	type NoMethod Weight
+	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
@@ -6993,7 +7952,7 @@ func (c *AccountsAuthinfoCall) Do(opts ...googleapi.CallOption) (*AccountsAuthIn
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -7024,10 +7983,6 @@ type AccountsClaimwebsiteCall struct {
 }
 
 // Claimwebsite: Claims the website of a Merchant Center sub-account.
-// This method can only be called for accounts to which the managing
-// account has access: either the managing account itself for any
-// Merchant Center account, or any sub-account when the managing account
-// is a multi-client account.
 func (r *AccountsService) Claimwebsite(merchantId uint64, accountId uint64) *AccountsClaimwebsiteCall {
 	c := &AccountsClaimwebsiteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -7121,12 +8076,12 @@ func (c *AccountsClaimwebsiteCall) Do(opts ...googleapi.CallOption) (*AccountsCl
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Claims the website of a Merchant Center sub-account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Claims the website of a Merchant Center sub-account.",
 	//   "httpMethod": "POST",
 	//   "id": "content.accounts.claimwebsite",
 	//   "parameterOrder": [
@@ -7142,7 +8097,7 @@ func (c *AccountsClaimwebsiteCall) Do(opts ...googleapi.CallOption) (*AccountsCl
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -7268,7 +8223,7 @@ func (c *AccountsCustombatchCall) Do(opts ...googleapi.CallOption) (*AccountsCus
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -7308,8 +8263,7 @@ type AccountsDeleteCall struct {
 	header_    http.Header
 }
 
-// Delete: Deletes a Merchant Center sub-account. This method can only
-// be called for multi-client accounts.
+// Delete: Deletes a Merchant Center sub-account.
 func (r *AccountsService) Delete(merchantId uint64, accountId uint64) *AccountsDeleteCall {
 	c := &AccountsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -7388,7 +8342,7 @@ func (c *AccountsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Deletes a Merchant Center sub-account. This method can only be called for multi-client accounts.",
+	//   "description": "Deletes a Merchant Center sub-account.",
 	//   "httpMethod": "DELETE",
 	//   "id": "content.accounts.delete",
 	//   "parameterOrder": [
@@ -7415,7 +8369,7 @@ func (c *AccountsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. This must be a multi-client account, and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -7442,10 +8396,7 @@ type AccountsGetCall struct {
 	header_      http.Header
 }
 
-// Get: Retrieves a Merchant Center account. This method can only be
-// called for accounts to which the managing account has access: either
-// the managing account itself for any Merchant Center account, or any
-// sub-account when the managing account is a multi-client account.
+// Get: Retrieves a Merchant Center account.
 func (r *AccountsService) Get(merchantId uint64, accountId uint64) *AccountsGetCall {
 	c := &AccountsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -7543,12 +8494,12 @@ func (c *AccountsGetCall) Do(opts ...googleapi.CallOption) (*Account, error) {
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves a Merchant Center account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Retrieves a Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.accounts.get",
 	//   "parameterOrder": [
@@ -7564,7 +8515,7 @@ func (c *AccountsGetCall) Do(opts ...googleapi.CallOption) (*Account, error) {
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -7593,8 +8544,7 @@ type AccountsInsertCall struct {
 	header_    http.Header
 }
 
-// Insert: Creates a Merchant Center sub-account. This method can only
-// be called for multi-client accounts.
+// Insert: Creates a Merchant Center sub-account.
 func (r *AccountsService) Insert(merchantId uint64, account *Account) *AccountsInsertCall {
 	c := &AccountsInsertCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -7690,12 +8640,12 @@ func (c *AccountsInsertCall) Do(opts ...googleapi.CallOption) (*Account, error) 
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Creates a Merchant Center sub-account. This method can only be called for multi-client accounts.",
+	//   "description": "Creates a Merchant Center sub-account.",
 	//   "httpMethod": "POST",
 	//   "id": "content.accounts.insert",
 	//   "parameterOrder": [
@@ -7708,7 +8658,7 @@ func (c *AccountsInsertCall) Do(opts ...googleapi.CallOption) (*Account, error) 
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. This must be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -7740,8 +8690,7 @@ type AccountsListCall struct {
 	header_      http.Header
 }
 
-// List: Lists the sub-accounts in your Merchant Center account. This
-// method can only be called for multi-client accounts.
+// List: Lists the sub-accounts in your Merchant Center account.
 func (r *AccountsService) List(merchantId uint64) *AccountsListCall {
 	c := &AccountsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -7851,12 +8800,12 @@ func (c *AccountsListCall) Do(opts ...googleapi.CallOption) (*AccountsListRespon
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the sub-accounts in your Merchant Center account. This method can only be called for multi-client accounts.",
+	//   "description": "Lists the sub-accounts in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.accounts.list",
 	//   "parameterOrder": [
@@ -7870,7 +8819,7 @@ func (c *AccountsListCall) Do(opts ...googleapi.CallOption) (*AccountsListRespon
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. This must be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -7926,11 +8875,8 @@ type AccountsPatchCall struct {
 	header_    http.Header
 }
 
-// Patch: Updates a Merchant Center account. This method can only be
-// called for accounts to which the managing account has access: either
-// the managing account itself for any Merchant Center account, or any
-// sub-account when the managing account is a multi-client account. This
-// method supports patch semantics.
+// Patch: Updates a Merchant Center account. This method supports patch
+// semantics.
 func (r *AccountsService) Patch(merchantId uint64, accountId uint64, account *Account) *AccountsPatchCall {
 	c := &AccountsPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -8028,12 +8974,12 @@ func (c *AccountsPatchCall) Do(opts ...googleapi.CallOption) (*Account, error) {
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a Merchant Center account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account. This method supports patch semantics.",
+	//   "description": "Updates a Merchant Center account. This method supports patch semantics.",
 	//   "httpMethod": "PATCH",
 	//   "id": "content.accounts.patch",
 	//   "parameterOrder": [
@@ -8054,7 +9000,7 @@ func (c *AccountsPatchCall) Do(opts ...googleapi.CallOption) (*Account, error) {
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -8087,10 +9033,7 @@ type AccountsUpdateCall struct {
 	header_    http.Header
 }
 
-// Update: Updates a Merchant Center account. This method can only be
-// called for accounts to which the managing account has access: either
-// the managing account itself for any Merchant Center account, or any
-// sub-account when the managing account is a multi-client account.
+// Update: Updates a Merchant Center account.
 func (r *AccountsService) Update(merchantId uint64, accountId uint64, account *Account) *AccountsUpdateCall {
 	c := &AccountsUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -8188,12 +9131,12 @@ func (c *AccountsUpdateCall) Do(opts ...googleapi.CallOption) (*Account, error) 
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a Merchant Center account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Updates a Merchant Center account.",
 	//   "httpMethod": "PUT",
 	//   "id": "content.accounts.update",
 	//   "parameterOrder": [
@@ -8214,7 +9157,7 @@ func (c *AccountsUpdateCall) Do(opts ...googleapi.CallOption) (*Account, error) 
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -8331,7 +9274,7 @@ func (c *AccountstatusesCustombatchCall) Do(opts ...googleapi.CallOption) (*Acco
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -8364,11 +9307,7 @@ type AccountstatusesGetCall struct {
 	header_      http.Header
 }
 
-// Get: Retrieves the status of a Merchant Center account. This method
-// can only be called for accounts to which the managing account has
-// access: either the managing account itself for any Merchant Center
-// account, or any sub-account when the managing account is a
-// multi-client account.
+// Get: Retrieves the status of a Merchant Center account.
 func (r *AccountstatusesService) Get(merchantId uint64, accountId uint64) *AccountstatusesGetCall {
 	c := &AccountstatusesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -8466,12 +9405,12 @@ func (c *AccountstatusesGetCall) Do(opts ...googleapi.CallOption) (*AccountStatu
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves the status of a Merchant Center account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Retrieves the status of a Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.accountstatuses.get",
 	//   "parameterOrder": [
@@ -8487,7 +9426,7 @@ func (c *AccountstatusesGetCall) Do(opts ...googleapi.CallOption) (*AccountStatu
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -8517,7 +9456,7 @@ type AccountstatusesListCall struct {
 }
 
 // List: Lists the statuses of the sub-accounts in your Merchant Center
-// account. This method can only be called for multi-client accounts.
+// account.
 func (r *AccountstatusesService) List(merchantId uint64) *AccountstatusesListCall {
 	c := &AccountstatusesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -8628,12 +9567,12 @@ func (c *AccountstatusesListCall) Do(opts ...googleapi.CallOption) (*Accountstat
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the statuses of the sub-accounts in your Merchant Center account. This method can only be called for multi-client accounts.",
+	//   "description": "Lists the statuses of the sub-accounts in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.accountstatuses.list",
 	//   "parameterOrder": [
@@ -8647,7 +9586,7 @@ func (c *AccountstatusesListCall) Do(opts ...googleapi.CallOption) (*Accountstat
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. This must be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -8794,7 +9733,7 @@ func (c *AccounttaxCustombatchCall) Do(opts ...googleapi.CallOption) (*Accountta
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -8835,11 +9774,7 @@ type AccounttaxGetCall struct {
 	header_      http.Header
 }
 
-// Get: Retrieves the tax settings of the account. This method can only
-// be called for accounts to which the managing account has access:
-// either the managing account itself for any Merchant Center account,
-// or any sub-account when the managing account is a multi-client
-// account.
+// Get: Retrieves the tax settings of the account.
 func (r *AccounttaxService) Get(merchantId uint64, accountId uint64) *AccounttaxGetCall {
 	c := &AccounttaxGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -8937,12 +9872,12 @@ func (c *AccounttaxGetCall) Do(opts ...googleapi.CallOption) (*AccountTax, error
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves the tax settings of the account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Retrieves the tax settings of the account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.accounttax.get",
 	//   "parameterOrder": [
@@ -8958,7 +9893,7 @@ func (c *AccounttaxGetCall) Do(opts ...googleapi.CallOption) (*AccountTax, error
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -8988,8 +9923,7 @@ type AccounttaxListCall struct {
 }
 
 // List: Lists the tax settings of the sub-accounts in your Merchant
-// Center account. This method can only be called for multi-client
-// accounts.
+// Center account.
 func (r *AccounttaxService) List(merchantId uint64) *AccounttaxListCall {
 	c := &AccounttaxListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -9099,12 +10033,12 @@ func (c *AccounttaxListCall) Do(opts ...googleapi.CallOption) (*AccounttaxListRe
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the tax settings of the sub-accounts in your Merchant Center account. This method can only be called for multi-client accounts.",
+	//   "description": "Lists the tax settings of the sub-accounts in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.accounttax.list",
 	//   "parameterOrder": [
@@ -9118,7 +10052,7 @@ func (c *AccounttaxListCall) Do(opts ...googleapi.CallOption) (*AccounttaxListRe
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. This must be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -9174,11 +10108,8 @@ type AccounttaxPatchCall struct {
 	header_    http.Header
 }
 
-// Patch: Updates the tax settings of the account. This method can only
-// be called for accounts to which the managing account has access:
-// either the managing account itself for any Merchant Center account,
-// or any sub-account when the managing account is a multi-client
-// account. This method supports patch semantics.
+// Patch: Updates the tax settings of the account. This method supports
+// patch semantics.
 func (r *AccounttaxService) Patch(merchantId uint64, accountId uint64, accounttax *AccountTax) *AccounttaxPatchCall {
 	c := &AccounttaxPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -9276,12 +10207,12 @@ func (c *AccounttaxPatchCall) Do(opts ...googleapi.CallOption) (*AccountTax, err
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the tax settings of the account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account. This method supports patch semantics.",
+	//   "description": "Updates the tax settings of the account. This method supports patch semantics.",
 	//   "httpMethod": "PATCH",
 	//   "id": "content.accounttax.patch",
 	//   "parameterOrder": [
@@ -9302,7 +10233,7 @@ func (c *AccounttaxPatchCall) Do(opts ...googleapi.CallOption) (*AccountTax, err
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -9335,11 +10266,7 @@ type AccounttaxUpdateCall struct {
 	header_    http.Header
 }
 
-// Update: Updates the tax settings of the account. This method can only
-// be called for accounts to which the managing account has access:
-// either the managing account itself for any Merchant Center account,
-// or any sub-account when the managing account is a multi-client
-// account.
+// Update: Updates the tax settings of the account.
 func (r *AccounttaxService) Update(merchantId uint64, accountId uint64, accounttax *AccountTax) *AccounttaxUpdateCall {
 	c := &AccounttaxUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -9437,12 +10364,12 @@ func (c *AccounttaxUpdateCall) Do(opts ...googleapi.CallOption) (*AccountTax, er
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the tax settings of the account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Updates the tax settings of the account.",
 	//   "httpMethod": "PUT",
 	//   "id": "content.accounttax.update",
 	//   "parameterOrder": [
@@ -9463,7 +10390,7 @@ func (c *AccounttaxUpdateCall) Do(opts ...googleapi.CallOption) (*AccountTax, er
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -9586,7 +10513,7 @@ func (c *DatafeedsCustombatchCall) Do(opts ...googleapi.CallOption) (*DatafeedsC
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -9626,8 +10553,7 @@ type DatafeedsDeleteCall struct {
 }
 
 // Delete: Deletes a datafeed configuration from your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *DatafeedsService) Delete(merchantId uint64, datafeedId uint64) *DatafeedsDeleteCall {
 	c := &DatafeedsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -9699,7 +10625,7 @@ func (c *DatafeedsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Deletes a datafeed configuration from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Deletes a datafeed configuration from your Merchant Center account.",
 	//   "httpMethod": "DELETE",
 	//   "id": "content.datafeeds.delete",
 	//   "parameterOrder": [
@@ -9708,6 +10634,7 @@ func (c *DatafeedsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//   ],
 	//   "parameters": {
 	//     "datafeedId": {
+	//       "description": "The ID of the datafeed.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -9719,6 +10646,7 @@ func (c *DatafeedsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
+	//       "description": "The ID of the account that manages the datafeed. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -9746,8 +10674,7 @@ type DatafeedsGetCall struct {
 }
 
 // Get: Retrieves a datafeed configuration from your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *DatafeedsService) Get(merchantId uint64, datafeedId uint64) *DatafeedsGetCall {
 	c := &DatafeedsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -9845,12 +10772,12 @@ func (c *DatafeedsGetCall) Do(opts ...googleapi.CallOption) (*Datafeed, error) {
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves a datafeed configuration from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves a datafeed configuration from your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.datafeeds.get",
 	//   "parameterOrder": [
@@ -9859,12 +10786,14 @@ func (c *DatafeedsGetCall) Do(opts ...googleapi.CallOption) (*Datafeed, error) {
 	//   ],
 	//   "parameters": {
 	//     "datafeedId": {
+	//       "description": "The ID of the datafeed.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
+	//       "description": "The ID of the account that manages the datafeed. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -9894,8 +10823,7 @@ type DatafeedsInsertCall struct {
 }
 
 // Insert: Registers a datafeed configuration with your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *DatafeedsService) Insert(merchantId uint64, datafeed *Datafeed) *DatafeedsInsertCall {
 	c := &DatafeedsInsertCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -9991,12 +10919,12 @@ func (c *DatafeedsInsertCall) Do(opts ...googleapi.CallOption) (*Datafeed, error
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Registers a datafeed configuration with your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Registers a datafeed configuration with your Merchant Center account.",
 	//   "httpMethod": "POST",
 	//   "id": "content.datafeeds.insert",
 	//   "parameterOrder": [
@@ -10009,6 +10937,7 @@ func (c *DatafeedsInsertCall) Do(opts ...googleapi.CallOption) (*Datafeed, error
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
+	//       "description": "The ID of the account that manages the datafeed. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10040,8 +10969,8 @@ type DatafeedsListCall struct {
 	header_      http.Header
 }
 
-// List: Lists the datafeeds in your Merchant Center account. This
-// method can only be called for non-multi-client accounts.
+// List: Lists the configurations for datafeeds in your Merchant Center
+// account.
 func (r *DatafeedsService) List(merchantId uint64) *DatafeedsListCall {
 	c := &DatafeedsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -10151,12 +11080,12 @@ func (c *DatafeedsListCall) Do(opts ...googleapi.CallOption) (*DatafeedsListResp
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the datafeeds in your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Lists the configurations for datafeeds in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.datafeeds.list",
 	//   "parameterOrder": [
@@ -10170,7 +11099,7 @@ func (c *DatafeedsListCall) Do(opts ...googleapi.CallOption) (*DatafeedsListResp
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the datafeeds. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10227,8 +11156,7 @@ type DatafeedsPatchCall struct {
 }
 
 // Patch: Updates a datafeed configuration of your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts. This method supports patch semantics.
+// account. This method supports patch semantics.
 func (r *DatafeedsService) Patch(merchantId uint64, datafeedId uint64, datafeed *Datafeed) *DatafeedsPatchCall {
 	c := &DatafeedsPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -10326,12 +11254,12 @@ func (c *DatafeedsPatchCall) Do(opts ...googleapi.CallOption) (*Datafeed, error)
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a datafeed configuration of your Merchant Center account. This method can only be called for non-multi-client accounts. This method supports patch semantics.",
+	//   "description": "Updates a datafeed configuration of your Merchant Center account. This method supports patch semantics.",
 	//   "httpMethod": "PATCH",
 	//   "id": "content.datafeeds.patch",
 	//   "parameterOrder": [
@@ -10340,6 +11268,7 @@ func (c *DatafeedsPatchCall) Do(opts ...googleapi.CallOption) (*Datafeed, error)
 	//   ],
 	//   "parameters": {
 	//     "datafeedId": {
+	//       "description": "The ID of the datafeed.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10351,6 +11280,7 @@ func (c *DatafeedsPatchCall) Do(opts ...googleapi.CallOption) (*Datafeed, error)
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
+	//       "description": "The ID of the account that manages the datafeed. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10384,8 +11314,7 @@ type DatafeedsUpdateCall struct {
 }
 
 // Update: Updates a datafeed configuration of your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *DatafeedsService) Update(merchantId uint64, datafeedId uint64, datafeed *Datafeed) *DatafeedsUpdateCall {
 	c := &DatafeedsUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -10483,12 +11412,12 @@ func (c *DatafeedsUpdateCall) Do(opts ...googleapi.CallOption) (*Datafeed, error
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a datafeed configuration of your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Updates a datafeed configuration of your Merchant Center account.",
 	//   "httpMethod": "PUT",
 	//   "id": "content.datafeeds.update",
 	//   "parameterOrder": [
@@ -10497,6 +11426,7 @@ func (c *DatafeedsUpdateCall) Do(opts ...googleapi.CallOption) (*Datafeed, error
 	//   ],
 	//   "parameters": {
 	//     "datafeedId": {
+	//       "description": "The ID of the datafeed.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10508,6 +11438,7 @@ func (c *DatafeedsUpdateCall) Do(opts ...googleapi.CallOption) (*Datafeed, error
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
+	//       "description": "The ID of the account that manages the datafeed. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10624,7 +11555,7 @@ func (c *DatafeedstatusesCustombatchCall) Do(opts ...googleapi.CallOption) (*Dat
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -10658,8 +11589,7 @@ type DatafeedstatusesGetCall struct {
 }
 
 // Get: Retrieves the status of a datafeed from your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *DatafeedstatusesService) Get(merchantId uint64, datafeedId uint64) *DatafeedstatusesGetCall {
 	c := &DatafeedstatusesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -10777,12 +11707,12 @@ func (c *DatafeedstatusesGetCall) Do(opts ...googleapi.CallOption) (*DatafeedSta
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves the status of a datafeed from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves the status of a datafeed from your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.datafeedstatuses.get",
 	//   "parameterOrder": [
@@ -10796,6 +11726,7 @@ func (c *DatafeedstatusesGetCall) Do(opts ...googleapi.CallOption) (*DatafeedSta
 	//       "type": "string"
 	//     },
 	//     "datafeedId": {
+	//       "description": "The ID of the datafeed.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10807,6 +11738,7 @@ func (c *DatafeedstatusesGetCall) Do(opts ...googleapi.CallOption) (*DatafeedSta
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
+	//       "description": "The ID of the account that manages the datafeed. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -10836,8 +11768,7 @@ type DatafeedstatusesListCall struct {
 }
 
 // List: Lists the statuses of the datafeeds in your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *DatafeedstatusesService) List(merchantId uint64) *DatafeedstatusesListCall {
 	c := &DatafeedstatusesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -10947,12 +11878,12 @@ func (c *DatafeedstatusesListCall) Do(opts ...googleapi.CallOption) (*Datafeedst
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the statuses of the datafeeds in your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Lists the statuses of the datafeeds in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.datafeedstatuses.list",
 	//   "parameterOrder": [
@@ -10966,7 +11897,7 @@ func (c *DatafeedstatusesListCall) Do(opts ...googleapi.CallOption) (*Datafeedst
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the datafeeds. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -11022,8 +11953,7 @@ type InventoryCustombatchCall struct {
 
 // Custombatch: Updates price and availability for multiple products or
 // stores in a single request. This operation does not update the
-// expiration date of the products. This method can only be called for
-// non-multi-client accounts.
+// expiration date of the products.
 func (r *InventoryService) Custombatch(inventorycustombatchrequest *InventoryCustomBatchRequest) *InventoryCustombatchCall {
 	c := &InventoryCustombatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.inventorycustombatchrequest = inventorycustombatchrequest
@@ -11115,12 +12045,12 @@ func (c *InventoryCustombatchCall) Do(opts ...googleapi.CallOption) (*InventoryC
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates price and availability for multiple products or stores in a single request. This operation does not update the expiration date of the products. This method can only be called for non-multi-client accounts.",
+	//   "description": "Updates price and availability for multiple products or stores in a single request. This operation does not update the expiration date of the products.",
 	//   "httpMethod": "POST",
 	//   "id": "content.inventory.custombatch",
 	//   "parameters": {
@@ -11158,9 +12088,7 @@ type InventorySetCall struct {
 }
 
 // Set: Updates price and availability of a product in your Merchant
-// Center account. This operation does not update the expiration date of
-// the product. This method can only be called for non-multi-client
-// accounts.
+// Center account.
 func (r *InventoryService) Set(merchantId uint64, storeCode string, productId string, inventorysetrequest *InventorySetRequest) *InventorySetCall {
 	c := &InventorySetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -11260,12 +12188,12 @@ func (c *InventorySetCall) Do(opts ...googleapi.CallOption) (*InventorySetRespon
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates price and availability of a product in your Merchant Center account. This operation does not update the expiration date of the product. This method can only be called for non-multi-client accounts.",
+	//   "description": "Updates price and availability of a product in your Merchant Center account.",
 	//   "httpMethod": "POST",
 	//   "id": "content.inventory.set",
 	//   "parameterOrder": [
@@ -11280,14 +12208,14 @@ func (c *InventorySetCall) Do(opts ...googleapi.CallOption) (*InventorySetRespon
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the product. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     },
 	//     "productId": {
-	//       "description": "The ID of the product for which to update price and availability.",
+	//       "description": "The REST id of the product for which to update price and availability.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
@@ -11325,8 +12253,7 @@ type OrdersAcknowledgeCall struct {
 	header_                  http.Header
 }
 
-// Acknowledge: Marks an order as acknowledged. This method can only be
-// called for non-multi-client accounts.
+// Acknowledge: Marks an order as acknowledged.
 func (r *OrdersService) Acknowledge(merchantId uint64, orderId string, ordersacknowledgerequest *OrdersAcknowledgeRequest) *OrdersAcknowledgeCall {
 	c := &OrdersAcknowledgeCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -11417,12 +12344,12 @@ func (c *OrdersAcknowledgeCall) Do(opts ...googleapi.CallOption) (*OrdersAcknowl
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Marks an order as acknowledged. This method can only be called for non-multi-client accounts.",
+	//   "description": "Marks an order as acknowledged.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.acknowledge",
 	//   "parameterOrder": [
@@ -11431,7 +12358,7 @@ func (c *OrdersAcknowledgeCall) Do(opts ...googleapi.CallOption) (*OrdersAcknowl
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -11470,8 +12397,7 @@ type OrdersAdvancetestorderCall struct {
 }
 
 // Advancetestorder: Sandbox only. Moves a test order from state
-// "inProgress" to state "pendingShipment". This method can only be
-// called for non-multi-client accounts.
+// "inProgress" to state "pendingShipment".
 func (r *OrdersService) Advancetestorder(merchantId uint64, orderId string) *OrdersAdvancetestorderCall {
 	c := &OrdersAdvancetestorderCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -11556,12 +12482,12 @@ func (c *OrdersAdvancetestorderCall) Do(opts ...googleapi.CallOption) (*OrdersAd
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Sandbox only. Moves a test order from state \"inProgress\" to state \"pendingShipment\". This method can only be called for non-multi-client accounts.",
+	//   "description": "Sandbox only. Moves a test order from state \"inProgress\" to state \"pendingShipment\".",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.advancetestorder",
 	//   "parameterOrder": [
@@ -11570,7 +12496,7 @@ func (c *OrdersAdvancetestorderCall) Do(opts ...googleapi.CallOption) (*OrdersAd
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -11607,7 +12533,6 @@ type OrdersCancelCall struct {
 }
 
 // Cancel: Cancels all line items in an order, making a full refund.
-// This method can only be called for non-multi-client accounts.
 func (r *OrdersService) Cancel(merchantId uint64, orderId string, orderscancelrequest *OrdersCancelRequest) *OrdersCancelCall {
 	c := &OrdersCancelCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -11698,12 +12623,12 @@ func (c *OrdersCancelCall) Do(opts ...googleapi.CallOption) (*OrdersCancelRespon
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Cancels all line items in an order, making a full refund. This method can only be called for non-multi-client accounts.",
+	//   "description": "Cancels all line items in an order, making a full refund.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.cancel",
 	//   "parameterOrder": [
@@ -11712,7 +12637,7 @@ func (c *OrdersCancelCall) Do(opts ...googleapi.CallOption) (*OrdersCancelRespon
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -11751,8 +12676,7 @@ type OrdersCancellineitemCall struct {
 	header_                     http.Header
 }
 
-// Cancellineitem: Cancels a line item, making a full refund. This
-// method can only be called for non-multi-client accounts.
+// Cancellineitem: Cancels a line item, making a full refund.
 func (r *OrdersService) Cancellineitem(merchantId uint64, orderId string, orderscancellineitemrequest *OrdersCancelLineItemRequest) *OrdersCancellineitemCall {
 	c := &OrdersCancellineitemCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -11843,12 +12767,12 @@ func (c *OrdersCancellineitemCall) Do(opts ...googleapi.CallOption) (*OrdersCanc
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Cancels a line item, making a full refund. This method can only be called for non-multi-client accounts.",
+	//   "description": "Cancels a line item, making a full refund.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.cancellineitem",
 	//   "parameterOrder": [
@@ -11857,7 +12781,7 @@ func (c *OrdersCancellineitemCall) Do(opts ...googleapi.CallOption) (*OrdersCanc
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -11895,8 +12819,7 @@ type OrdersCreatetestorderCall struct {
 	header_                      http.Header
 }
 
-// Createtestorder: Sandbox only. Creates a test order. This method can
-// only be called for non-multi-client accounts.
+// Createtestorder: Sandbox only. Creates a test order.
 func (r *OrdersService) Createtestorder(merchantId uint64, orderscreatetestorderrequest *OrdersCreateTestOrderRequest) *OrdersCreatetestorderCall {
 	c := &OrdersCreatetestorderCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -11985,12 +12908,12 @@ func (c *OrdersCreatetestorderCall) Do(opts ...googleapi.CallOption) (*OrdersCre
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Sandbox only. Creates a test order. This method can only be called for non-multi-client accounts.",
+	//   "description": "Sandbox only. Creates a test order.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.createtestorder",
 	//   "parameterOrder": [
@@ -11998,7 +12921,7 @@ func (c *OrdersCreatetestorderCall) Do(opts ...googleapi.CallOption) (*OrdersCre
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that should manage the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -12030,8 +12953,7 @@ type OrdersCustombatchCall struct {
 }
 
 // Custombatch: Retrieves or modifies multiple orders in a single
-// request. This method can only be called for non-multi-client
-// accounts.
+// request.
 func (r *OrdersService) Custombatch(orderscustombatchrequest *OrdersCustomBatchRequest) *OrdersCustombatchCall {
 	c := &OrdersCustombatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.orderscustombatchrequest = orderscustombatchrequest
@@ -12116,12 +13038,12 @@ func (c *OrdersCustombatchCall) Do(opts ...googleapi.CallOption) (*OrdersCustomB
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves or modifies multiple orders in a single request. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves or modifies multiple orders in a single request.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.custombatch",
 	//   "path": "orders/batch",
@@ -12150,8 +13072,7 @@ type OrdersGetCall struct {
 	header_      http.Header
 }
 
-// Get: Retrieves an order from your Merchant Center account. This
-// method can only be called for non-multi-client accounts.
+// Get: Retrieves an order from your Merchant Center account.
 func (r *OrdersService) Get(merchantId uint64, orderId string) *OrdersGetCall {
 	c := &OrdersGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -12249,12 +13170,12 @@ func (c *OrdersGetCall) Do(opts ...googleapi.CallOption) (*Order, error) {
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves an order from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves an order from your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.orders.get",
 	//   "parameterOrder": [
@@ -12263,7 +13184,7 @@ func (c *OrdersGetCall) Do(opts ...googleapi.CallOption) (*Order, error) {
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -12300,7 +13221,6 @@ type OrdersGetbymerchantorderidCall struct {
 }
 
 // Getbymerchantorderid: Retrieves an order using merchant order id.
-// This method can only be called for non-multi-client accounts.
 func (r *OrdersService) Getbymerchantorderid(merchantId uint64, merchantOrderId string) *OrdersGetbymerchantorderidCall {
 	c := &OrdersGetbymerchantorderidCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -12399,12 +13319,12 @@ func (c *OrdersGetbymerchantorderidCall) Do(opts ...googleapi.CallOption) (*Orde
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves an order using merchant order id. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves an order using merchant order id.",
 	//   "httpMethod": "GET",
 	//   "id": "content.orders.getbymerchantorderid",
 	//   "parameterOrder": [
@@ -12413,7 +13333,7 @@ func (c *OrdersGetbymerchantorderidCall) Do(opts ...googleapi.CallOption) (*Orde
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -12450,8 +13370,7 @@ type OrdersGettestordertemplateCall struct {
 }
 
 // Gettestordertemplate: Sandbox only. Retrieves an order template that
-// can be used to quickly create a new order in sandbox. This method can
-// only be called for non-multi-client accounts.
+// can be used to quickly create a new order in sandbox.
 func (r *OrdersService) Gettestordertemplate(merchantId uint64, templateName string) *OrdersGettestordertemplateCall {
 	c := &OrdersGettestordertemplateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -12550,12 +13469,12 @@ func (c *OrdersGettestordertemplateCall) Do(opts ...googleapi.CallOption) (*Orde
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Sandbox only. Retrieves an order template that can be used to quickly create a new order in sandbox. This method can only be called for non-multi-client accounts.",
+	//   "description": "Sandbox only. Retrieves an order template that can be used to quickly create a new order in sandbox.",
 	//   "httpMethod": "GET",
 	//   "id": "content.orders.gettestordertemplate",
 	//   "parameterOrder": [
@@ -12564,7 +13483,7 @@ func (c *OrdersGettestordertemplateCall) Do(opts ...googleapi.CallOption) (*Orde
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that should manage the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -12600,6 +13519,152 @@ func (c *OrdersGettestordertemplateCall) Do(opts ...googleapi.CallOption) (*Orde
 
 }
 
+// method id "content.orders.instorerefundlineitem":
+
+type OrdersInstorerefundlineitemCall struct {
+	s                                  *APIService
+	merchantId                         uint64
+	orderId                            string
+	ordersinstorerefundlineitemrequest *OrdersInStoreRefundLineItemRequest
+	urlParams_                         gensupport.URLParams
+	ctx_                               context.Context
+	header_                            http.Header
+}
+
+// Instorerefundlineitem: Notifies that item return and refund was
+// handled directly in store.
+func (r *OrdersService) Instorerefundlineitem(merchantId uint64, orderId string, ordersinstorerefundlineitemrequest *OrdersInStoreRefundLineItemRequest) *OrdersInstorerefundlineitemCall {
+	c := &OrdersInstorerefundlineitemCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.merchantId = merchantId
+	c.orderId = orderId
+	c.ordersinstorerefundlineitemrequest = ordersinstorerefundlineitemrequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *OrdersInstorerefundlineitemCall) Fields(s ...googleapi.Field) *OrdersInstorerefundlineitemCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *OrdersInstorerefundlineitemCall) Context(ctx context.Context) *OrdersInstorerefundlineitemCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *OrdersInstorerefundlineitemCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *OrdersInstorerefundlineitemCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.ordersinstorerefundlineitemrequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	urls := googleapi.ResolveRelative(c.s.BasePath, "{merchantId}/orders/{orderId}/inStoreRefundLineItem")
+	urls += "?" + c.urlParams_.Encode()
+	req, _ := http.NewRequest("POST", urls, body)
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"merchantId": strconv.FormatUint(c.merchantId, 10),
+		"orderId":    c.orderId,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "content.orders.instorerefundlineitem" call.
+// Exactly one of *OrdersInStoreRefundLineItemResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *OrdersInStoreRefundLineItemResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *OrdersInstorerefundlineitemCall) Do(opts ...googleapi.CallOption) (*OrdersInStoreRefundLineItemResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &OrdersInStoreRefundLineItemResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Notifies that item return and refund was handled directly in store.",
+	//   "httpMethod": "POST",
+	//   "id": "content.orders.instorerefundlineitem",
+	//   "parameterOrder": [
+	//     "merchantId",
+	//     "orderId"
+	//   ],
+	//   "parameters": {
+	//     "merchantId": {
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
+	//       "format": "uint64",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "orderId": {
+	//       "description": "The ID of the order.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "{merchantId}/orders/{orderId}/inStoreRefundLineItem",
+	//   "request": {
+	//     "$ref": "OrdersInStoreRefundLineItemRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "OrdersInStoreRefundLineItemResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/content"
+	//   ]
+	// }
+
+}
+
 // method id "content.orders.list":
 
 type OrdersListCall struct {
@@ -12611,8 +13676,7 @@ type OrdersListCall struct {
 	header_      http.Header
 }
 
-// List: Lists the orders in your Merchant Center account. This method
-// can only be called for non-multi-client accounts.
+// List: Lists the orders in your Merchant Center account.
 func (r *OrdersService) List(merchantId uint64) *OrdersListCall {
 	c := &OrdersListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -12792,12 +13856,12 @@ func (c *OrdersListCall) Do(opts ...googleapi.CallOption) (*OrdersListResponse, 
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the orders in your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Lists the orders in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.orders.list",
 	//   "parameterOrder": [
@@ -12816,7 +13880,7 @@ func (c *OrdersListCall) Do(opts ...googleapi.CallOption) (*OrdersListResponse, 
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -12928,7 +13992,6 @@ type OrdersRefundCall struct {
 }
 
 // Refund: Refund a portion of the order, up to the full amount paid.
-// This method can only be called for non-multi-client accounts.
 func (r *OrdersService) Refund(merchantId uint64, orderId string, ordersrefundrequest *OrdersRefundRequest) *OrdersRefundCall {
 	c := &OrdersRefundCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -13019,12 +14082,12 @@ func (c *OrdersRefundCall) Do(opts ...googleapi.CallOption) (*OrdersRefundRespon
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Refund a portion of the order, up to the full amount paid. This method can only be called for non-multi-client accounts.",
+	//   "description": "Refund a portion of the order, up to the full amount paid.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.refund",
 	//   "parameterOrder": [
@@ -13033,7 +14096,7 @@ func (c *OrdersRefundCall) Do(opts ...googleapi.CallOption) (*OrdersRefundRespon
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -13060,6 +14123,151 @@ func (c *OrdersRefundCall) Do(opts ...googleapi.CallOption) (*OrdersRefundRespon
 
 }
 
+// method id "content.orders.rejectreturnlineitem":
+
+type OrdersRejectreturnlineitemCall struct {
+	s                                 *APIService
+	merchantId                        uint64
+	orderId                           string
+	ordersrejectreturnlineitemrequest *OrdersRejectReturnLineItemRequest
+	urlParams_                        gensupport.URLParams
+	ctx_                              context.Context
+	header_                           http.Header
+}
+
+// Rejectreturnlineitem: Rejects return on an line item.
+func (r *OrdersService) Rejectreturnlineitem(merchantId uint64, orderId string, ordersrejectreturnlineitemrequest *OrdersRejectReturnLineItemRequest) *OrdersRejectreturnlineitemCall {
+	c := &OrdersRejectreturnlineitemCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.merchantId = merchantId
+	c.orderId = orderId
+	c.ordersrejectreturnlineitemrequest = ordersrejectreturnlineitemrequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *OrdersRejectreturnlineitemCall) Fields(s ...googleapi.Field) *OrdersRejectreturnlineitemCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *OrdersRejectreturnlineitemCall) Context(ctx context.Context) *OrdersRejectreturnlineitemCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *OrdersRejectreturnlineitemCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *OrdersRejectreturnlineitemCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.ordersrejectreturnlineitemrequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	urls := googleapi.ResolveRelative(c.s.BasePath, "{merchantId}/orders/{orderId}/rejectReturnLineItem")
+	urls += "?" + c.urlParams_.Encode()
+	req, _ := http.NewRequest("POST", urls, body)
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"merchantId": strconv.FormatUint(c.merchantId, 10),
+		"orderId":    c.orderId,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "content.orders.rejectreturnlineitem" call.
+// Exactly one of *OrdersRejectReturnLineItemResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *OrdersRejectReturnLineItemResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *OrdersRejectreturnlineitemCall) Do(opts ...googleapi.CallOption) (*OrdersRejectReturnLineItemResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &OrdersRejectReturnLineItemResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Rejects return on an line item.",
+	//   "httpMethod": "POST",
+	//   "id": "content.orders.rejectreturnlineitem",
+	//   "parameterOrder": [
+	//     "merchantId",
+	//     "orderId"
+	//   ],
+	//   "parameters": {
+	//     "merchantId": {
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
+	//       "format": "uint64",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "orderId": {
+	//       "description": "The ID of the order.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "{merchantId}/orders/{orderId}/rejectReturnLineItem",
+	//   "request": {
+	//     "$ref": "OrdersRejectReturnLineItemRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "OrdersRejectReturnLineItemResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/content"
+	//   ]
+	// }
+
+}
+
 // method id "content.orders.returnlineitem":
 
 type OrdersReturnlineitemCall struct {
@@ -13072,8 +14280,7 @@ type OrdersReturnlineitemCall struct {
 	header_                     http.Header
 }
 
-// Returnlineitem: Returns a line item. This method can only be called
-// for non-multi-client accounts.
+// Returnlineitem: Returns a line item.
 func (r *OrdersService) Returnlineitem(merchantId uint64, orderId string, ordersreturnlineitemrequest *OrdersReturnLineItemRequest) *OrdersReturnlineitemCall {
 	c := &OrdersReturnlineitemCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -13164,12 +14371,12 @@ func (c *OrdersReturnlineitemCall) Do(opts ...googleapi.CallOption) (*OrdersRetu
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Returns a line item. This method can only be called for non-multi-client accounts.",
+	//   "description": "Returns a line item.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.returnlineitem",
 	//   "parameterOrder": [
@@ -13178,7 +14385,7 @@ func (c *OrdersReturnlineitemCall) Do(opts ...googleapi.CallOption) (*OrdersRetu
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -13205,6 +14412,298 @@ func (c *OrdersReturnlineitemCall) Do(opts ...googleapi.CallOption) (*OrdersRetu
 
 }
 
+// method id "content.orders.returnrefundlineitem":
+
+type OrdersReturnrefundlineitemCall struct {
+	s                                 *APIService
+	merchantId                        uint64
+	orderId                           string
+	ordersreturnrefundlineitemrequest *OrdersReturnRefundLineItemRequest
+	urlParams_                        gensupport.URLParams
+	ctx_                              context.Context
+	header_                           http.Header
+}
+
+// Returnrefundlineitem: Returns and refunds a line item. Note that this
+// method can only be called on fully shipped orders.
+func (r *OrdersService) Returnrefundlineitem(merchantId uint64, orderId string, ordersreturnrefundlineitemrequest *OrdersReturnRefundLineItemRequest) *OrdersReturnrefundlineitemCall {
+	c := &OrdersReturnrefundlineitemCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.merchantId = merchantId
+	c.orderId = orderId
+	c.ordersreturnrefundlineitemrequest = ordersreturnrefundlineitemrequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *OrdersReturnrefundlineitemCall) Fields(s ...googleapi.Field) *OrdersReturnrefundlineitemCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *OrdersReturnrefundlineitemCall) Context(ctx context.Context) *OrdersReturnrefundlineitemCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *OrdersReturnrefundlineitemCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *OrdersReturnrefundlineitemCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.ordersreturnrefundlineitemrequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	urls := googleapi.ResolveRelative(c.s.BasePath, "{merchantId}/orders/{orderId}/returnRefundLineItem")
+	urls += "?" + c.urlParams_.Encode()
+	req, _ := http.NewRequest("POST", urls, body)
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"merchantId": strconv.FormatUint(c.merchantId, 10),
+		"orderId":    c.orderId,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "content.orders.returnrefundlineitem" call.
+// Exactly one of *OrdersReturnRefundLineItemResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *OrdersReturnRefundLineItemResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *OrdersReturnrefundlineitemCall) Do(opts ...googleapi.CallOption) (*OrdersReturnRefundLineItemResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &OrdersReturnRefundLineItemResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Returns and refunds a line item. Note that this method can only be called on fully shipped orders.",
+	//   "httpMethod": "POST",
+	//   "id": "content.orders.returnrefundlineitem",
+	//   "parameterOrder": [
+	//     "merchantId",
+	//     "orderId"
+	//   ],
+	//   "parameters": {
+	//     "merchantId": {
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
+	//       "format": "uint64",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "orderId": {
+	//       "description": "The ID of the order.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "{merchantId}/orders/{orderId}/returnRefundLineItem",
+	//   "request": {
+	//     "$ref": "OrdersReturnRefundLineItemRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "OrdersReturnRefundLineItemResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/content"
+	//   ]
+	// }
+
+}
+
+// method id "content.orders.setlineitemmetadata":
+
+type OrdersSetlineitemmetadataCall struct {
+	s                                *APIService
+	merchantId                       uint64
+	orderId                          string
+	orderssetlineitemmetadatarequest *OrdersSetLineItemMetadataRequest
+	urlParams_                       gensupport.URLParams
+	ctx_                             context.Context
+	header_                          http.Header
+}
+
+// Setlineitemmetadata: Sets (overrides) merchant provided annotations
+// on the line item.
+func (r *OrdersService) Setlineitemmetadata(merchantId uint64, orderId string, orderssetlineitemmetadatarequest *OrdersSetLineItemMetadataRequest) *OrdersSetlineitemmetadataCall {
+	c := &OrdersSetlineitemmetadataCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.merchantId = merchantId
+	c.orderId = orderId
+	c.orderssetlineitemmetadatarequest = orderssetlineitemmetadatarequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *OrdersSetlineitemmetadataCall) Fields(s ...googleapi.Field) *OrdersSetlineitemmetadataCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *OrdersSetlineitemmetadataCall) Context(ctx context.Context) *OrdersSetlineitemmetadataCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *OrdersSetlineitemmetadataCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *OrdersSetlineitemmetadataCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.orderssetlineitemmetadatarequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	urls := googleapi.ResolveRelative(c.s.BasePath, "{merchantId}/orders/{orderId}/setLineItemMetadata")
+	urls += "?" + c.urlParams_.Encode()
+	req, _ := http.NewRequest("POST", urls, body)
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"merchantId": strconv.FormatUint(c.merchantId, 10),
+		"orderId":    c.orderId,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "content.orders.setlineitemmetadata" call.
+// Exactly one of *OrdersSetLineItemMetadataResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *OrdersSetLineItemMetadataResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *OrdersSetlineitemmetadataCall) Do(opts ...googleapi.CallOption) (*OrdersSetLineItemMetadataResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &OrdersSetLineItemMetadataResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Sets (overrides) merchant provided annotations on the line item.",
+	//   "httpMethod": "POST",
+	//   "id": "content.orders.setlineitemmetadata",
+	//   "parameterOrder": [
+	//     "merchantId",
+	//     "orderId"
+	//   ],
+	//   "parameters": {
+	//     "merchantId": {
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
+	//       "format": "uint64",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "orderId": {
+	//       "description": "The ID of the order.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "{merchantId}/orders/{orderId}/setLineItemMetadata",
+	//   "request": {
+	//     "$ref": "OrdersSetLineItemMetadataRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "OrdersSetLineItemMetadataResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/content"
+	//   ]
+	// }
+
+}
+
 // method id "content.orders.shiplineitems":
 
 type OrdersShiplineitemsCall struct {
@@ -13217,8 +14716,7 @@ type OrdersShiplineitemsCall struct {
 	header_                    http.Header
 }
 
-// Shiplineitems: Marks line item(s) as shipped. This method can only be
-// called for non-multi-client accounts.
+// Shiplineitems: Marks line item(s) as shipped.
 func (r *OrdersService) Shiplineitems(merchantId uint64, orderId string, ordersshiplineitemsrequest *OrdersShipLineItemsRequest) *OrdersShiplineitemsCall {
 	c := &OrdersShiplineitemsCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -13309,12 +14807,12 @@ func (c *OrdersShiplineitemsCall) Do(opts ...googleapi.CallOption) (*OrdersShipL
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Marks line item(s) as shipped. This method can only be called for non-multi-client accounts.",
+	//   "description": "Marks line item(s) as shipped.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.shiplineitems",
 	//   "parameterOrder": [
@@ -13323,7 +14821,7 @@ func (c *OrdersShiplineitemsCall) Do(opts ...googleapi.CallOption) (*OrdersShipL
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -13350,6 +14848,153 @@ func (c *OrdersShiplineitemsCall) Do(opts ...googleapi.CallOption) (*OrdersShipL
 
 }
 
+// method id "content.orders.updatelineitemshippingdetails":
+
+type OrdersUpdatelineitemshippingdetailsCall struct {
+	s                                          *APIService
+	merchantId                                 uint64
+	orderId                                    string
+	ordersupdatelineitemshippingdetailsrequest *OrdersUpdateLineItemShippingDetailsRequest
+	urlParams_                                 gensupport.URLParams
+	ctx_                                       context.Context
+	header_                                    http.Header
+}
+
+// Updatelineitemshippingdetails: Updates ship by and delivery by dates
+// for a line item.
+func (r *OrdersService) Updatelineitemshippingdetails(merchantId uint64, orderId string, ordersupdatelineitemshippingdetailsrequest *OrdersUpdateLineItemShippingDetailsRequest) *OrdersUpdatelineitemshippingdetailsCall {
+	c := &OrdersUpdatelineitemshippingdetailsCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.merchantId = merchantId
+	c.orderId = orderId
+	c.ordersupdatelineitemshippingdetailsrequest = ordersupdatelineitemshippingdetailsrequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *OrdersUpdatelineitemshippingdetailsCall) Fields(s ...googleapi.Field) *OrdersUpdatelineitemshippingdetailsCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *OrdersUpdatelineitemshippingdetailsCall) Context(ctx context.Context) *OrdersUpdatelineitemshippingdetailsCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *OrdersUpdatelineitemshippingdetailsCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *OrdersUpdatelineitemshippingdetailsCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.ordersupdatelineitemshippingdetailsrequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	urls := googleapi.ResolveRelative(c.s.BasePath, "{merchantId}/orders/{orderId}/updateLineItemShippingDetails")
+	urls += "?" + c.urlParams_.Encode()
+	req, _ := http.NewRequest("POST", urls, body)
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"merchantId": strconv.FormatUint(c.merchantId, 10),
+		"orderId":    c.orderId,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "content.orders.updatelineitemshippingdetails" call.
+// Exactly one of *OrdersUpdateLineItemShippingDetailsResponse or error
+// will be non-nil. Any non-2xx status code is an error. Response
+// headers are in either
+// *OrdersUpdateLineItemShippingDetailsResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *OrdersUpdatelineitemshippingdetailsCall) Do(opts ...googleapi.CallOption) (*OrdersUpdateLineItemShippingDetailsResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &OrdersUpdateLineItemShippingDetailsResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Updates ship by and delivery by dates for a line item.",
+	//   "httpMethod": "POST",
+	//   "id": "content.orders.updatelineitemshippingdetails",
+	//   "parameterOrder": [
+	//     "merchantId",
+	//     "orderId"
+	//   ],
+	//   "parameters": {
+	//     "merchantId": {
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
+	//       "format": "uint64",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "orderId": {
+	//       "description": "The ID of the order.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "{merchantId}/orders/{orderId}/updateLineItemShippingDetails",
+	//   "request": {
+	//     "$ref": "OrdersUpdateLineItemShippingDetailsRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "OrdersUpdateLineItemShippingDetailsResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/content"
+	//   ]
+	// }
+
+}
+
 // method id "content.orders.updatemerchantorderid":
 
 type OrdersUpdatemerchantorderidCall struct {
@@ -13363,7 +15008,7 @@ type OrdersUpdatemerchantorderidCall struct {
 }
 
 // Updatemerchantorderid: Updates the merchant order ID for a given
-// order. This method can only be called for non-multi-client accounts.
+// order.
 func (r *OrdersService) Updatemerchantorderid(merchantId uint64, orderId string, ordersupdatemerchantorderidrequest *OrdersUpdateMerchantOrderIdRequest) *OrdersUpdatemerchantorderidCall {
 	c := &OrdersUpdatemerchantorderidCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -13455,12 +15100,12 @@ func (c *OrdersUpdatemerchantorderidCall) Do(opts ...googleapi.CallOption) (*Ord
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the merchant order ID for a given order. This method can only be called for non-multi-client accounts.",
+	//   "description": "Updates the merchant order ID for a given order.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.updatemerchantorderid",
 	//   "parameterOrder": [
@@ -13469,7 +15114,7 @@ func (c *OrdersUpdatemerchantorderidCall) Do(opts ...googleapi.CallOption) (*Ord
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -13509,7 +15154,7 @@ type OrdersUpdateshipmentCall struct {
 }
 
 // Updateshipment: Updates a shipment's status, carrier, and/or tracking
-// ID. This method can only be called for non-multi-client accounts.
+// ID.
 func (r *OrdersService) Updateshipment(merchantId uint64, orderId string, ordersupdateshipmentrequest *OrdersUpdateShipmentRequest) *OrdersUpdateshipmentCall {
 	c := &OrdersUpdateshipmentCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -13600,12 +15245,12 @@ func (c *OrdersUpdateshipmentCall) Do(opts ...googleapi.CallOption) (*OrdersUpda
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a shipment's status, carrier, and/or tracking ID. This method can only be called for non-multi-client accounts.",
+	//   "description": "Updates a shipment's status, carrier, and/or tracking ID.",
 	//   "httpMethod": "POST",
 	//   "id": "content.orders.updateshipment",
 	//   "parameterOrder": [
@@ -13614,7 +15259,7 @@ func (c *OrdersUpdateshipmentCall) Do(opts ...googleapi.CallOption) (*OrdersUpda
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that manages the order. This cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -13652,8 +15297,7 @@ type ProductsCustombatchCall struct {
 }
 
 // Custombatch: Retrieves, inserts, and deletes multiple products in a
-// single request. This method can only be called for non-multi-client
-// accounts.
+// single request.
 func (r *ProductsService) Custombatch(productscustombatchrequest *ProductsCustomBatchRequest) *ProductsCustombatchCall {
 	c := &ProductsCustombatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.productscustombatchrequest = productscustombatchrequest
@@ -13745,12 +15389,12 @@ func (c *ProductsCustombatchCall) Do(opts ...googleapi.CallOption) (*ProductsCus
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves, inserts, and deletes multiple products in a single request. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves, inserts, and deletes multiple products in a single request.",
 	//   "httpMethod": "POST",
 	//   "id": "content.products.custombatch",
 	//   "parameters": {
@@ -13785,8 +15429,7 @@ type ProductsDeleteCall struct {
 	header_    http.Header
 }
 
-// Delete: Deletes a product from your Merchant Center account. This
-// method can only be called for non-multi-client accounts.
+// Delete: Deletes a product from your Merchant Center account.
 func (r *ProductsService) Delete(merchantId uint64, productId string) *ProductsDeleteCall {
 	c := &ProductsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -13858,7 +15501,7 @@ func (c *ProductsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Deletes a product from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Deletes a product from your Merchant Center account.",
 	//   "httpMethod": "DELETE",
 	//   "id": "content.products.delete",
 	//   "parameterOrder": [
@@ -13872,14 +15515,14 @@ func (c *ProductsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the product. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     },
 	//     "productId": {
-	//       "description": "The ID of the product.",
+	//       "description": "The REST id of the product.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
@@ -13905,8 +15548,7 @@ type ProductsGetCall struct {
 	header_      http.Header
 }
 
-// Get: Retrieves a product from your Merchant Center account. This
-// method can only be called for non-multi-client accounts.
+// Get: Retrieves a product from your Merchant Center account.
 func (r *ProductsService) Get(merchantId uint64, productId string) *ProductsGetCall {
 	c := &ProductsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -14004,12 +15646,12 @@ func (c *ProductsGetCall) Do(opts ...googleapi.CallOption) (*Product, error) {
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves a product from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Retrieves a product from your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.products.get",
 	//   "parameterOrder": [
@@ -14018,14 +15660,14 @@ func (c *ProductsGetCall) Do(opts ...googleapi.CallOption) (*Product, error) {
 	//   ],
 	//   "parameters": {
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the product. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     },
 	//     "productId": {
-	//       "description": "The ID of the product.",
+	//       "description": "The REST id of the product.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
@@ -14055,8 +15697,7 @@ type ProductsInsertCall struct {
 
 // Insert: Uploads a product to your Merchant Center account. If an item
 // with the same channel, contentLanguage, offerId, and targetCountry
-// already exists, this method updates that entry. This method can only
-// be called for non-multi-client accounts.
+// already exists, this method updates that entry.
 func (r *ProductsService) Insert(merchantId uint64, product *Product) *ProductsInsertCall {
 	c := &ProductsInsertCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -14152,12 +15793,12 @@ func (c *ProductsInsertCall) Do(opts ...googleapi.CallOption) (*Product, error) 
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Uploads a product to your Merchant Center account. If an item with the same channel, contentLanguage, offerId, and targetCountry already exists, this method updates that entry. This method can only be called for non-multi-client accounts.",
+	//   "description": "Uploads a product to your Merchant Center account. If an item with the same channel, contentLanguage, offerId, and targetCountry already exists, this method updates that entry.",
 	//   "httpMethod": "POST",
 	//   "id": "content.products.insert",
 	//   "parameterOrder": [
@@ -14170,7 +15811,7 @@ func (c *ProductsInsertCall) Do(opts ...googleapi.CallOption) (*Product, error) 
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the product. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -14202,8 +15843,7 @@ type ProductsListCall struct {
 	header_      http.Header
 }
 
-// List: Lists the products in your Merchant Center account. This method
-// can only be called for non-multi-client accounts.
+// List: Lists the products in your Merchant Center account.
 func (r *ProductsService) List(merchantId uint64) *ProductsListCall {
 	c := &ProductsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -14322,12 +15962,12 @@ func (c *ProductsListCall) Do(opts ...googleapi.CallOption) (*ProductsListRespon
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the products in your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Lists the products in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.products.list",
 	//   "parameterOrder": [
@@ -14346,7 +15986,7 @@ func (c *ProductsListCall) Do(opts ...googleapi.CallOption) (*ProductsListRespon
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the products. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -14401,8 +16041,7 @@ type ProductstatusesCustombatchCall struct {
 }
 
 // Custombatch: Gets the statuses of multiple products in a single
-// request. This method can only be called for non-multi-client
-// accounts.
+// request.
 func (r *ProductstatusesService) Custombatch(productstatusescustombatchrequest *ProductstatusesCustomBatchRequest) *ProductstatusesCustombatchCall {
 	c := &ProductstatusesCustombatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.productstatusescustombatchrequest = productstatusescustombatchrequest
@@ -14496,12 +16135,12 @@ func (c *ProductstatusesCustombatchCall) Do(opts ...googleapi.CallOption) (*Prod
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Gets the statuses of multiple products in a single request. This method can only be called for non-multi-client accounts.",
+	//   "description": "Gets the statuses of multiple products in a single request.",
 	//   "httpMethod": "POST",
 	//   "id": "content.productstatuses.custombatch",
 	//   "parameters": {
@@ -14538,7 +16177,6 @@ type ProductstatusesGetCall struct {
 }
 
 // Get: Gets the status of a product from your Merchant Center account.
-// This method can only be called for non-multi-client accounts.
 func (r *ProductstatusesService) Get(merchantId uint64, productId string) *ProductstatusesGetCall {
 	c := &ProductstatusesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -14644,12 +16282,12 @@ func (c *ProductstatusesGetCall) Do(opts ...googleapi.CallOption) (*ProductStatu
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Gets the status of a product from your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Gets the status of a product from your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.productstatuses.get",
 	//   "parameterOrder": [
@@ -14663,14 +16301,14 @@ func (c *ProductstatusesGetCall) Do(opts ...googleapi.CallOption) (*ProductStatu
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the product. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     },
 	//     "productId": {
-	//       "description": "The ID of the product.",
+	//       "description": "The REST id of the product.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
@@ -14699,8 +16337,7 @@ type ProductstatusesListCall struct {
 }
 
 // List: Lists the statuses of the products in your Merchant Center
-// account. This method can only be called for non-multi-client
-// accounts.
+// account.
 func (r *ProductstatusesService) List(merchantId uint64) *ProductstatusesListCall {
 	c := &ProductstatusesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -14828,12 +16465,12 @@ func (c *ProductstatusesListCall) Do(opts ...googleapi.CallOption) (*Productstat
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the statuses of the products in your Merchant Center account. This method can only be called for non-multi-client accounts.",
+	//   "description": "Lists the statuses of the products in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.productstatuses.list",
 	//   "parameterOrder": [
@@ -14857,7 +16494,7 @@ func (c *ProductstatusesListCall) Do(opts ...googleapi.CallOption) (*Productstat
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the account that contains the products. This account cannot be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -15005,7 +16642,7 @@ func (c *ShippingsettingsCustombatchCall) Do(opts ...googleapi.CallOption) (*Shi
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -15046,11 +16683,7 @@ type ShippingsettingsGetCall struct {
 	header_      http.Header
 }
 
-// Get: Retrieves the shipping settings of the account. This method can
-// only be called for accounts to which the managing account has access:
-// either the managing account itself for any Merchant Center account,
-// or any sub-account when the managing account is a multi-client
-// account.
+// Get: Retrieves the shipping settings of the account.
 func (r *ShippingsettingsService) Get(merchantId uint64, accountId uint64) *ShippingsettingsGetCall {
 	c := &ShippingsettingsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -15148,12 +16781,12 @@ func (c *ShippingsettingsGetCall) Do(opts ...googleapi.CallOption) (*ShippingSet
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Retrieves the shipping settings of the account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Retrieves the shipping settings of the account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.shippingsettings.get",
 	//   "parameterOrder": [
@@ -15169,7 +16802,7 @@ func (c *ShippingsettingsGetCall) Do(opts ...googleapi.CallOption) (*ShippingSet
 	//       "type": "string"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -15297,7 +16930,7 @@ func (c *ShippingsettingsGetsupportedcarriersCall) Do(opts ...googleapi.CallOpti
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
@@ -15328,6 +16961,146 @@ func (c *ShippingsettingsGetsupportedcarriersCall) Do(opts ...googleapi.CallOpti
 
 }
 
+// method id "content.shippingsettings.getsupportedholidays":
+
+type ShippingsettingsGetsupportedholidaysCall struct {
+	s            *APIService
+	merchantId   uint64
+	urlParams_   gensupport.URLParams
+	ifNoneMatch_ string
+	ctx_         context.Context
+	header_      http.Header
+}
+
+// Getsupportedholidays: Retrieves supported holidays for an account.
+func (r *ShippingsettingsService) Getsupportedholidays(merchantId uint64) *ShippingsettingsGetsupportedholidaysCall {
+	c := &ShippingsettingsGetsupportedholidaysCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.merchantId = merchantId
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ShippingsettingsGetsupportedholidaysCall) Fields(s ...googleapi.Field) *ShippingsettingsGetsupportedholidaysCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *ShippingsettingsGetsupportedholidaysCall) IfNoneMatch(entityTag string) *ShippingsettingsGetsupportedholidaysCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ShippingsettingsGetsupportedholidaysCall) Context(ctx context.Context) *ShippingsettingsGetsupportedholidaysCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ShippingsettingsGetsupportedholidaysCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ShippingsettingsGetsupportedholidaysCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	urls := googleapi.ResolveRelative(c.s.BasePath, "{merchantId}/supportedHolidays")
+	urls += "?" + c.urlParams_.Encode()
+	req, _ := http.NewRequest("GET", urls, body)
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"merchantId": strconv.FormatUint(c.merchantId, 10),
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "content.shippingsettings.getsupportedholidays" call.
+// Exactly one of *ShippingsettingsGetSupportedHolidaysResponse or error
+// will be non-nil. Any non-2xx status code is an error. Response
+// headers are in either
+// *ShippingsettingsGetSupportedHolidaysResponse.ServerResponse.Header
+// or (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *ShippingsettingsGetsupportedholidaysCall) Do(opts ...googleapi.CallOption) (*ShippingsettingsGetSupportedHolidaysResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ShippingsettingsGetSupportedHolidaysResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Retrieves supported holidays for an account.",
+	//   "httpMethod": "GET",
+	//   "id": "content.shippingsettings.getsupportedholidays",
+	//   "parameterOrder": [
+	//     "merchantId"
+	//   ],
+	//   "parameters": {
+	//     "merchantId": {
+	//       "description": "The ID of the account for which to retrieve the supported holidays.",
+	//       "format": "uint64",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "{merchantId}/supportedHolidays",
+	//   "response": {
+	//     "$ref": "ShippingsettingsGetSupportedHolidaysResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/content"
+	//   ]
+	// }
+
+}
+
 // method id "content.shippingsettings.list":
 
 type ShippingsettingsListCall struct {
@@ -15340,8 +17113,7 @@ type ShippingsettingsListCall struct {
 }
 
 // List: Lists the shipping settings of the sub-accounts in your
-// Merchant Center account. This method can only be called for
-// multi-client accounts.
+// Merchant Center account.
 func (r *ShippingsettingsService) List(merchantId uint64) *ShippingsettingsListCall {
 	c := &ShippingsettingsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -15452,12 +17224,12 @@ func (c *ShippingsettingsListCall) Do(opts ...googleapi.CallOption) (*Shippingse
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the shipping settings of the sub-accounts in your Merchant Center account. This method can only be called for multi-client accounts.",
+	//   "description": "Lists the shipping settings of the sub-accounts in your Merchant Center account.",
 	//   "httpMethod": "GET",
 	//   "id": "content.shippingsettings.list",
 	//   "parameterOrder": [
@@ -15471,7 +17243,7 @@ func (c *ShippingsettingsListCall) Do(opts ...googleapi.CallOption) (*Shippingse
 	//       "type": "integer"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. This must be a multi-client account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -15527,11 +17299,8 @@ type ShippingsettingsPatchCall struct {
 	header_          http.Header
 }
 
-// Patch: Updates the shipping settings of the account. This method can
-// only be called for accounts to which the managing account has access:
-// either the managing account itself for any Merchant Center account,
-// or any sub-account when the managing account is a multi-client
-// account. This method supports patch semantics.
+// Patch: Updates the shipping settings of the account. This method
+// supports patch semantics.
 func (r *ShippingsettingsService) Patch(merchantId uint64, accountId uint64, shippingsettings *ShippingSettings) *ShippingsettingsPatchCall {
 	c := &ShippingsettingsPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -15629,12 +17398,12 @@ func (c *ShippingsettingsPatchCall) Do(opts ...googleapi.CallOption) (*ShippingS
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the shipping settings of the account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account. This method supports patch semantics.",
+	//   "description": "Updates the shipping settings of the account. This method supports patch semantics.",
 	//   "httpMethod": "PATCH",
 	//   "id": "content.shippingsettings.patch",
 	//   "parameterOrder": [
@@ -15655,7 +17424,7 @@ func (c *ShippingsettingsPatchCall) Do(opts ...googleapi.CallOption) (*ShippingS
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
@@ -15688,11 +17457,7 @@ type ShippingsettingsUpdateCall struct {
 	header_          http.Header
 }
 
-// Update: Updates the shipping settings of the account. This method can
-// only be called for accounts to which the managing account has access:
-// either the managing account itself for any Merchant Center account,
-// or any sub-account when the managing account is a multi-client
-// account.
+// Update: Updates the shipping settings of the account.
 func (r *ShippingsettingsService) Update(merchantId uint64, accountId uint64, shippingsettings *ShippingSettings) *ShippingsettingsUpdateCall {
 	c := &ShippingsettingsUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.merchantId = merchantId
@@ -15790,12 +17555,12 @@ func (c *ShippingsettingsUpdateCall) Do(opts ...googleapi.CallOption) (*Shipping
 		},
 	}
 	target := &ret
-	if err := json.NewDecoder(res.Body).Decode(target); err != nil {
+	if err := gensupport.DecodeResponse(target, res); err != nil {
 		return nil, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the shipping settings of the account. This method can only be called for accounts to which the managing account has access: either the managing account itself for any Merchant Center account, or any sub-account when the managing account is a multi-client account.",
+	//   "description": "Updates the shipping settings of the account.",
 	//   "httpMethod": "PUT",
 	//   "id": "content.shippingsettings.update",
 	//   "parameterOrder": [
@@ -15816,7 +17581,7 @@ func (c *ShippingsettingsUpdateCall) Do(opts ...googleapi.CallOption) (*Shipping
 	//       "type": "boolean"
 	//     },
 	//     "merchantId": {
-	//       "description": "The ID of the managing account.",
+	//       "description": "The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.",
 	//       "format": "uint64",
 	//       "location": "path",
 	//       "required": true,
