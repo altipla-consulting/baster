@@ -1,0 +1,5 @@
+
+domains:
+- name: local
+  hostname: localhost:8080
+  service: www.lavozdealmeria.es

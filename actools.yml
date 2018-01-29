@@ -1,0 +1,11 @@
+
+project: github.com/altipla-consulting/baster
+
+services:
+  baster:
+    type: go
+    workdir: .
+    ports:
+    - "8080:8080"
+    volumes:
+    - "./config/baster:/etc/baster"

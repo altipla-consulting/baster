@@ -2,9 +2,8 @@
 FROM golang:1.8
 MAINTAINER Ernesto Alejo <ernesto@altiplaconsulting.com>
 
-COPY . /go/src/baster
+COPY . /go/src/github.com/altipla-consulting/baster
 
-RUN go install baster/cmd/baster
+RUN go install github.com/altipla-consulting/cmd/baster
 
-WORKDIR /go/src/baster
-CMD baster
+CMD ["baster"]

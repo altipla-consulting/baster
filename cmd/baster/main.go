@@ -3,15 +3,18 @@ package main
 import (
 	"crypto/tls"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/juju/errors"
+	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 
-	"baster/pkg/config"
-	"baster/pkg/proxy"
-	"baster/pkg/store"
+	"github.com/altipla-consulting/baster/pkg/config"
+	"github.com/altipla-consulting/baster/pkg/host_policy"
+	"github.com/altipla-consulting/baster/pkg/proxy"
+	"github.com/altipla-consulting/baster/pkg/stores"
 )
 
 func main() {
@@ -21,63 +24,96 @@ func main() {
 }
 
 func run() error {
-	if config.IsDebug() {
-		log.SetFormatter(&log.TextFormatter{
-			ForceColors:   true,
-			FullTimestamp: true,
-		})
-	}
-
-	updates := make(chan *config.Config, 1)
-	go config.AutoUpdate(updates)
-
-	// We need the config for the ACME email
-	cnf := <-updates
-
-	p := proxy.New(updates)
-	handler := p.Handler()
-
-	// Restore the config in the queue again to receive it in the proxy controller.
-	updates <- cnf
-
-	cache, err := store.NewDatastore()
-	if err != nil {
+	if err := config.ParseSettings(); err != nil {
 		return errors.Trace(err)
 	}
-	log.WithFields(log.Fields{"email": cnf.ACME.Email}).Info("acme account")
-	manager := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		Email:      cnf.ACME.Email,
-		Cache:      cache,
-		HostPolicy: p.HostPolicy(),
+
+	var manager autocert.Manager
+	if !config.IsLocal() {
+		cache, err := stores.NewDatastore()
+		if err != nil {
+			return errors.Trace(err)
+		}
+		log.WithFields(log.Fields{"email": config.Settings.ACME.Email}).Info("acme account")
+
+		manager = autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			Email:      config.Settings.ACME.Email,
+			Cache:      cache,
+			HostPolicy: host_policy.New(),
+		}
+	}
+
+	hs := make(proxy.HostSwitch)
+	for _, domain := range config.Settings.Domains {
+		r := httprouter.New()
+		r.GET("/health", proxy.HealthHandler)
+		r.NotFound = http.HandlerFunc(proxy.Handler(domain))
+
+		hs[domain.Hostname] = r
 	}
 
 	go func() {
-		log.WithFields(log.Fields{"address": "localhost:80"}).Info("run insecure server")
-		server := &http.Server{
-			Addr:         ":80",
-			ReadTimeout:  30 * time.Second,
-			WriteTimeout: 30 * time.Second,
-			Handler:      handler,
-		}
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatal(errors.ErrorStack(err))
+		if config.IsLocal() {
+			insecureServer := httprouter.New()
+			insecureServer.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				hs.ServeHTTP(w, r)
+			})
+
+			log.WithFields(log.Fields{"address": "localhost:8080"}).Info("Baster instance running")
+			server := &http.Server{
+				Addr:         ":8080",
+				ReadTimeout:  30 * time.Second,
+				WriteTimeout: 30 * time.Second,
+				Handler:      insecureServer,
+			}
+			if err := server.ListenAndServe(); err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			insecureServer := httprouter.New()
+			insecureServer.NotFound = http.HandlerFunc(proxy.RedirectHandler)
+			insecureServer.GET("/health", proxy.HealthHandler)
+
+			server := &http.Server{
+				Addr:         ":80",
+				ReadTimeout:  30 * time.Second,
+				WriteTimeout: 30 * time.Second,
+				Handler:      manager.HTTPHandler(insecureServer),
+			}
+			if err := server.ListenAndServe(); err != nil {
+				log.Fatal(err)
+			}
 		}
 	}()
 
-	log.WithFields(log.Fields{"address": "localhost:443", "acme-email": cnf.ACME.Email}).Info("run secure server")
-	server := &http.Server{
-		Addr:         ":443",
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-		Handler:      handler,
-		TLSConfig: &tls.Config{
-			GetCertificate: manager.GetCertificate,
-		},
-	}
-	if err := server.ListenAndServeTLS("", ""); err != http.ErrServerClosed {
-		return errors.Trace(err)
-	}
+	go func() {
+		if !config.IsLocal() {
+			secureServer := httprouter.New()
+			secureServer.HandleMethodNotAllowed = false
+			secureServer.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				hs.ServeHTTP(w, r)
+			})
+
+			log.WithFields(log.Fields{"address": "localhost:443"}).Info("Baster instance running")
+			server := &http.Server{
+				Addr:         ":443",
+				ReadTimeout:  30 * time.Second,
+				WriteTimeout: 30 * time.Second,
+				Handler:      secureServer,
+				TLSConfig: &tls.Config{
+					GetCertificate: manager.GetCertificate,
+				},
+			}
+			if err := server.ListenAndServeTLS("", ""); err != nil {
+				log.Fatal(err)
+			}
+		}
+	}()
+
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
+	wg.Wait()
 
 	return nil
 }

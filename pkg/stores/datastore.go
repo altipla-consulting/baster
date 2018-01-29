@@ -1,4 +1,4 @@
-package store
+package stores
 
 import (
 	"context"
@@ -51,6 +51,7 @@ func (cache *Datastore) Get(ctx context.Context, key string) ([]byte, error) {
 	model := new(CacheModel)
 	if err := cache.client.Get(ctx, model.Key(key), model); err != nil {
 		if err == datastore.ErrNoSuchEntity {
+			log.Info("cache miss")
 			return nil, autocert.ErrCacheMiss
 		}
 

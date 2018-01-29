@@ -1,0 +1,69 @@
+package config
+
+import (
+	"io/ioutil"
+	"os"
+
+	"github.com/juju/errors"
+	"gopkg.in/yaml.v2"
+)
+
+var Settings SettingsRoot
+
+type SettingsRoot struct {
+	ACME     ACME     `yaml:"acme"`
+	Domains  []Domain `yaml:"domains"`
+}
+
+type ACME struct {
+	Email   string `yaml:"email"`
+	Staging bool   `yaml:"staging"`
+}
+
+type Domain struct {
+	// Nombre de esta entrada de dominio.
+	Name string `yaml:"name"`
+
+	// Nombre de dominio al que debemos responder.
+	Hostname string `yaml:"hostname"`
+
+	// Servicio de Kubernetes a donde mandamos las peticiones.
+	Service string `yaml:"service"`
+
+	// Rechaza los ficheros estáticos.
+	RejectStaticAssets bool `yaml:"reject-static-assets"`
+
+	// Si lo especificamos cambia la cabecera Host de las peticiones que redireccionamos.
+	VirtualHostname string `yaml:"virtual-hostname"`
+
+	Paths []Path `yaml:"paths"`
+}
+
+type Path struct {
+	Match   string `yaml:"match"`
+	Service string `yaml:"service"`
+}
+
+func ParseSettings() error {
+	path := "/etc/baster/config.yml"
+	if IsLocal() {
+		path = "/etc/baster/config.dev.yml"
+	}
+
+	f, err := os.Open(path)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	defer f.Close()
+
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	if err := yaml.Unmarshal(content, &Settings); err != nil {
+		return errors.Trace(err)
+	}
+
+	return nil
+}

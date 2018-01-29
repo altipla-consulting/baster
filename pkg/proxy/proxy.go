@@ -2,165 +2,116 @@ package proxy
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
-	"github.com/juju/errors"
+	"github.com/altipla-consulting/collections"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/crypto/acme/autocert"
 
-	"baster/pkg/config"
+	"github.com/altipla-consulting/baster/pkg/config"
 )
 
-type Proxy struct {
-	*sync.RWMutex
+var assetsExts = []string{
+	// Images.
+	".gif",
+	".png",
+	".jpeg",
+	".jpg",
+	".svg",
 
-	services map[string]*Service
+	// Fonts.
+	".woff2",
+	".woff",
+	".ttf",
+	".eot",
+
+	// Assets.
+	".pdf",
+
+	// Stylesheets & scripts.
+	".css",
+	".js",
 }
 
-type Service struct {
-	Name     string
-	Endpoint string
-	Routes   []*Route
-}
+func Handler(domain config.Domain) http.HandlerFunc {
+	log.WithFields(log.Fields{
+		"hostname":             domain.Hostname,
+		"service":              domain.Service,
+		"reject-static-assets": domain.RejectStaticAssets,
+		"virtual-hostname":     domain.VirtualHostname,
+	}).Info("Domain configured")
 
-func (service *Service) FindRoute(search string) *Route {
-	for _, route := range service.Routes {
-		if route.Matches(search) {
-			return route
-		}
+	if len(domain.Paths) == 0 {
+		domain.Paths = append(domain.Paths, config.Path{
+			Match:   "/",
+			Service: domain.Service,
+		})
 	}
 
-	return nil
-}
-
-type Route struct {
-	URL           string
-	AllowInsecure bool
-	Endpoint      string
-	ExactMatch    bool
-	CORSEnabled   bool
-}
-
-func (route *Route) Matches(search string) bool {
-	if route.ExactMatch {
-		return search == route.URL
-	}
-
-	return strings.HasPrefix(search, route.URL)
-}
-
-func New(configUpdates chan *config.Config) *Proxy {
-	ctrl := &Proxy{
-		RWMutex: new(sync.RWMutex),
-	}
-
-	go func() {
-		for {
-			cnf := <-configUpdates
-
-			ctrl.Lock()
-
-			ctrl.services = map[string]*Service{}
-			for name, service := range cnf.Services {
-				// Service configured routes.
-				routes := []*Route{}
-				for _, route := range routes {
-					endpoint := route.Endpoint
-					if endpoint == "" {
-						endpoint = service.Endpoint
-					}
-
-					routes = append(routes, &Route{
-						URL:           route.URL,
-						AllowInsecure: route.AllowInsecure || service.AllowInsecure,
-						Endpoint:      endpoint,
-						ExactMatch:    route.ExactMatch,
-						CORSEnabled:   service.CORSEnabled,
-					})
-				}
-
-				// Default fallback route for all services.
-				routes = append(routes, &Route{
-					AllowInsecure: service.AllowInsecure,
-					Endpoint:      service.Endpoint,
-					CORSEnabled:   service.CORSEnabled,
-				})
-
-				// Register the service.
-				ctrl.services[service.Hostname] = &Service{
-					Name:     name,
-					Endpoint: service.Endpoint,
-					Routes:   routes,
-				}
-			}
-			
-			ctrl.Unlock()
-		}
-	}()
-
-	return ctrl
-}
-
-func (ctrl *Proxy) HostPolicy() autocert.HostPolicy {
-	return func(ctx context.Context, domain string) error {
-		ctrl.RLock()
-		defer ctrl.RUnlock()
-
-		if _, ok := ctrl.services[domain]; !ok {
-			return errors.Errorf("unknown service hostname: %s", domain)
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Rechaza ficheros estáticos si se ha activado la configuración.
+		if domain.RejectStaticAssets && collections.HasString(assetsExts, filepath.Ext(r.URL.Path)) {
+			http.Error(w, "Asset Not Found", http.StatusNotFound)
+			return
 		}
 
-		return nil
-	}
-}
-
-func (ctrl *Proxy) Handler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
+		var path config.Path
+		for _, p := range domain.Paths {
+			if strings.HasPrefix(r.URL.Path, p.Match) {
+				path = p
+				break
+			}
+		}
+
+		// Guarda algunos valores para evitar que se sobreescriban luego y podamos emitirlos.
+		host := r.Host
 		reqURL := new(url.URL)
 		*reqURL = *r.URL
 
-		r.Header.Set("X-Forwarded-Host", r.Host)
+		// Reescribe la URL de destino.
+		r.URL.Scheme = "http"
+		r.URL.Host = path.Service
 
-		if r.URL.Path == "/health" {
-			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			fmt.Fprintln(w, "baster is ok")
-			return
+		// Reescribe la cabecera Host.
+		r.Host = path.Service
+		if domain.VirtualHostname != "" {
+			r.Host = domain.VirtualHostname
+		}
+		r.Header.Set("X-Forwarded-Host", host)
+
+		// Ejecuta el proxy de la petición.
+		var resp *http.Response
+		proxy := &httputil.ReverseProxy{
+			Director:      func(r *http.Request) {},
+			FlushInterval: 10 * time.Second,
+			Transport:     new(transport),
+			ModifyResponse: func(response *http.Response) error {
+				resp = response
+				return nil
+			},
+		}
+		proxy.ServeHTTP(w, r)
+
+		// Intenta averiguar la longitud del contenido que estamos sirviendo.
+		length := resp.ContentLength
+		if length == -1 {
+			length, _ = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
 		}
 
-		ctrl.RLock()
-		service := ctrl.services[r.Host]
-		ctrl.RUnlock()
-
-		if service == nil {
-			log.WithFields(log.Fields{"hostname": r.Host}).Error("service not found")
-			http.Error(w, "baster: service not found", http.StatusNotFound)
-			return
-		}
-
-		u := new(url.URL)
-		*u = *reqURL
-
-		match := u.Path
-		if strings.HasSuffix(match, "/") {
-			match = match[:len(match)-1]
-		}
-		route := service.FindRoute(match)
-
-		reqLogger := log.WithFields(log.Fields{
-			"service":       service.Name,
-			"host":          r.Host,
-			"endpoint":      route.Endpoint,
+		// Logging de la petición que hemos recibido.
+		log.WithFields(log.Fields{
+			"domain":        domain.Name,
+			"host":          host,
+			"service":       r.URL.Host,
 			"method":        r.Method,
 			"referer":       r.Header.Get("Referer"),
 			"request-size":  r.ContentLength,
@@ -168,72 +119,20 @@ func (ctrl *Proxy) Handler() http.Handler {
 			"user-agent":    r.Header.Get("User-Agent"),
 			"authorization": r.Header.Get("Authorization"),
 			"secure":        r.TLS != nil,
-		})
-
-		// HTTP -> HTTPS redirection.
-		if !route.AllowInsecure && r.TLS == nil {
-			u.Scheme = "https"
-			u.Host = r.Host
-			http.Redirect(w, r, u.String(), http.StatusMovedPermanently)
-
-			reqLogger.WithFields(log.Fields{
-				"latency-ms": int64(time.Since(start) / time.Millisecond),
-				"status":     http.StatusMovedPermanently,
-			}).Info("redirect insecure request")
-
-			return
-		}
-
-		if r.Method == "OPTIONS" && route.CORSEnabled {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-			w.Header().Set("Content-Type", "text/plain")
-			w.WriteHeader(http.StatusOK)
-
-			reqLogger.WithFields(log.Fields{
-				"latency-ms": int64(time.Since(start) / time.Millisecond),
-				"status":     http.StatusOK,
-			}).Info("cors authorization")
-
-			return
-		}
-
-		u.Scheme = "http"
-		u.Host = route.Endpoint
-		r.URL = u
-
-		var response *http.Response
-		proxy := &httputil.ReverseProxy{
-			Director:      func(r *http.Request) {},
-			FlushInterval: 10 * time.Second,
-			Transport:     new(Transport),
-			ModifyResponse: func(resp *http.Response) error {
-				response = resp
-				return nil
-			},
-		}
-		proxy.ServeHTTP(w, r)
-
-		length := response.ContentLength
-		if length == -1 {
-			length, _ = strconv.ParseInt(response.Header.Get("Content-Length"), 10, 64)
-		}
-
-		reqLogger.WithFields(log.Fields{
 			"latency-ms":    int64(time.Since(start) / time.Millisecond),
-			"response-size": length,
-			"status":        response.StatusCode,
+			"resp-size":     length,
+			"status":        resp.StatusCode,
 		}).Info("request")
-	})
+	}
 }
 
-type Transport struct{}
+type transport struct{}
 
-func (transport *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
+func (transport *transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	resp, err := http.DefaultTransport.RoundTrip(r)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error("transport error")
+
 		resp = &http.Response{
 			Status:     fmt.Sprintf("%d %s", http.StatusBadGateway, http.StatusText(http.StatusBadGateway)),
 			StatusCode: http.StatusBadGateway,

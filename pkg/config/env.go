@@ -4,6 +4,10 @@ import (
 	"os"
 )
 
-func IsDebug() bool {
-	return os.Getenv("DEBUG") == "true"
+func IsLocal() bool {
+	return Version() == ""
+}
+
+func Version() string {
+	return os.Getenv("VERSION")
 }
