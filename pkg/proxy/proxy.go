@@ -65,7 +65,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 
 		start := time.Now()
 
-		origin := r.Headers.Get("Origin")
+		origin := r.Header.Get("Origin")
 		if collections.HasString(domain.CORS.Origins, origin) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
