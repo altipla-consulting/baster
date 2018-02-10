@@ -36,7 +36,16 @@ type Domain struct {
 	// Si lo especificamos cambia la cabecera Host de las peticiones que redireccionamos.
 	VirtualHostname string `yaml:"virtual-hostname"`
 
+	// Enrutamiento individual de algunas direcciones dentro del dominio.
 	Paths []Path `yaml:"paths"`
+
+	// Configuración CORS del dominio.
+	CORS CORS `yaml:"cors"`
+}
+
+type CORS struct {
+	// Dominios de origen en los que está autorizado CORS.
+	Origins []string `yaml:"origins"`
 }
 
 type Path struct {

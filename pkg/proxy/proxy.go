@@ -46,6 +46,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		"service":              domain.Service,
 		"reject-static-assets": domain.RejectStaticAssets,
 		"virtual-hostname":     domain.VirtualHostname,
+		"cors": domain.CORS,
 	}).Info("Domain configured")
 
 	if len(domain.Paths) == 0 {
@@ -63,6 +64,19 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		}
 
 		start := time.Now()
+
+		origin := r.Headers.Get("Origin")
+		if collections.HasString(domain.CORS.Origins, origin) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+			return
+		}
+		
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
 		var path config.Path
 		for _, p := range domain.Paths {
