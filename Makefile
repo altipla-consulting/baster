@@ -7,3 +7,6 @@ gofmt:
 
 serve:
 	actools start baster
+
+bench:
+	actools go test -bench . ./pkg/proxy
