@@ -11,13 +11,19 @@ import (
 var Settings SettingsRoot
 
 type SettingsRoot struct {
-	ACME     ACME     `yaml:"acme"`
-	Domains  []Domain `yaml:"domains"`
+	// Configuración de LetsEncrypt.
+	ACME ACME `yaml:"acme"`
+
+	// Configuración de dominios.
+	Domains []Domain `yaml:"domains"`
 }
 
 type ACME struct {
-	Email   string `yaml:"email"`
-	Staging bool   `yaml:"staging"`
+	// Correo para registrar los certificados de LetsEncrypt.
+	Email string `yaml:"email"`
+
+	// Activa el flag para usar el servidor de pruebas en lugar del real.
+	Staging bool `yaml:"staging"`
 }
 
 type Domain struct {

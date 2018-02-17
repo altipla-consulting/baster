@@ -46,7 +46,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		"service":              domain.Service,
 		"reject-static-assets": domain.RejectStaticAssets,
 		"virtual-hostname":     domain.VirtualHostname,
-		"cors": domain.CORS,
+		"cors":                 domain.CORS,
 	}).Info("Domain configured")
 
 	if len(domain.Paths) == 0 {
