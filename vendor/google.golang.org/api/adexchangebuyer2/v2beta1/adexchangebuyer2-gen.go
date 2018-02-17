@@ -1680,8 +1680,20 @@ type FilterSet struct {
 	//   "FORMAT_UNSPECIFIED" - A placeholder for an undefined format;
 	// indicates that no format filter
 	// will be applied.
-	//   "DISPLAY" - The ad impression is display format (i.e. an image).
-	//   "VIDEO" - The ad impression is video format.
+	//   "DISPLAY" - DEPRECATED: use combination of NATIVE_DISPLAY and
+	// NON_NATIVE_DISPLAY
+	// The ad impression is display format (i.e. an image).
+	//   "VIDEO" - DEPRECATED: use combination of NATIVE_VIDEO and
+	// NON_NATIVE_VIDEO
+	// The ad impression is video format.
+	//   "NATIVE_DISPLAY" - The ad impression is a native ad, and display
+	// (i.e. image) format.
+	//   "NATIVE_VIDEO" - The ad impression is a native ad, and video
+	// format.
+	//   "NON_NATIVE_DISPLAY" - The ad impression is not a native ad, and
+	// display (i.e. image) format.
+	//   "NON_NATIVE_VIDEO" - The ad impression is not a native ad, and
+	// video format.
 	Format string `json:"format,omitempty"`
 
 	// Formats: The list of formats on which to filter; may be empty. The
@@ -1694,8 +1706,20 @@ type FilterSet struct {
 	//   "FORMAT_UNSPECIFIED" - A placeholder for an undefined format;
 	// indicates that no format filter
 	// will be applied.
-	//   "DISPLAY" - The ad impression is display format (i.e. an image).
-	//   "VIDEO" - The ad impression is video format.
+	//   "DISPLAY" - DEPRECATED: use combination of NATIVE_DISPLAY and
+	// NON_NATIVE_DISPLAY
+	// The ad impression is display format (i.e. an image).
+	//   "VIDEO" - DEPRECATED: use combination of NATIVE_VIDEO and
+	// NON_NATIVE_VIDEO
+	// The ad impression is video format.
+	//   "NATIVE_DISPLAY" - The ad impression is a native ad, and display
+	// (i.e. image) format.
+	//   "NATIVE_VIDEO" - The ad impression is a native ad, and video
+	// format.
+	//   "NON_NATIVE_DISPLAY" - The ad impression is not a native ad, and
+	// display (i.e. image) format.
+	//   "NON_NATIVE_VIDEO" - The ad impression is not a native ad, and
+	// video format.
 	Formats []string `json:"formats,omitempty"`
 
 	// Name: A user-defined name of the filter set. Filter set names must be
@@ -3346,6 +3370,10 @@ func (s *TimeInterval) MarshalJSON() ([]byte, error) {
 type VideoContent struct {
 	// VideoUrl: The URL to fetch a video ad.
 	VideoUrl string `json:"videoUrl,omitempty"`
+
+	// VideoVastXml: The contents of a VAST document for a video ad.
+	// This document should conform to the VAST 2.0 or 3.0 standard.
+	VideoVastXml string `json:"videoVastXml,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "VideoUrl") to
 	// unconditionally include in API requests. By default, fields with
