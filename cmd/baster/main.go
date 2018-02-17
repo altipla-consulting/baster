@@ -12,7 +12,6 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/altipla-consulting/baster/pkg/config"
-	"github.com/altipla-consulting/baster/pkg/host_policy"
 	"github.com/altipla-consulting/baster/pkg/proxy"
 	"github.com/altipla-consulting/baster/pkg/stores"
 )
@@ -36,11 +35,16 @@ func run() error {
 		}
 		log.WithFields(log.Fields{"email": config.Settings.ACME.Email}).Info("acme account")
 
+		var whitelist []string
+		for _, domain := range config.Settings.Domains {
+			whitelist = append(whitelist, domain.Hostname)
+		}
+
 		manager = autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
 			Email:      config.Settings.ACME.Email,
 			Cache:      cache,
-			HostPolicy: host_policy.New(),
+			HostPolicy: autocert.HostWhitelist(whitelist...),
 		}
 	}
 
