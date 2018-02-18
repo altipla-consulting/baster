@@ -24,3 +24,5 @@ endif
 	rm baster
 	docker push altipla/baster:latest
 	docker push altipla/baster:$(tag)
+	git tag $(tag)
+	git push origin --tags
