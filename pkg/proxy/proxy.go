@@ -65,6 +65,8 @@ func Handler(domain config.Domain) http.HandlerFunc {
 
 		start := time.Now()
 
+		// Activa las cabeceras CORS en peticiones que cruzan dominios si coincide
+		// con un origen autorizado en la configuración.
 		origin := r.Header.Get("Origin")
 		if collections.HasString(domain.CORS.Origins, origin) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
