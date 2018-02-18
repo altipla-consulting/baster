@@ -57,13 +57,13 @@ func Handler(domain config.Domain) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
 		// Rechaza ficheros estáticos si se ha activado la configuración.
 		if domain.RejectStaticAssets && collections.HasString(assetsExts, filepath.Ext(r.URL.Path)) {
 			http.Error(w, "Asset Not Found", http.StatusNotFound)
 			return
 		}
-
-		start := time.Now()
 
 		// Activa las cabeceras CORS en peticiones que cruzan dominios si coincide
 		// con un origen autorizado en la configuración.
