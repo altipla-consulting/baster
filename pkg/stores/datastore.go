@@ -60,7 +60,6 @@ func (cache *Datastore) Get(ctx context.Context, key string) ([]byte, error) {
 		return nil, errors.Trace(err)
 	}
 
-	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("finished get key")
 	return model.Data, nil
 }
 
