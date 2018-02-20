@@ -1,5 +1,5 @@
 hash: 242c9188ccaa2e9a7e0c5fc01546527407efc834cbf231549e8512f51cfd8e4b
-updated: 2018-02-17T23:30:18.725793653Z
+updated: 2018-02-20T23:09:30.305624187Z
 imports:
 - name: cloud.google.com/go
   version: 767c40d6a2e058483c25fa193e963a22da17236d
@@ -33,17 +33,14 @@ imports:
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
 - name: github.com/stretchr/testify
   version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
-  subpackages:
-  - assert
-  - require
 - name: golang.org/x/crypto
-  version: 650f4a345ab4e5b245a3034b110ebc7299e68186
+  version: 432090b8f568c018896cd8a0fb0345872bbac6ce
   subpackages:
   - acme
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/net
-  version: 136a25c244d3019482a795d728110278d6ba09a4
+  version: cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb
   subpackages:
   - context
   - context/ctxhttp
@@ -73,7 +70,7 @@ imports:
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/api
-  version: c7a403bb5fe12fe4644bb956edd5cd677626120a
+  version: c76a25da6c114df45a86acb8873ae83eda1430b9
   subpackages:
   - googleapi
   - googleapi/internal/uritemplates
@@ -130,12 +127,4 @@ imports:
   - transport
 - name: gopkg.in/yaml.v2
   version: d670f9405373e636a5a2765eea47fac0c9bc91a4
-testImports:
-- name: github.com/davecgh/go-spew
-  version: 87df7c60d5820d0f8ae11afede5aa52325c09717
-  subpackages:
-  - spew
-- name: github.com/pmezard/go-difflib
-  version: 792786c7400a136282c1664665ae0a8db921c6c2
-  subpackages:
-  - difflib
+testImports: []
