@@ -37,6 +37,7 @@ func NewDatastore() (*Datastore, error) {
 		return nil, errors.Trace(err)
 	}
 
+	log.WithFields(log.Fields{"project": project}).Info("Google Cloud Project detected from metadata server")
 	client, err := datastore.NewClient(context.Background(), project)
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -46,7 +47,7 @@ func NewDatastore() (*Datastore, error) {
 }
 
 func (cache *Datastore) Get(ctx context.Context, key string) ([]byte, error) {
-	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("get key")
+	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("Get key")
 
 	model := new(CacheModel)
 	if err := cache.client.Get(ctx, model.Key(key), model); err != nil {
@@ -55,21 +56,22 @@ func (cache *Datastore) Get(ctx context.Context, key string) ([]byte, error) {
 			return nil, autocert.ErrCacheMiss
 		}
 
-		log.WithFields(log.Fields{"error": err}).Error("cannot get key")
+		log.WithFields(log.Fields{"error": err}).Error("Cannot get key")
 		return nil, errors.Trace(err)
 	}
 
+	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("finished get key")
 	return model.Data, nil
 }
 
 func (cache *Datastore) Put(ctx context.Context, key string, data []byte) error {
-	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("put key")
+	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("Put key")
 
 	model := &CacheModel{
 		Data: data,
 	}
 	if _, err := cache.client.Put(ctx, model.Key(key), model); err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("cannot put key")
+		log.WithFields(log.Fields{"error": err}).Error("Cannot put key")
 		return errors.Trace(err)
 	}
 
@@ -77,11 +79,11 @@ func (cache *Datastore) Put(ctx context.Context, key string, data []byte) error 
 }
 
 func (cache *Datastore) Delete(ctx context.Context, key string) error {
-	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("delete key")
+	log.WithFields(log.Fields{"key": key, "store": "datastore"}).Info("Delete key")
 
 	model := new(CacheModel)
 	if err := cache.client.Delete(ctx, model.Key(key)); err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("cannot delete key")
+		log.WithFields(log.Fields{"error": err}).Error("Cannot delete key")
 		return errors.Trace(err)
 	}
 
