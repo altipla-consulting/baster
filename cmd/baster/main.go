@@ -33,7 +33,7 @@ func run() error {
 		if err != nil {
 			return errors.Trace(err)
 		}
-		log.WithFields(log.Fields{"email": config.Settings.ACME.Email}).Info("acme account")
+		log.WithFields(log.Fields{"email": config.Settings.ACME.Email}).Info("ACME account")
 
 		var whitelist []string
 		for _, domain := range config.Settings.Domains {
