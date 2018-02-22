@@ -49,6 +49,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		"reject-static-assets": domain.RejectStaticAssets,
 		"virtual-hostname":     domain.VirtualHostname,
 		"cors-origins":         domain.CORS.Origins,
+		"hop-headers":          domain.HopHeaders,
 	}).Info("Domain configured")
 
 	if len(domain.Paths) == 0 {
@@ -119,6 +120,11 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			r.Host = domain.VirtualHostname
 		}
 		r.Header.Set("X-Forwarded-Host", host)
+
+		// Añade las cabeceras de salto.
+		for key, value := range domain.HopHeaders {
+			r.Header.Set(key, value)
+		}
 
 		// Ejecuta el proxy de la petición.
 		var resp *http.Response

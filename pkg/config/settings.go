@@ -50,6 +50,12 @@ type Domain struct {
 
 	// Configuración CORS del dominio.
 	CORS CORS `yaml:"cors"`
+
+	// Mapa de cabeceras estáticas que mandaremos al servicio en las peticiones.
+	// Se puede usar para sobreescribir la cabecera Host o cualquiera otra que necesitemos.
+	// Si la asignamos a un valor vacío nos aseguramos que una cabecera nunca llege al servicio
+	// mandada desde el cliente para mayor seguridad que necesite la aplicación.
+	HopHeaders map[string]string `yaml:"hop-headers"`
 }
 
 type CORS struct {
