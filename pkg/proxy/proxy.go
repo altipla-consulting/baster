@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/altipla-consulting/collections"
+	"github.com/juju/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/altipla-consulting/baster/pkg/config"
@@ -63,6 +65,20 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		if domain.RejectStaticAssets && collections.HasString(assetsExts, filepath.Ext(r.URL.Path)) {
 			http.Error(w, "Asset Not Found", http.StatusNotFound)
 			return
+		}
+
+		// Aplica el servicio de redirecciones si lo hemos configurado.
+		if config.Settings.Redirects != "" {
+			dest, err := queryRedirect(r.URL.String())
+			if err != nil {
+				http.Error(w, "Redirects not working", http.StatusInternalServerError)
+				return
+			}
+
+			if dest != r.URL.String() {
+				http.Redirect(w, r, dest, http.StatusPermanentRedirect)
+				return
+			}
 		}
 
 		// Activa las cabeceras CORS en peticiones que cruzan dominios si coincide
@@ -161,4 +177,40 @@ func (transport *transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+type redirectRequest struct {
+	Source string `json:"source"`
+}
+
+type redirectReply struct {
+	Destination string `json:"destination"`
+}
+
+func queryRedirect(url string) (string, error) {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(&redirectRequest{url}); err != nil {
+		return "", errors.Trace(err)
+	}
+
+	req, _ := http.NewRequest("POST", config.Settings.Redirects, &buf)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", errors.Errorf("unexpected status code: %v", resp.Status)
+	}
+
+	reply := new(redirectReply)
+	if err := json.NewDecoder(resp.Body).Decode(&reply); err != nil {
+		return "", errors.Trace(err)
+	}
+
+	return reply.Destination, nil
 }

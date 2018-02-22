@@ -48,6 +48,10 @@ func run() error {
 		}
 	}
 
+	if config.Settings.Redirects != "" {
+		log.WithFields(log.Fields{"endpoint": config.Settings.Redirects}).Info("Configure redirects service")
+	}
+
 	hs := make(proxy.HostSwitch)
 	for _, domain := range config.Settings.Domains {
 		r := httprouter.New()

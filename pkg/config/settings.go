@@ -16,6 +16,9 @@ type SettingsRoot struct {
 
 	// Configuración de dominios.
 	Domains []Domain `yaml:"domains"`
+
+	// Endpoint que tenemos que llamar para aplicar redirecciones.
+	Redirects string `yaml:"redirects"`
 }
 
 type ACME struct {
