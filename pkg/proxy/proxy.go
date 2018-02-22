@@ -74,6 +74,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 				http.Error(w, "Redirects not working", http.StatusInternalServerError)
 				return
 			}
+			log.WithFields(log.Fields{"source": r.URL.String(), "destination": dest}).Info("Debug redirect")
 
 			if dest != r.URL.String() {
 				http.Redirect(w, r, dest, http.StatusPermanentRedirect)
