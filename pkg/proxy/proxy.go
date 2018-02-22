@@ -76,8 +76,6 @@ func Handler(domain config.Domain) http.HandlerFunc {
 				return
 			}
 
-			log.WithFields(log.Fields{"source": source, "destination": dest}).Info("Debug redirect")
-
 			if dest != source {
 				http.Redirect(w, r, dest, http.StatusPermanentRedirect)
 				return
