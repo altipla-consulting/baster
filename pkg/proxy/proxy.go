@@ -69,14 +69,16 @@ func Handler(domain config.Domain) http.HandlerFunc {
 
 		// Aplica el servicio de redirecciones si lo hemos configurado.
 		if config.Settings.Redirects != "" {
-			dest, err := queryRedirect(r.URL.String())
+			source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
+			dest, err := queryRedirect(source)
 			if err != nil {
 				http.Error(w, "Redirects not working", http.StatusInternalServerError)
 				return
 			}
-			log.WithFields(log.Fields{"source": r.URL.String(), "destination": dest}).Info("Debug redirect")
 
-			if dest != r.URL.String() {
+			log.WithFields(log.Fields{"source": source, "destination": dest}).Info("Debug redirect")
+
+			if dest != source {
 				http.Redirect(w, r, dest, http.StatusPermanentRedirect)
 				return
 			}
