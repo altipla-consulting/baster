@@ -18,6 +18,7 @@ ifndef tag
 	$(error tag is not set)
 endif
 
+	git push
 	actools go build -o baster github.com/altipla-consulting/baster/cmd/baster
 	docker build -t altipla/baster:latest .
 	docker build -t altipla/baster:$(tag) .
