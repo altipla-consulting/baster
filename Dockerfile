@@ -1,5 +1,5 @@
 
-FROM google/debian:wheezy
+FROM google/debian:jessie
 MAINTAINER Ernesto Alejo <ernesto@altiplaconsulting.com>
 
 RUN apt-get update && \
