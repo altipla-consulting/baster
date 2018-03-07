@@ -133,6 +133,30 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			FlushInterval: 10 * time.Second,
 			Transport:     new(transport),
 			ModifyResponse: func(response *http.Response) error {
+				// Si tenemos una redirección vamos a parsear la cabecera Location.
+				//
+				// Aunque el RFC indica que debemos tener direcciones completas muchos
+				// lenguajes y frameworks (incluido Go) no añaden el host porque lo desconocen
+				// en el momento de la generación. Dado que actuamos de borde de infraestructura
+				// debemos poder añadir el dominio sin problemas.
+				//
+				// IE11 en Windows 7 ignora cualquier redirección relativa que le
+				// mandemos, y por él y otros clientes iguales hacemos esto.
+				if response.StatusCode == http.StatusPermanentRedirect || response.StatusCode == http.StatusFound {
+					u, err := url.Parse(response.Header.Get("Location"))
+					if err == nil {
+						if !u.IsAbs() {
+							u.Host = host
+							if config.IsLocal() {
+								u.Scheme = "http"
+							} else {
+								u.Scheme = "https"
+							}
+							response.Header.Set("Location", u.String())
+						}
+					}
+				}
+
 				resp = response
 				return nil
 			},
