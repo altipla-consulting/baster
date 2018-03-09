@@ -40,11 +40,19 @@ func Sender() {
 			points = append(points, p)
 
 		case <-t:
+			// No hay peticiones en los últimos 10 segundos.
+			if len(points) == 0 {
+				continue
+			}
+
+			// Se han ido acumulando demasiados puntos por problemas de conexión en
+			// antiguos envíos; empezamos a descartar puntos antiguos.
 			if len(points) > 1000 {
 				log.WithFields(log.Fields{"points": len(points)}).Warning("Discarding old points: we have too much points")
 				points = points[len(points)-1000:]
 			}
 
+			// Mandamos a InfluxDB los datos.
 			bp := client.BatchPoints{
 				Points:   points,
 				Database: "baster",
@@ -58,7 +66,6 @@ func Sender() {
 				points = nil
 			}
 		}
-		time.Sleep(10 * time.Second)
 	}
 }
 
