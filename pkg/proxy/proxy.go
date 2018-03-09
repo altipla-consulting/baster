@@ -78,7 +78,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			}
 
 			if dest != source {
-				http.Redirect(w, r, dest, http.StatusPermanentRedirect)
+				http.Redirect(w, r, dest, http.StatusMovedPermanently)
 				return
 			}
 		}
