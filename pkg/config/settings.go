@@ -17,8 +17,12 @@ type SettingsRoot struct {
 	// Configuración de dominios.
 	Domains []Domain `yaml:"domains"`
 
-	// Endpoint que tenemos que llamar para aplicar redirecciones.
+	// Endpoint externo que tenemos que llamar para aplicar redirecciones. Si está vacío
+	// no se aplicarán redirecciones personalizadas.
 	Redirects string `yaml:"redirects"`
+
+	// Configuración de la monitorización usando el stack TICK.
+	Monitoring Monitoring `yaml:"monitoring"`
 }
 
 type ACME struct {
@@ -64,8 +68,27 @@ type CORS struct {
 }
 
 type Path struct {
-	Match   string `yaml:"match"`
+	// Prefijo que se compara para ejecutar esta dirección.
+	Match string `yaml:"match"`
+
+	// Servicio que debe responder a las peticiones. Si está vacío se reusará
+	// automáticamente el servicio que tengamos configurado a nivel de dominio.
 	Service string `yaml:"service"`
+
+	// Etiquetas que debemos añadir a la monitorización cuando esta ruta se active.
+	MonitoringTags map[string]string `yaml:"monitoring-tags"`
+}
+
+type Monitoring struct {
+	// Dirección del servicio de monitorización. Si está vacío no se enviarán mediciones
+	// de latencias a ningún servidor InfluxDB.
+	Address string `yaml:"address"`
+
+	// Nombre de usuario para mandar las mediciones de monitorización.
+	Username string `yaml:"username"`
+
+	// Contraseña para mandar las mediciones de monitorización.
+	Password string `yaml:"password"`
 }
 
 func ParseSettings() error {

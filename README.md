@@ -6,7 +6,7 @@
 
 ### Estado
 
-Este proxy está mantenido y es para uso interno (tiene poca documentación). Recomendamos al público general usar [Traefik](https://traefik.io/)
+Este proxy está mantenido pero es para uso interno (tiene poca documentación). Recomendamos al público general usar [Traefik](https://traefik.io/)
 
 
 ### Características
@@ -18,6 +18,8 @@ Este proxy está mantenido y es para uso interno (tiene poca documentación). Re
 - Carga la configuración desde un ConfigMap de Kubernetes.
 - Soporte para HTTP/2 *out of the box*.
 - Health checks para que Kubernetes reinicie el contenedor si tiene problemas.
+- Redirecciones usando un servicio externo.
+- Medición de latencias usando InfluxDB.
 
 
 ### Configuración

@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/altipla-consulting/baster/pkg/config"
+	"github.com/altipla-consulting/baster/pkg/monitoring"
 	"github.com/altipla-consulting/baster/pkg/proxy"
 	"github.com/altipla-consulting/baster/pkg/stores"
 )
@@ -119,8 +120,10 @@ func run() error {
 		}
 	}()
 
+	go monitoring.Sender()
+
 	wg := new(sync.WaitGroup)
-	wg.Add(2)
+	wg.Add(1)
 	wg.Wait()
 
 	return nil

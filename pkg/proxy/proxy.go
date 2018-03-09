@@ -18,6 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/altipla-consulting/baster/pkg/config"
+	"github.com/altipla-consulting/baster/pkg/monitoring"
 )
 
 var assetsExts = []string{
@@ -58,6 +59,11 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			Service: domain.Service,
 		})
 	}
+	for _, path := range domain.Paths {
+		if path.Service == "" {
+			path.Service = domain.Service
+		}
+	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -69,8 +75,8 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		}
 
 		// Aplica el servicio de redirecciones si lo hemos configurado.
+		source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
 		if config.Settings.Redirects != "" {
-			source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
 			dest, err := queryRedirect(source)
 			if err != nil {
 				http.Error(w, "Redirects not working", http.StatusInternalServerError)
@@ -145,6 +151,16 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			length, _ = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
 		}
 
+		latency := int64(time.Since(start) / time.Millisecond)
+		monitoring.Send(monitoring.Measurement{
+			Domain:  domain,
+			Path:    path,
+			URL:     source,
+			Method:  r.Method,
+			Status:  resp.StatusCode,
+			Latency: latency,
+		})
+
 		// Logging de la petición que hemos recibido.
 		log.WithFields(log.Fields{
 			"domain":        domain.Name,
@@ -157,7 +173,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			"user-agent":    r.Header.Get("User-Agent"),
 			"authorization": r.Header.Get("Authorization"),
 			"secure":        r.TLS != nil,
-			"latency-ms":    int64(time.Since(start) / time.Millisecond),
+			"latency-ms":    latency,
 			"resp-size":     length,
 			"status":        resp.StatusCode,
 		}).Info("request")
