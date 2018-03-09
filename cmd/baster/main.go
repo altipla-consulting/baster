@@ -52,9 +52,9 @@ func run() error {
 	if config.Settings.Redirects != "" {
 		log.WithFields(log.Fields{"endpoint": config.Settings.Redirects}).Info("Configure redirects service")
 	}
-	if config.Settings.Monitoring.Address != {
+	if config.Settings.Monitoring.Address != "" {
 		log.WithFields(log.Fields{
-			"address": config.Settings.Monitoring.Address,
+			"address":  config.Settings.Monitoring.Address,
 			"username": config.Settings.Monitoring.Username,
 		}).Info("Configure monitoring")
 	}
