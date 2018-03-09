@@ -1065,6 +1065,8 @@ func (s *Correction) MarshalJSON() ([]byte, error) {
 }
 
 // Creative: A creative and its classification data.
+//
+// Next ID: 31
 type Creative struct {
 	// AccountId: The account that this creative belongs to.
 	// Can be used to filter the response of the
@@ -5123,13 +5125,6 @@ func (r *AccountsCreativesService) Create(accountId string, creative *Creative) 
 	return c
 }
 
-// AccountId1 sets the optional parameter "accountId1": The account the
-// creative belongs to.
-func (c *AccountsCreativesCreateCall) AccountId1(accountId1 string) *AccountsCreativesCreateCall {
-	c.urlParams_.Set("accountId1", accountId1)
-	return c
-}
-
 // DuplicateIdMode sets the optional parameter "duplicateIdMode":
 // Indicates if multiple creatives can share an ID or not. Default
 // is
@@ -5241,11 +5236,6 @@ func (c *AccountsCreativesCreateCall) Do(opts ...googleapi.CallOption) (*Creativ
 	//       "description": "The account that this creative belongs to.\nCan be used to filter the response of the\ncreatives.list\nmethod.",
 	//       "location": "path",
 	//       "required": true,
-	//       "type": "string"
-	//     },
-	//     "accountId1": {
-	//       "description": "The account the creative belongs to.",
-	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "duplicateIdMode": {
@@ -5812,13 +5802,6 @@ func (r *AccountsCreativesService) Update(accountId string, creativeId string, c
 	return c
 }
 
-// AccountId1 sets the optional parameter "accountId1": The account the
-// creative belongs to.
-func (c *AccountsCreativesUpdateCall) AccountId1(accountId1 string) *AccountsCreativesUpdateCall {
-	c.urlParams_.Set("accountId1", accountId1)
-	return c
-}
-
 // Fields allows partial responses to be retrieved. See
 // https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
 // for more information.
@@ -5919,11 +5902,6 @@ func (c *AccountsCreativesUpdateCall) Do(opts ...googleapi.CallOption) (*Creativ
 	//       "description": "The account that this creative belongs to.\nCan be used to filter the response of the\ncreatives.list\nmethod.",
 	//       "location": "path",
 	//       "required": true,
-	//       "type": "string"
-	//     },
-	//     "accountId1": {
-	//       "description": "The account the creative belongs to.",
-	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "creativeId": {

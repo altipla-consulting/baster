@@ -691,14 +691,14 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 4, 5, 6000}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	ts := time.Date(2016, 3, 20, 15, 4, 5, 6000, time.UTC)
-	dtm := civil.DateTime{d, tm}
-	d2 := civil.Date{1994, 5, 15}
-	tm2 := civil.Time{1, 2, 4, 0}
+	dtm := civil.DateTime{Date: d, Time: tm}
+	d2 := civil.Date{Year: 1994, Month: 5, Day: 15}
+	tm2 := civil.Time{Hour: 1, Minute: 2, Second: 4, Nanosecond: 0}
 	ts2 := time.Date(1994, 5, 15, 1, 2, 4, 0, time.UTC)
-	dtm2 := civil.DateTime{d2, tm2}
+	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 
 	// Populate the table.
 	upl := table.Uploader()
@@ -797,8 +797,8 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	ctm := civil.Time{15, 4, 5, 6000}
-	cdt := civil.DateTime{testDate, ctm}
+	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
+	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	testUploadAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
 	testUploadAndReadNullable(t, testStructNullable{
 		String:    NullString{"x", true},
@@ -1085,9 +1085,9 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	table := newTable(t, dtSchema)
 	defer table.Delete(ctx)
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{12, 30, 0, 6000}
-	dtm := civil.DateTime{d, tm}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 12, Minute: 30, Second: 0, Nanosecond: 6000}
+	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	wantRows := [][]Value{
 		[]Value{d, tm, dtm, ts},
@@ -1121,8 +1121,8 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 04, 05, 0}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 0}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	dtm := ts.Format("2006-01-02 15:04:05")
 
@@ -1147,7 +1147,7 @@ func TestIntegration_StandardQuery(t *testing.T) {
 		{fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
 		{fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
 		{fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
-		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{d, tm}}},
+		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{Date: d, Time: tm}}},
 		{fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
 		{fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
 		{"SELECT (1, 2)", []Value{ints(1, 2)}},
@@ -1206,9 +1206,11 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	d := civil.Date{2016, 3, 20}
-	tm := civil.Time{15, 04, 05, 0}
-	dtm := civil.DateTime{d, tm}
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
+	rtm := tm
+	rtm.Nanosecond = 3000 // round to microseconds
+	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 
 	type ss struct {
@@ -1226,20 +1228,93 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		query      string
 		parameters []QueryParameter
 		wantRow    []Value
+		wantConfig interface{}
 	}{
-		{"SELECT @val", []QueryParameter{{"val", 1}}, []Value{int64(1)}},
-		{"SELECT @val", []QueryParameter{{"val", 1.3}}, []Value{1.3}},
-		{"SELECT @val", []QueryParameter{{"val", true}}, []Value{true}},
-		{"SELECT @val", []QueryParameter{{"val", "ABC"}}, []Value{"ABC"}},
-		{"SELECT @val", []QueryParameter{{"val", []byte("foo")}}, []Value{[]byte("foo")}},
-		{"SELECT @val", []QueryParameter{{"val", ts}}, []Value{ts}},
-		{"SELECT @val", []QueryParameter{{"val", []time.Time{ts, ts}}}, []Value{[]Value{ts, ts}}},
-		{"SELECT @val", []QueryParameter{{"val", dtm}}, []Value{dtm}},
-		{"SELECT @val", []QueryParameter{{"val", d}}, []Value{d}},
-		{"SELECT @val", []QueryParameter{{"val", tm}}, []Value{tm}},
-		{"SELECT @val", []QueryParameter{{"val", s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
-			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}}},
-		{"SELECT @val.Timestamp, @val.SubStruct.String", []QueryParameter{{"val", s{Timestamp: ts, SubStruct: ss{"a"}}}}, []Value{ts, "a"}},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", 1}},
+			[]Value{int64(1)},
+			int64(1),
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", 1.3}},
+			[]Value{1.3},
+			1.3,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", true}},
+			[]Value{true},
+			true,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", "ABC"}},
+			[]Value{"ABC"},
+			"ABC",
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", []byte("foo")}},
+			[]Value{[]byte("foo")},
+			[]byte("foo"),
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", ts}},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", []time.Time{ts, ts}}},
+			[]Value{[]Value{ts, ts}},
+			[]interface{}{ts, ts},
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", dtm}},
+			[]Value{civil.DateTime{Date: d, Time: rtm}},
+			civil.DateTime{Date: d, Time: rtm},
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", d}},
+			[]Value{d},
+			d,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", tm}},
+			[]Value{rtm},
+			rtm,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
+			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
+			map[string]interface{}{
+				"Timestamp":   ts,
+				"StringArray": []interface{}{"a", "b"},
+				"SubStruct":   map[string]interface{}{"String": "c"},
+				"SubStructArray": []interface{}{
+					map[string]interface{}{"String": "d"},
+					map[string]interface{}{"String": "e"},
+				},
+			},
+		},
+		{
+			"SELECT @val.Timestamp, @val.SubStruct.String",
+			[]QueryParameter{{"val", s{Timestamp: ts, SubStruct: ss{"a"}}}},
+			[]Value{ts, "a"},
+			map[string]interface{}{
+				"Timestamp":      ts,
+				"SubStruct":      map[string]interface{}{"String": "a"},
+				"StringArray":    nil,
+				"SubStructArray": nil,
+			},
+		},
 	}
 	for _, c := range testCases {
 		q := client.Query(c.query)
@@ -1256,6 +1331,15 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			t.Fatal(err)
 		}
 		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
+		config, err := job.Config()
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := config.(*QueryConfig).Parameters[0].Value
+		if !testutil.Equal(got, c.wantConfig) {
+			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+				c.parameters[0].Value, got, c.wantConfig)
+		}
 	}
 }
 

@@ -1,4 +1,4 @@
-// Package cloudresourcemanager provides access to the Google Cloud Resource Manager API.
+// Package cloudresourcemanager provides access to the Cloud Resource Manager API.
 //
 // See https://cloud.google.com/resource-manager
 //
@@ -43,7 +43,7 @@ var _ = ctxhttp.Do
 const apiId = "cloudresourcemanager:v2beta1"
 const apiName = "cloudresourcemanager"
 const apiVersion = "v2beta1"
-const basePath = "https://cloudresourcemanager.googleapis.com/"
+const basePath = "https://content-cloudresourcemanager.googleapis.com/"
 
 // OAuth2 scopes used by this API.
 const (

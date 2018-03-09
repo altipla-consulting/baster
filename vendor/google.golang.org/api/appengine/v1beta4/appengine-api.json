@@ -938,7 +938,7 @@
       }
     }
   },
-  "revision": "20180209",
+  "revision": "20180307",
   "rootUrl": "https://appengine.googleapis.com/",
   "schemas": {
     "ApiConfigHandler": {
@@ -1584,6 +1584,10 @@
       "description": "A resource that represents Google Cloud Platform location.",
       "id": "Location",
       "properties": {
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
         "labels": {
           "additionalProperties": {
             "type": "string"
@@ -2435,6 +2439,6 @@
     }
   },
   "servicePath": "",
-  "title": "Google App Engine Admin API",
+  "title": "App Engine Admin API",
   "version": "v1beta4"
 }

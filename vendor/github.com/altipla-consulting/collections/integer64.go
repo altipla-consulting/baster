@@ -46,3 +46,15 @@ func ReverseInt64(list []int64) []int64 {
 	}
 	return result
 }
+
+// RemoveInt64 return list without remove.
+func RemoveInt64(list []int64, remove int64) []int64 {
+	result := []int64{}
+	for _, item := range list {
+		if item != remove {
+			result = append(result, item)
+		}
+	}
+
+	return result
+}

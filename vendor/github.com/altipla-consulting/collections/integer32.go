@@ -46,3 +46,15 @@ func ReverseInt32(list []int32) []int32 {
 	}
 	return result
 }
+
+// RemoveInt32 return list without remove.
+func RemoveInt32(list []int32, remove int32) []int32 {
+	result := []int32{}
+	for _, item := range list {
+		if item != remove {
+			result = append(result, item)
+		}
+	}
+
+	return result
+}
