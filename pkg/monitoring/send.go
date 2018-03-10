@@ -101,6 +101,7 @@ func Send(m Measurement) {
 		Fields: map[string]interface{}{
 			"latency": m.Latency,
 			"url":     m.URL,
+			"count":   1,
 		},
 	}
 
