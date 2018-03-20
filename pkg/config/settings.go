@@ -43,9 +43,6 @@ type Domain struct {
 	// Servicio de Kubernetes a donde mandamos las peticiones.
 	Service string `yaml:"service"`
 
-	// Rechaza los ficheros estáticos.
-	RejectStaticAssets bool `yaml:"reject-static-assets"`
-
 	// Si lo especificamos cambia la cabecera Host de las peticiones que redireccionamos.
 	VirtualHostname string `yaml:"virtual-hostname"`
 

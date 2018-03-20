@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -21,36 +20,13 @@ import (
 	"github.com/altipla-consulting/baster/pkg/monitoring"
 )
 
-var assetsExts = []string{
-	// Images.
-	".gif",
-	".png",
-	".jpeg",
-	".jpg",
-	".svg",
-
-	// Fonts.
-	".woff2",
-	".woff",
-	".ttf",
-	".eot",
-
-	// Assets.
-	".pdf",
-
-	// Stylesheets & scripts.
-	".css",
-	".js",
-}
-
 func Handler(domain config.Domain) http.HandlerFunc {
 	log.WithFields(log.Fields{
-		"hostname":             domain.Hostname,
-		"service":              domain.Service,
-		"reject-static-assets": domain.RejectStaticAssets,
-		"virtual-hostname":     domain.VirtualHostname,
-		"cors-origins":         domain.CORS.Origins,
-		"hop-headers":          domain.HopHeaders,
+		"hostname":         domain.Hostname,
+		"service":          domain.Service,
+		"virtual-hostname": domain.VirtualHostname,
+		"cors-origins":     domain.CORS.Origins,
+		"hop-headers":      domain.HopHeaders,
 	}).Info("Domain configured")
 
 	if len(domain.Paths) == 0 {
@@ -67,12 +43,6 @@ func Handler(domain config.Domain) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-
-		// Rechaza ficheros estáticos si se ha activado la configuración.
-		if domain.RejectStaticAssets && collections.HasString(assetsExts, filepath.Ext(r.URL.Path)) {
-			http.Error(w, "Asset Not Found", http.StatusNotFound)
-			return
-		}
 
 		// Aplica el servicio de redirecciones si lo hemos configurado.
 		source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
