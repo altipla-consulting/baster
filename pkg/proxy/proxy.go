@@ -185,7 +185,7 @@ type transport struct{}
 func (transport *transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	resp, err := http.DefaultTransport.RoundTrip(r)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error("transport error")
+		log.WithFields(log.Fields{"error": err}).Error("Transport error")
 
 		resp = &http.Response{
 			Status:     fmt.Sprintf("%d %s", http.StatusBadGateway, http.StatusText(http.StatusBadGateway)),
