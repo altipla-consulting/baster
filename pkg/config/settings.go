@@ -152,6 +152,10 @@ func ParseSettings() error {
 
 		for match, path := range domain.Paths {
 			path.Match = match
+
+			if path.Service == "" {
+				path.Service = domain.Service
+			}
 		}
 	}
 

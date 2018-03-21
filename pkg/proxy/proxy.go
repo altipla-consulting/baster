@@ -40,6 +40,10 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 	}
 	log.WithFields(f).Info("Domain configured")
 
+	defaultPath := &config.Path{
+		Service: domain.Service,
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -87,6 +91,9 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 				path = p
 				break
 			}
+		}
+		if path == nil {
+			path = defaultPath
 		}
 
 		// Guarda algunos valores para evitar que se sobreescriban luego y podamos emitirlos.
