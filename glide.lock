@@ -1,20 +1,23 @@
-hash: 53430a2116fafef6dfc76cfc6393e1d7107f4ec1e27b736293920a9a9086a24c
-updated: 2018-03-21T17:31:12.118450893Z
+hash: 518d84b5c7e4f84fcdeeeb97150f560cf8c12e72175a67420f7d15c4c774b668
+updated: 2018-03-21T18:29:26.020699406Z
 imports:
 - name: cloud.google.com/go
   version: f0945c7677b2605cceaa429f567518ad11297d87
   subpackages:
+  - bigquery
+  - civil
   - compute/metadata
   - datastore
   - internal
   - internal/atomiccache
   - internal/fields
+  - internal/optional
   - internal/trace
   - internal/version
 - name: github.com/altipla-consulting/collections
   version: dd5d53544f186d0686932b72559b0818ac78d5cc
 - name: github.com/golang/protobuf
-  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
+  version: 925541529c1fa6821df4e44ce2723319eb2be768
   subpackages:
   - proto
   - protoc-gen-go/descriptor
@@ -47,14 +50,19 @@ imports:
   version: c7d06af17c68cd34c835053720b21f6549d9b0ee
 - name: github.com/julienschmidt/httprouter
   version: 8c199fb6259ffc1af525cc3ad52ee60ba8359669
+- name: github.com/segmentio/ksuid
+  version: 112f929a3020abfcd06b77c963ec919130796a35
 - name: github.com/sirupsen/logrus
   version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
 - name: go.opencensus.io
-  version: ce5da1021628452c72be6e0b6312cea40a6c90ed
+  version: b8f3b913f034c5682f7255d5d51efb6f151fb09b
   subpackages:
+  - exporter/stackdriver/propagation
   - internal
   - internal/tagencoding
   - plugin/ocgrpc
+  - plugin/ochttp
+  - plugin/ochttp/propagation/b3
   - stats
   - stats/internal
   - stats/view
@@ -68,7 +76,7 @@ imports:
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/net
-  version: 9dfe39835686865bff950a07b394c12a98ddc811
+  version: 92b859f39abd2d91a854c9f9c4621b2f5054a92d
   subpackages:
   - context
   - context/ctxhttp
@@ -86,7 +94,7 @@ imports:
   - jws
   - jwt
 - name: golang.org/x/sys
-  version: 062cd7e4e68206d8bab9b18396626e855c992658
+  version: d8e400bc7db4870d786864138af681469693d18c
   subpackages:
   - unix
   - windows
@@ -100,12 +108,16 @@ imports:
 - name: google.golang.org/api
   version: 24928b980e6919be4c72647aacd53ebcbb8c4bab
   subpackages:
+  - bigquery/v2
+  - gensupport
   - googleapi
   - googleapi/internal/uritemplates
+  - googleapi/transport
   - internal
   - iterator
   - option
   - transport/grpc
+  - transport/http
 - name: google.golang.org/appengine
   version: 5bee14b453b4c71be47ec1781b0fa61c2ea182db
   subpackages:
