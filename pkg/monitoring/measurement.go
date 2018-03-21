@@ -18,14 +18,21 @@ type Measurement struct {
 
 	// Latency data.
 	Latency int64
+
+	// Autofilled by the send procedure
+	Time time.Time
 }
 
 func Send(m Measurement) {
 	if m.Monitoring.Name != "" {
 		m.DomainName = m.Monitoring.Name
 	}
+	m.Time = time.Now()
 
-	if config.Settings.Monitoring.Address != "" {
+	if config.Settings.Monitoring.InfluxDB.Address != "" {
 		influxDBMeasurements <- m
+	}
+	if config.Settings.Monitoring.BigQuery.Dataset != "" {
+		bigqueryMeasurements <- m
 	}
 }

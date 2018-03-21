@@ -37,7 +37,7 @@ func NewDatastore() (*Datastore, error) {
 		return nil, errors.Trace(err)
 	}
 
-	log.WithFields(log.Fields{"project": project}).Info("Google Cloud Project detected from metadata server")
+	log.WithFields(log.Fields{"project": project}).Info("Project detected from metadata server for storage")
 	client, err := datastore.NewClient(context.Background(), project)
 	if err != nil {
 		return nil, errors.Trace(err)

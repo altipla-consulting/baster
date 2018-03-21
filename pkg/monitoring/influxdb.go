@@ -14,7 +14,7 @@ import (
 var influxDBMeasurements = make(chan Measurement, 1000)
 
 func InfluxDBSender() {
-	u, err := url.Parse(config.Settings.Monitoring.Address)
+	u, err := url.Parse(config.Settings.Monitoring.InfluxDB.Address)
 	if err != nil {
 		log.WithFields(log.Fields{"err": err.Error()}).Error("Cannot parse monitoring address")
 		return
@@ -22,8 +22,8 @@ func InfluxDBSender() {
 
 	c, err := client.NewClient(client.Config{
 		URL:      *u,
-		Username: config.Settings.Monitoring.Username,
-		Password: config.Settings.Monitoring.Password,
+		Username: config.Settings.Monitoring.InfluxDB.Username,
+		Password: config.Settings.Monitoring.InfluxDB.Password,
 		Timeout:  10 * time.Second,
 	})
 	if err != nil {
@@ -44,7 +44,7 @@ func InfluxDBSender() {
 					"method": m.Method,
 					"status": fmt.Sprintf("%d", m.Status),
 				},
-				Time: time.Now(),
+				Time: m.Time,
 				Fields: map[string]interface{}{
 					"latency": m.Latency,
 					"url":     m.URL,
@@ -68,7 +68,10 @@ func InfluxDBSender() {
 			// Se han ido acumulando demasiados puntos por problemas de conexión en
 			// antiguos envíos; empezamos a descartar puntos antiguos.
 			if len(points) > 1000 {
-				log.WithFields(log.Fields{"points": len(points)}).Warning("Discarding old points: we have too much points")
+				log.WithFields(log.Fields{
+					"points": len(points),
+					"monitoring": "influxdb",
+				}).Warning("Discarding old points: we have too much points")
 				points = points[len(points)-1000:]
 			}
 
@@ -81,6 +84,7 @@ func InfluxDBSender() {
 				log.WithFields(log.Fields{
 					"err":    err.Error(),
 					"points": len(points),
+					"monitoring": "influxdb",
 				}).Error("Cannot write monitoring points")
 			} else {
 				points = nil
