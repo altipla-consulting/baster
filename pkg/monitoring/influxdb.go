@@ -69,7 +69,7 @@ func InfluxDBSender() {
 			// antiguos envíos; empezamos a descartar puntos antiguos.
 			if len(points) > 1000 {
 				log.WithFields(log.Fields{
-					"points": len(points),
+					"points":     len(points),
 					"monitoring": "influxdb",
 				}).Warning("Discarding old points: we have too much points")
 				points = points[len(points)-1000:]
@@ -82,8 +82,8 @@ func InfluxDBSender() {
 			}
 			if _, err := c.Write(bp); err != nil {
 				log.WithFields(log.Fields{
-					"err":    err.Error(),
-					"points": len(points),
+					"err":        err.Error(),
+					"points":     len(points),
 					"monitoring": "influxdb",
 				}).Error("Cannot write monitoring points")
 			} else {

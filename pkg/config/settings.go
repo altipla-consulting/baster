@@ -98,6 +98,14 @@ type Redirects struct {
 }
 
 type Monitoring struct {
+	// Configuraciones para monitorizar las peticiones con InfluxDB.
+	InfluxDB InfluxDB `hcl:"influxdb"`
+
+	// Configuraciones para monitorizar las peticiones con BigQuery.
+	BigQuery BigQuery `hcl:"bigquery"`
+}
+
+type InfluxDB struct {
 	// Dirección del servicio de monitorización. Si está vacío no se enviarán mediciones
 	// de latencias a ningún servidor InfluxDB.
 	Address string `hcl:"address"`
@@ -107,6 +115,14 @@ type Monitoring struct {
 
 	// Contraseña para mandar las mediciones de monitorización.
 	Password string `hcl:"password"`
+}
+
+type BigQuery struct {
+	// Nombre del dataset de BigQuery donde se deben insertar los datos.
+	Dataset string `hcl:"dataset"`
+
+	// Nombre de la tabla donde se deben insertar los datos.
+	Table string `hcl:"table"`
 }
 
 func ParseSettings() error {

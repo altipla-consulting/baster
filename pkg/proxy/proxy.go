@@ -22,9 +22,9 @@ import (
 
 func Handler(domain *config.Domain) http.HandlerFunc {
 	f := log.Fields{
-		"name": domain.Name,
+		"name":     domain.Name,
 		"hostname": domain.Hostname,
-		"service": domain.Service,
+		"service":  domain.Service,
 	}
 	if domain.VirtualHostname != "" {
 		f["virtual-hostname"] = domain.VirtualHostname
@@ -135,8 +135,10 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 			Monitoring: path.Monitoring,
 			URL:        source,
 			Method:     r.Method,
+			Referer:    r.Referer(),
 			Status:     resp.StatusCode,
 			Latency:    latency,
+			Time:       time.Now(),
 		})
 
 		// Logging de la petición que hemos recibido.

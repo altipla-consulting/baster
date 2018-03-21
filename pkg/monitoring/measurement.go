@@ -1,6 +1,8 @@
 package monitoring
 
 import (
+	"time"
+
 	"github.com/altipla-consulting/baster/pkg/config"
 )
 
@@ -10,8 +12,9 @@ type Measurement struct {
 	Monitoring config.PathMonitoring
 
 	// Request data.
-	URL    string
-	Method string
+	URL     string
+	Method  string
+	Referer string
 
 	// Response data.
 	Status int

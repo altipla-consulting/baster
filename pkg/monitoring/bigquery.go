@@ -2,10 +2,13 @@ package monitoring
 
 import (
 	"context"
+	"fmt"
+	"time"
 
-	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/compute/metadata"
 	"github.com/segmentio/ksuid"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/altipla-consulting/baster/pkg/config"
 )
@@ -14,36 +17,68 @@ var bigqueryMeasurements = make(chan Measurement, 1000)
 
 var schema = bigquery.Schema{
 	&bigquery.FieldSchema{
-		Name: "domain",
+		Name:        "domain",
 		Description: "Nombre del dominio que está emitiendo los logs",
-		Required: true,
-		Type: bigquery.StringFieldType,
+		Required:    true,
+		Type:        bigquery.StringFieldType,
 	},
 	&bigquery.FieldSchema{
-		Name: "method",
+		Name:        "method",
 		Description: "Método HTTP que se ha usado en la petición",
-		Required: true,
-		Type: bigquery.StringFieldType,
+		Required:    true,
+		Type:        bigquery.StringFieldType,
 	},
 	&bigquery.FieldSchema{
-		Name: "status",
+		Name:        "status",
 		Description: "Código de estado HTTP que ha dado la respuesta",
-		Required: true,
-		Type: bigquery.IntegerFieldType,
+		Required:    true,
+		Type:        bigquery.IntegerFieldType,
+	},
+	&bigquery.FieldSchema{
+		Name:        "time",
+		Description: "Fecha y hora en la que se ha producido la petición",
+		Required:    true,
+		Type:        bigquery.DateTimeFieldType,
+	},
+	&bigquery.FieldSchema{
+		Name:        "latency",
+		Description: "Latencia en milisegundos en generar la respuesta",
+		Required:    true,
+		Type:        bigquery.IntegerFieldType,
+	},
+	&bigquery.FieldSchema{
+		Name:        "url",
+		Description: "URL que ha pedido el usuario",
+		Required:    true,
+		Type:        bigquery.StringFieldType,
+	},
+	&bigquery.FieldSchema{
+		Name:        "tags",
+		Description: "Lista de etiquetas personalizadas del dominio",
+		Repeated:    true,
+		Type:        bigquery.StringFieldType,
+	},
+	&bigquery.FieldSchema{
+		Name:        "referer",
+		Description: "Referer de la petición. No todas las peticiones lo llevan",
+		Type:        bigquery.StringFieldType,
 	},
 }
 
 type bqPoint struct {
-	Domain string
-	Method string
-	Status int64
-	Time time.Time
+	Domain  string
+	Method  string
+	Status  int64
+	Time    time.Time
 	Latency int64
-	URL string
-	Tags []string
+	URL     string
+	Tags    []string
+	Referer string
 }
 
-func BigquerySender() {
+func BigQuerySender() {
+	ctx := context.Background()
+
 	project, err := metadata.ProjectID()
 	if err != nil {
 		log.WithFields(log.Fields{"err": err.Error()}).Error("Cannot get monitoring project")
@@ -51,7 +86,7 @@ func BigquerySender() {
 	}
 
 	log.WithFields(log.Fields{"project": project}).Info("Project detected from metadata server for monitoring")
-	client, err := datastore.NewClient(context.Background(), project)
+	client, err := bigquery.NewClient(ctx, project)
 	if err != nil {
 		log.WithFields(log.Fields{"err": err.Error()}).Error("Cannot initialize monitoring client")
 		return
@@ -66,12 +101,13 @@ func BigquerySender() {
 		select {
 		case m := <-bigqueryMeasurements:
 			p := &bqPoint{
-				Domain: m.DomainName,
-				Method: m.Method,
-				Status: m.Status,
-				Time: m.Time,
+				Domain:  m.DomainName,
+				Method:  m.Method,
+				Status:  int64(m.Status),
+				Time:    m.Time,
 				Latency: m.Latency,
-				URL: m.URL,
+				URL:     m.URL,
+				Referer: m.Referer,
 			}
 
 			// Añade las etiquetas que el usuario defina en especial para esta ruta.
@@ -81,16 +117,16 @@ func BigquerySender() {
 
 			id, err := ksuid.NewRandomWithTime(m.Time)
 			if err != nil {
-				log.WithFields({
-					"error", err.Error(),
+				log.WithFields(log.Fields{
+					"error":      err.Error(),
 					"monitoring": "bigquery",
 				}).Error("Cannot generate insert ID for BigQuery")
 				return
 			}
 
-			points = append(points, &bigQuery.StructSaver{
-				Struct: p,
-				Schema: schema,
+			points = append(points, &bigquery.StructSaver{
+				Struct:   p,
+				Schema:   schema,
 				InsertID: id.String(),
 			})
 
@@ -104,21 +140,24 @@ func BigquerySender() {
 			// antiguos envíos; empezamos a descartar puntos antiguos.
 			if len(points) > 1000 {
 				log.WithFields(log.Fields{
-					"points": len(points),
+					"points":     len(points),
 					"monitoring": "bigquery",
 				}).Warning("Discarding old points: we have too much points")
 				points = points[len(points)-1000:]
 			}
 
 			// Mandamos a BigQuery los datos.
+			ctxdeadline, cancel := context.WithTimeout(ctx, 20*time.Second)
 			if err := uploader.Put(ctxdeadline, points); err != nil {
 				log.WithFields(log.Fields{
-					"err":    err.Error(),
-					"points": len(points),
+					"err":        err.Error(),
+					"points":     len(points),
 					"monitoring": "bigquery",
 				}).Error("Cannot write monitoring points")
+				cancel()
 			} else {
 				points = nil
+				cancel()
 			}
 		}
 	}

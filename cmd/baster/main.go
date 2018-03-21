@@ -52,13 +52,21 @@ func run() error {
 	if config.Settings.Redirects.Apply != "" {
 		log.WithFields(log.Fields{"endpoint": config.Settings.Redirects}).Info("Configure redirects service")
 	}
-	if config.Settings.Monitoring.Address != "" {
+	if config.Settings.Monitoring.InfluxDB.Address != "" {
 		log.WithFields(log.Fields{
-			"address":  config.Settings.Monitoring.Address,
-			"username": config.Settings.Monitoring.Username,
-		}).Info("Configure monitoring")
-	
+			"address":  config.Settings.Monitoring.InfluxDB.Address,
+			"username": config.Settings.Monitoring.InfluxDB.Username,
+		}).Info("Configure InfluxDB monitoring")
+
 		go monitoring.InfluxDBSender()
+	}
+	if config.Settings.Monitoring.BigQuery.Dataset != "" {
+		log.WithFields(log.Fields{
+			"dataset": config.Settings.Monitoring.BigQuery.Dataset,
+			"table":   config.Settings.Monitoring.BigQuery.Table,
+		}).Info("Configure BigQuery monitoring")
+
+		go monitoring.BigQuerySender()
 	}
 
 	hs := make(proxy.HostSwitch)
