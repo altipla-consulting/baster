@@ -71,8 +71,8 @@ func Sender() {
 
 type Measurement struct {
 	// Configuration data.
-	Domain config.Domain
-	Path   config.Path
+	DomainName string
+	Monitoring config.PathMonitoring
 
 	// Request data.
 	URL    string
@@ -90,10 +90,15 @@ func Send(m Measurement) {
 		return
 	}
 
+	name := m.DomainName
+	if m.Monitoring.Name != "" {
+		name = m.Monitoring.Name
+	}
+
 	p := client.Point{
 		Measurement: "latency",
 		Tags: map[string]string{
-			"domain": m.Domain.Name,
+			"domain": name,
 			"method": m.Method,
 			"status": fmt.Sprintf("%d", m.Status),
 		},
@@ -101,12 +106,12 @@ func Send(m Measurement) {
 		Fields: map[string]interface{}{
 			"latency": m.Latency,
 			"url":     m.URL,
-			"count":   1,
+			"value":   1,
 		},
 	}
 
 	// Añade las etiquetas que el usuario defina en especial para esta ruta.
-	for k, v := range m.Path.MonitoringTags {
+	for k, v := range m.Monitoring.Tags {
 		p.Tags[k] = v
 	}
 

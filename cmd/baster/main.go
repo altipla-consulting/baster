@@ -49,7 +49,7 @@ func run() error {
 		}
 	}
 
-	if config.Settings.Redirects != "" {
+	if config.Settings.Redirects.Apply != "" {
 		log.WithFields(log.Fields{"endpoint": config.Settings.Redirects}).Info("Configure redirects service")
 	}
 	if config.Settings.Monitoring.Address != "" {

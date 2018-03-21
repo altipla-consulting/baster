@@ -20,7 +20,7 @@ import (
 	"github.com/altipla-consulting/baster/pkg/monitoring"
 )
 
-func Handler(domain config.Domain) http.HandlerFunc {
+func Handler(domain *config.Domain) http.HandlerFunc {
 	log.WithFields(log.Fields{
 		"hostname":         domain.Hostname,
 		"service":          domain.Service,
@@ -29,24 +29,12 @@ func Handler(domain config.Domain) http.HandlerFunc {
 		"hop-headers":      domain.HopHeaders,
 	}).Info("Domain configured")
 
-	if len(domain.Paths) == 0 {
-		domain.Paths = append(domain.Paths, config.Path{
-			Match:   "/",
-			Service: domain.Service,
-		})
-	}
-	for _, path := range domain.Paths {
-		if path.Service == "" {
-			path.Service = domain.Service
-		}
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
 		// Aplica el servicio de redirecciones si lo hemos configurado.
 		source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
-		if config.Settings.Redirects != "" {
+		if config.Settings.Redirects.Apply != "" {
 			dest, err := queryRedirect(source)
 			if err != nil {
 				http.Error(w, "Redirects not working", http.StatusInternalServerError)
@@ -73,7 +61,7 @@ func Handler(domain config.Domain) http.HandlerFunc {
 			}
 		}
 
-		var path config.Path
+		var path *config.Path
 		for _, p := range domain.Paths {
 			if strings.HasPrefix(r.URL.Path, p.Match) {
 				path = p
@@ -123,12 +111,12 @@ func Handler(domain config.Domain) http.HandlerFunc {
 
 		latency := int64(time.Since(start) / time.Millisecond)
 		monitoring.Send(monitoring.Measurement{
-			Domain:  domain,
-			Path:    path,
-			URL:     source,
-			Method:  r.Method,
-			Status:  resp.StatusCode,
-			Latency: latency,
+			DomainName: domain.Name,
+			Monitoring: path.Monitoring,
+			URL:        source,
+			Method:     r.Method,
+			Status:     resp.StatusCode,
+			Latency:    latency,
 		})
 
 		// Logging de la petición que hemos recibido.
@@ -186,7 +174,7 @@ func queryRedirect(url string) (string, error) {
 		return "", errors.Trace(err)
 	}
 
-	req, _ := http.NewRequest("POST", config.Settings.Redirects, &buf)
+	req, _ := http.NewRequest("POST", config.Settings.Redirects.Apply, &buf)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
