@@ -57,6 +57,8 @@ func run() error {
 			"address":  config.Settings.Monitoring.Address,
 			"username": config.Settings.Monitoring.Username,
 		}).Info("Configure monitoring")
+	
+		go monitoring.InfluxDBSender()
 	}
 
 	hs := make(proxy.HostSwitch)
@@ -125,8 +127,6 @@ func run() error {
 			}
 		}
 	}()
-
-	go monitoring.Sender()
 
 	wg := new(sync.WaitGroup)
 	wg.Add(1)

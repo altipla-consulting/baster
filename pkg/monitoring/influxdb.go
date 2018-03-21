@@ -11,9 +11,9 @@ import (
 	"github.com/altipla-consulting/baster/pkg/config"
 )
 
-var measurements = make(chan client.Point, 1000)
+var influxDBMeasurements = make(chan Measurement, 1000)
 
-func Sender() {
+func InfluxDBSender() {
 	u, err := url.Parse(config.Settings.Monitoring.Address)
 	if err != nil {
 		log.WithFields(log.Fields{"err": err.Error()}).Error("Cannot parse monitoring address")
@@ -36,7 +36,27 @@ func Sender() {
 	t := time.Tick(10 * time.Second)
 	for {
 		select {
-		case p := <-measurements:
+		case m := <-influxDBMeasurements:
+			p := client.Point{
+				Measurement: "latency",
+				Tags: map[string]string{
+					"domain": m.DomainName,
+					"method": m.Method,
+					"status": fmt.Sprintf("%d", m.Status),
+				},
+				Time: time.Now(),
+				Fields: map[string]interface{}{
+					"latency": m.Latency,
+					"url":     m.URL,
+					"value":   1,
+				},
+			}
+
+			// Añade las etiquetas que el usuario defina en especial para esta ruta.
+			for k, v := range m.Monitoring.Tags {
+				p.Tags[k] = v
+			}
+
 			points = append(points, p)
 
 		case <-t:
@@ -67,53 +87,4 @@ func Sender() {
 			}
 		}
 	}
-}
-
-type Measurement struct {
-	// Configuration data.
-	DomainName string
-	Monitoring config.PathMonitoring
-
-	// Request data.
-	URL    string
-	Method string
-
-	// Response data.
-	Status int
-
-	// Latency data.
-	Latency int64
-}
-
-func Send(m Measurement) {
-	if config.Settings.Monitoring.Address == "" {
-		return
-	}
-
-	name := m.DomainName
-	if m.Monitoring.Name != "" {
-		name = m.Monitoring.Name
-	}
-
-	p := client.Point{
-		Measurement: "latency",
-		Tags: map[string]string{
-			"domain": name,
-			"method": m.Method,
-			"status": fmt.Sprintf("%d", m.Status),
-		},
-		Time: time.Now(),
-		Fields: map[string]interface{}{
-			"latency": m.Latency,
-			"url":     m.URL,
-			"value":   1,
-		},
-	}
-
-	// Añade las etiquetas que el usuario defina en especial para esta ruta.
-	for k, v := range m.Monitoring.Tags {
-		p.Tags[k] = v
-	}
-
-	measurements <- p
 }
