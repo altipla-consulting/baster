@@ -21,16 +21,36 @@ import (
 )
 
 func Handler(domain *config.Domain) http.HandlerFunc {
-	log.WithFields(log.Fields{
-		"hostname":         domain.Hostname,
-		"service":          domain.Service,
-		"virtual-hostname": domain.VirtualHostname,
-		"cors-origins":     domain.CORS.Origins,
-		"hop-headers":      domain.HopHeaders,
-	}).Info("Domain configured")
+	f := log.Fields{
+		"name": domain.Name,
+		"hostname": domain.Hostname,
+		"service": domain.Service,
+	}
+	if domain.VirtualHostname != "" {
+		f["virtual-hostname"] = domain.VirtualHostname
+	}
+	if len(domain.CORS.Origins) > 0 {
+		f["cors-origins"] = domain.CORS.Origins
+	}
+	if domain.Redirect != "" {
+		f["redirect"] = domain.Redirect
+	}
+	if len(domain.HopHeaders) > 0 {
+		f["hop-headers"] = domain.HopHeaders
+	}
+	log.WithFields(f).Info("Domain configured")
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+
+		// Aplica redirecciones de dominio si están configuradas
+		if domain.Redirect != "" {
+			u := r.URL
+			u.Scheme = "https"
+			u.Host = domain.Redirect
+			http.Redirect(w, r, u.String(), http.StatusMovedPermanently)
+			return
+		}
 
 		// Aplica el servicio de redirecciones si lo hemos configurado.
 		source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())

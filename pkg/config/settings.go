@@ -36,6 +36,10 @@ type Domain struct {
 	// Nombre de esta entrada de dominio. Se autorellena desde la clave del mapa.
 	Name string `hcl:"-"`
 
+	// Hostname de la redirección. Si se especifica provocará una redirección automática
+	// sin al otro dominio sin que llegue a ningún servicio de backend.
+	Redirect string `hcl:"redirect"`
+
 	// Nombre de dominio al que debemos responder.
 	Hostname string `hcl:"hostname"`
 
