@@ -31,9 +31,10 @@ import (
 	"go.opencensus.io/internal"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"go.opencensus.io/trace"
 
-	monitoring "cloud.google.com/go/monitoring/apiv3"
-	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	"cloud.google.com/go/monitoring/apiv3"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 	distributionpb "google.golang.org/genproto/googleapis/api/distribution"
@@ -49,6 +50,7 @@ import (
 const maxTimeSeriesPerUpload = 200
 const opencensusTaskKey = "opencensus_task"
 const opencensusTaskDescription = "Opencensus task identifier"
+const defaultDisplayNamePrefix = "OpenCensus"
 
 // statsExporter exports stats to the Stackdriver Monitoring.
 type statsExporter struct {
@@ -143,7 +145,7 @@ func getTaskValue() string {
 // handleUpload handles uploading a slice
 // of Data, as well as error handling.
 func (e *statsExporter) handleUpload(vds ...*view.Data) {
-	if err := e.upload(vds); err != nil {
+	if err := e.uploadStats(vds); err != nil {
 		e.onError(err)
 	}
 }
@@ -164,16 +166,24 @@ func (e *statsExporter) onError(err error) {
 	log.Printf("Failed to export to Stackdriver Monitoring: %v", err)
 }
 
-func (e *statsExporter) upload(vds []*view.Data) error {
-	ctx := context.Background()
+func (e *statsExporter) uploadStats(vds []*view.Data) error {
+	span := trace.NewSpan(
+		"go.opencensus.io/exporter/stackdriver.uploadStats",
+		nil,
+		trace.StartOptions{Sampler: trace.NeverSample()},
+	)
+	ctx := trace.WithSpan(context.Background(), span)
+	defer span.End()
 
 	for _, vd := range vds {
 		if err := e.createMeasure(ctx, vd); err != nil {
+			span.SetStatus(trace.Status{Code: 2, Message: err.Error()})
 			return err
 		}
 	}
 	for _, req := range e.makeReq(vds, maxTimeSeriesPerUpload) {
 		if err := e.c.CreateTimeSeries(ctx, req); err != nil {
+			span.SetStatus(trace.Status{Code: 2, Message: err.Error()})
 			// TODO(jbd): Don't fail fast here, batch errors?
 			return err
 		}
@@ -269,11 +279,15 @@ func (e *statsExporter) createMeasure(ctx context.Context, vd *view.Data) error 
 	}
 
 	metricKind = metricpb.MetricDescriptor_CUMULATIVE
+	displayNamePrefix := defaultDisplayNamePrefix
+	if e.o.MetricPrefix != "" {
+		displayNamePrefix = e.o.MetricPrefix
+	}
 
 	md, err = createMetricDescriptor(ctx, e.c, &monitoringpb.CreateMetricDescriptorRequest{
 		Name: monitoring.MetricProjectPath(e.o.ProjectID),
 		MetricDescriptor: &metricpb.MetricDescriptor{
-			DisplayName: path.Join("OpenCensus", viewName),
+			DisplayName: path.Join(displayNamePrefix, viewName),
 			Description: m.Description(),
 			Unit:        m.Unit(),
 			Type:        namespacedViewName(viewName, false),

@@ -1,20 +1,25 @@
 package: github.com/altipla-consulting/baster
 import:
 - package: cloud.google.com/go
-  version: ^0.18.0
   subpackages:
   - compute/metadata
   - datastore
 - package: github.com/altipla-consulting/collections
-  version: ^0.2.1
+  version: ^0.3.0
+- package: github.com/hashicorp/hcl
+- package: github.com/influxdata/influxdb
+  version: ^1.5.1
+  subpackages:
+  - client
 - package: github.com/juju/errors
 - package: github.com/julienschmidt/httprouter
   version: ^1.1.0
 - package: github.com/sirupsen/logrus
-  version: ^1.0.4
+  version: ^1.0.5
 - package: golang.org/x/crypto
   subpackages:
   - acme/autocert
-- package: gopkg.in/yaml.v2
-- package: github.com/stretchr/testify
-  version: ^1.2.1
+- package: golang.org/x/text
+  version: f21a4dfb5e38f5895301dc265a8def02365cc3d0
+  subpackages:
+  - secure/bidirule

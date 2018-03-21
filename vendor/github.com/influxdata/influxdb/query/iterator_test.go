@@ -1554,11 +1554,9 @@ func TestIterator_EncodeDecode(t *testing.T) {
 
 // Test implementation of influxql.FloatIterator
 type FloatIterator struct {
-	Context context.Context
-	Points  []query.FloatPoint
-	Closed  bool
-	Delay   time.Duration
-	stats   query.IteratorStats
+	Points []query.FloatPoint
+	Closed bool
+	stats  query.IteratorStats
 }
 
 func (itr *FloatIterator) Stats() query.IteratorStats { return itr.stats }
@@ -1570,22 +1568,6 @@ func (itr *FloatIterator) Next() (*query.FloatPoint, error) {
 		return nil, nil
 	}
 
-	// If we have asked for a delay, then delay the returning of the point
-	// until either an (optional) context is done or the time has passed.
-	if itr.Delay > 0 {
-		var done <-chan struct{}
-		if itr.Context != nil {
-			done = itr.Context.Done()
-		}
-
-		timer := time.NewTimer(itr.Delay)
-		select {
-		case <-timer.C:
-		case <-done:
-			timer.Stop()
-			return nil, itr.Context.Err()
-		}
-	}
 	v := &itr.Points[0]
 	itr.Points = itr.Points[1:]
 	return v, nil

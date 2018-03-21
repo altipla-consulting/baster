@@ -992,7 +992,7 @@
       }
     }
   },
-  "revision": "20180228",
+  "revision": "20180315",
   "rootUrl": "https://ml.googleapis.com/",
   "schemas": {
     "GoogleApi__HttpBody": {
@@ -1487,7 +1487,7 @@
           "type": "array"
         },
         "maxValue": {
-          "description": "Required if typeis `DOUBLE` or `INTEGER`. This field\nshould be unset if type is `CATEGORICAL`. This value should be integers if\ntype is `INTEGER`.",
+          "description": "Required if type is `DOUBLE` or `INTEGER`. This field\nshould be unset if type is `CATEGORICAL`. This value should be integers if\ntype is `INTEGER`.",
           "format": "double",
           "type": "number"
         },
@@ -1666,7 +1666,7 @@
           "description": "Optional. The set of Hyperparameters to tune."
         },
         "jobDir": {
-          "description": "Optional. A Google Cloud Storage path in which to store training outputs\nand other data needed for training. This path is passed to your TensorFlow\nprogram as the 'job_dir' command-line argument. The benefit of specifying\nthis field is that Cloud ML validates the path for use in training.",
+          "description": "Optional. A Google Cloud Storage path in which to store training outputs\nand other data needed for training. This path is passed to your TensorFlow\nprogram as the '--job-dir' command-line argument. The benefit of specifying\nthis field is that Cloud ML validates the path for use in training.",
           "type": "string"
         },
         "masterType": {
@@ -1766,7 +1766,7 @@
       "type": "object"
     },
     "GoogleCloudMlV1__Version": {
-      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](/ml-engine/reference/rest/v1/projects.models.versions/list).\n\nLINT.IfChange",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](/ml-engine/reference/rest/v1/projects.models.versions/list).",
       "id": "GoogleCloudMlV1__Version",
       "properties": {
         "autoScaling": {
@@ -1790,6 +1790,22 @@
           "description": "Output only. The details of a failure or a cancellation.",
           "type": "string"
         },
+        "framework": {
+          "description": "The ML framework used to train this version of the model. If not specified,\ndefaults to `TENSORFLOW`",
+          "enum": [
+            "FRAMEWORK_UNSPECIFIED",
+            "TENSORFLOW",
+            "SCIKIT_LEARN",
+            "XGBOOST"
+          ],
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "type": "string"
+        },
         "isDefault": {
           "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](/ml-engine/reference/rest/v1/projects.models.versions/setDefault).",
           "type": "boolean"
@@ -1805,6 +1821,10 @@
         },
         "name": {
           "description": "Required.The name specified for the version when it was created.\n\nThe version name must be unique within the model it is created in.",
+          "type": "string"
+        },
+        "pythonVersion": {
+          "description": "Optional. The version of Python used in prediction. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
           "type": "string"
         },
         "runtimeVersion": {
@@ -2063,7 +2083,7 @@
     }
   },
   "servicePath": "",
-  "title": "Google Cloud Machine Learning Engine",
+  "title": "Cloud Machine Learning Engine",
   "version": "v1",
   "version_module": true
 }

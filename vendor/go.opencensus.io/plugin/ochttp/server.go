@@ -38,31 +38,33 @@ import (
 //
 // Incoming propagation mechanism is determined by the given HTTP propagators.
 type Handler struct {
-	// NoStats may be set to disable recording of stats.
-	NoStats bool
-
-	// NoTrace may be set to disable recording of traces.
-	NoTrace bool
-
 	// Propagation defines how traces are propagated. If unspecified,
 	// B3 propagation will be used.
 	Propagation propagation.HTTPFormat
 
 	// Handler is the handler used to handle the incoming request.
 	Handler http.Handler
+
+	// StartOptions are applied to the span started by this Handler around each
+	// request.
+	//
+	// StartOptions.SpanKind will always be set to trace.SpanKindServer
+	// for spans started by this transport.
+	StartOptions trace.StartOptions
+
+	// IsPublicEndpoint should be set to true for publicly accessible HTTP(S)
+	// servers. If true, any trace metadata set on the incoming request will
+	// be added as a linked trace instead of being added as a parent of the
+	// current trace.
+	IsPublicEndpoint bool
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !h.NoTrace {
-		var end func()
-		r, end = h.startTrace(w, r)
-		defer end()
-	}
-	if !h.NoStats {
-		var end func()
-		w, end = h.startStats(w, r)
-		defer end()
-	}
+	var traceEnd, statsEnd func()
+	r, traceEnd = h.startTrace(w, r)
+	defer traceEnd()
+	w, statsEnd = h.startStats(w, r)
+	defer statsEnd()
 
 	handler := h.Handler
 	if handler == nil {
@@ -72,21 +74,39 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) startTrace(w http.ResponseWriter, r *http.Request) (*http.Request, func()) {
-	name := spanNameFromURL("Recv", r.URL)
-	p := h.Propagation
-	if p == nil {
-		p = defaultFormat
-	}
-	ctx := r.Context()
-	var span *trace.Span
-	if sc, ok := p.SpanContextFromRequest(r); ok {
-		ctx, span = trace.StartSpanWithRemoteParent(ctx, name, sc, trace.StartOptions{})
-	} else {
-		ctx, span = trace.StartSpan(ctx, name)
+	opts := trace.StartOptions{
+		Sampler:  h.StartOptions.Sampler,
+		SpanKind: trace.SpanKindServer,
 	}
 
-	span.SetAttributes(requestAttrs(r)...)
+	name := spanNameFromURL("Recv", r.URL)
+	ctx := r.Context()
+	var span *trace.Span
+	sc, ok := h.extractSpanContext(r)
+	if ok && !h.IsPublicEndpoint {
+		span = trace.NewSpanWithRemoteParent(name, sc, opts)
+		ctx = trace.WithSpan(ctx, span)
+	} else {
+		span = trace.NewSpan(name, nil, opts)
+		if ok {
+			span.AddLink(trace.Link{
+				TraceID:    sc.TraceID,
+				SpanID:     sc.SpanID,
+				Type:       trace.LinkTypeChild,
+				Attributes: nil,
+			})
+		}
+	}
+	ctx = trace.WithSpan(ctx, span)
+	span.AddAttributes(requestAttrs(r)...)
 	return r.WithContext(trace.WithSpan(r.Context(), span)), span.End
+}
+
+func (h *Handler) extractSpanContext(r *http.Request) (trace.SpanContext, bool) {
+	if h.Propagation == nil {
+		return defaultFormat.SpanContextFromRequest(r)
+	}
+	return h.Propagation.SpanContextFromRequest(r)
 }
 
 func (h *Handler) startStats(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, func()) {

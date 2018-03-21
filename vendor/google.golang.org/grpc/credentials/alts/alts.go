@@ -25,7 +25,6 @@ package alts
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"net"
 	"sync"
@@ -52,9 +51,8 @@ const (
 )
 
 var (
-	enableUntrustedALTS = flag.Bool("enable_untrusted_alts", false, "Enables ALTS in untrusted mode. Enabling this mode is risky since we cannot ensure that the application is running on GCP with a trusted handshaker service.")
-	once                sync.Once
-	maxRPCVersion       = &altspb.RpcProtocolVersions_Version{
+	once          sync.Once
+	maxRPCVersion = &altspb.RpcProtocolVersions_Version{
 		Major: protocolVersionMaxMajor,
 		Minor: protocolVersionMaxMinor,
 	}
@@ -65,7 +63,7 @@ var (
 	// ErrUntrustedPlatform is returned from ClientHandshake and
 	// ServerHandshake is running on a platform where the trustworthiness of
 	// the handshaker service is not guaranteed.
-	ErrUntrustedPlatform = errors.New("untrusted platform, use enable_untrusted_alts flag at your own risk")
+	ErrUntrustedPlatform = errors.New("untrusted platform")
 )
 
 // AuthInfo exposes security information from the ALTS handshake to the
@@ -91,6 +89,14 @@ type AuthInfo interface {
 	PeerRPCVersions() *altspb.RpcProtocolVersions
 }
 
+// ClientOptions contains the client-side options of an ALTS channel. These
+// options will be passed to the underlying ALTS handshaker.
+type ClientOptions struct {
+	// TargetServiceAccounts contains a list of expected target service
+	// accounts.
+	TargetServiceAccounts []string
+}
+
 // altsTC is the credentials required for authenticating a connection using ALTS.
 // It implements credentials.TransportCredentials interface.
 type altsTC struct {
@@ -100,25 +106,20 @@ type altsTC struct {
 	accounts []string
 }
 
-// NewClient constructs a client-side ALTS TransportCredentials object.
-func NewClient(targetServiceAccounts []string) credentials.TransportCredentials {
-	return newALTS(core.ClientSide, targetServiceAccounts)
+// NewClientCreds constructs a client-side ALTS TransportCredentials object.
+func NewClientCreds(opts *ClientOptions) credentials.TransportCredentials {
+	return newALTS(core.ClientSide, opts.TargetServiceAccounts)
 }
 
-// NewServer constructs a server-side ALTS TransportCredentials object.
-func NewServer() credentials.TransportCredentials {
+// NewServerCreds constructs a server-side ALTS TransportCredentials object.
+func NewServerCreds() credentials.TransportCredentials {
 	return newALTS(core.ServerSide, nil)
 }
 
 func newALTS(side core.Side, accounts []string) credentials.TransportCredentials {
-	// Make sure flags are parsed before accessing enableUntrustedALTS.
 	once.Do(func() {
-		flag.Parse()
 		vmOnGCP = isRunningOnGCP()
 	})
-	if *enableUntrustedALTS {
-		grpclog.Warning("untrusted ALTS mode is enabled and we cannot guarantee the trustworthiness of the ALTS handshaker service.")
-	}
 
 	return &altsTC{
 		info: &credentials.ProtocolInfo{
@@ -132,7 +133,7 @@ func newALTS(side core.Side, accounts []string) credentials.TransportCredentials
 
 // ClientHandshake implements the client side handshake protocol.
 func (g *altsTC) ClientHandshake(ctx context.Context, addr string, rawConn net.Conn) (_ net.Conn, _ credentials.AuthInfo, err error) {
-	if !*enableUntrustedALTS && !vmOnGCP {
+	if !vmOnGCP {
 		return nil, nil, ErrUntrustedPlatform
 	}
 
@@ -186,7 +187,7 @@ func (g *altsTC) ClientHandshake(ctx context.Context, addr string, rawConn net.C
 
 // ServerHandshake implements the server side ALTS handshaker.
 func (g *altsTC) ServerHandshake(rawConn net.Conn) (_ net.Conn, _ credentials.AuthInfo, err error) {
-	if !*enableUntrustedALTS && !vmOnGCP {
+	if !vmOnGCP {
 		return nil, nil, ErrUntrustedPlatform
 	}
 	// Connecting to ALTS handshaker service.

@@ -1,19 +1,20 @@
-hash: 242c9188ccaa2e9a7e0c5fc01546527407efc834cbf231549e8512f51cfd8e4b
-updated: 2018-03-09T17:28:52.001499021Z
+hash: 53430a2116fafef6dfc76cfc6393e1d7107f4ec1e27b736293920a9a9086a24c
+updated: 2018-03-21T17:31:12.118450893Z
 imports:
 - name: cloud.google.com/go
-  version: 20d4028b8a750c2aca76bf9fefa8ed2d0109b573
+  version: f0945c7677b2605cceaa429f567518ad11297d87
   subpackages:
   - compute/metadata
   - datastore
   - internal
   - internal/atomiccache
   - internal/fields
+  - internal/trace
   - internal/version
 - name: github.com/altipla-consulting/collections
   version: dd5d53544f186d0686932b72559b0818ac78d5cc
 - name: github.com/golang/protobuf
-  version: bbd03ef6da3a115852eaf24c8a1c46aeb39aa175
+  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
   subpackages:
   - proto
   - protoc-gen-go/descriptor
@@ -25,8 +26,19 @@ imports:
   - ptypes/wrappers
 - name: github.com/googleapis/gax-go
   version: 317e0006254c44a0ac427cc52a0e083ff0b9622f
+- name: github.com/hashicorp/hcl
+  version: f40e974e75af4e271d97ce0fc917af5898ae7bda
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
 - name: github.com/influxdata/influxdb
-  version: c75c824c8c65ae1e60896c99dc5a8be2188c1a88
+  version: cdae4ccde4c67c3390d8ae8a1a06bd3b4cdce5c5
   subpackages:
   - client
   - models
@@ -36,11 +48,9 @@ imports:
 - name: github.com/julienschmidt/httprouter
   version: 8c199fb6259ffc1af525cc3ad52ee60ba8359669
 - name: github.com/sirupsen/logrus
-  version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
-- name: github.com/stretchr/testify
-  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
+  version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
 - name: go.opencensus.io
-  version: 2ecd8d94fb0d89f945d4911143a0d640bce45936
+  version: ce5da1021628452c72be6e0b6312cea40a6c90ed
   subpackages:
   - internal
   - internal/tagencoding
@@ -52,13 +62,13 @@ imports:
   - trace
   - trace/propagation
 - name: golang.org/x/crypto
-  version: c7dcf104e3a7a1417abc0230cb0d5240d764159d
+  version: 80db560fac1fb3e6ac81dbc7f8ae4c061f5257bd
   subpackages:
   - acme
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/net
-  version: d0aafc73d5cdc42264b0af071c261abac580695e
+  version: 9dfe39835686865bff950a07b394c12a98ddc811
   subpackages:
   - context
   - context/ctxhttp
@@ -69,26 +79,26 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/oauth2
-  version: 2f32c3ac0fa4fb807a0fcefb0b6f2468a0d99bd0
+  version: fdc9e635145ae97e6c2cb777c48305600cf515cb
   subpackages:
   - google
   - internal
   - jws
   - jwt
 - name: golang.org/x/sys
-  version: 7dca6fe1f43775aa6d1334576870ff63f978f539
+  version: 062cd7e4e68206d8bab9b18396626e855c992658
   subpackages:
   - unix
   - windows
 - name: golang.org/x/text
-  version: b7ef84aaf62aa3e70962625c80a571ae7c17cb40
+  version: f21a4dfb5e38f5895301dc265a8def02365cc3d0
   subpackages:
   - secure/bidirule
   - transform
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/api
-  version: 7f657476956314fee258816aaf81c0ff65cf8bee
+  version: 24928b980e6919be4c72647aacd53ebcbb8c4bab
   subpackages:
   - googleapi
   - googleapi/internal/uritemplates
@@ -111,14 +121,15 @@ imports:
   - socket
   - urlfetch
 - name: google.golang.org/genproto
-  version: df60624c1e9b9d2973e889c7a1cff73155da81c4
+  version: f8c8703595236ae70fdf8789ecb656ea0bcdcf46
   subpackages:
   - googleapis/api/annotations
   - googleapis/datastore/v1
+  - googleapis/rpc/code
   - googleapis/rpc/status
   - googleapis/type/latlng
 - name: google.golang.org/grpc
-  version: 90dca43332f6cc944c37e16f32a82c41639e7705
+  version: 32d9ffabbae22e378e8643eb8ba7795684eb7789
   subpackages:
   - balancer
   - balancer/base
@@ -143,6 +154,4 @@ imports:
   - status
   - tap
   - transport
-- name: gopkg.in/yaml.v2
-  version: 7f97868eec74b32b0982dd158a51a446d1da7eb5
 testImports: []

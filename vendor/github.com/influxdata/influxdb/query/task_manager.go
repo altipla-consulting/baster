@@ -1,7 +1,6 @@
 package query
 
 import (
-	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -55,7 +54,7 @@ type TaskManager struct {
 	Logger *zap.Logger
 
 	// Used for managing and tracking running queries.
-	queries  map[uint64]*Task
+	queries  map[uint64]*QueryTask
 	nextID   uint64
 	mu       sync.RWMutex
 	shutdown bool
@@ -66,13 +65,13 @@ func NewTaskManager() *TaskManager {
 	return &TaskManager{
 		QueryTimeout: DefaultQueryTimeout,
 		Logger:       zap.NewNop(),
-		queries:      make(map[uint64]*Task),
+		queries:      make(map[uint64]*QueryTask),
 		nextID:       1,
 	}
 }
 
 // ExecuteStatement executes a statement containing one of the task management queries.
-func (t *TaskManager) ExecuteStatement(stmt influxql.Statement, ctx *ExecutionContext) error {
+func (t *TaskManager) ExecuteStatement(stmt influxql.Statement, ctx ExecutionContext) error {
 	switch stmt := stmt.(type) {
 	case *influxql.ShowQueriesStatement:
 		rows, err := t.executeShowQueriesStatement(stmt)
@@ -80,9 +79,10 @@ func (t *TaskManager) ExecuteStatement(stmt influxql.Statement, ctx *ExecutionCo
 			return err
 		}
 
-		ctx.Send(&Result{
-			Series: rows,
-		})
+		ctx.Results <- &Result{
+			StatementID: ctx.StatementID,
+			Series:      rows,
+		}
 	case *influxql.KillQueryStatement:
 		var messages []*Message
 		if ctx.ReadOnly {
@@ -92,9 +92,10 @@ func (t *TaskManager) ExecuteStatement(stmt influxql.Statement, ctx *ExecutionCo
 		if err := t.executeKillQueryStatement(stmt); err != nil {
 			return err
 		}
-		ctx.Send(&Result{
-			Messages: messages,
-		})
+		ctx.Results <- &Result{
+			StatementID: ctx.StatementID,
+			Messages:    messages,
+		}
 	default:
 		return ErrInvalidQuery
 	}
@@ -149,22 +150,22 @@ func (t *TaskManager) queryError(qid uint64, err error) {
 // query finishes running.
 //
 // After a query finishes running, the system is free to reuse a query id.
-func (t *TaskManager) AttachQuery(q *influxql.Query, opt ExecutionOptions, interrupt <-chan struct{}) (*ExecutionContext, func(), error) {
+func (t *TaskManager) AttachQuery(q *influxql.Query, database string, interrupt <-chan struct{}) (uint64, *QueryTask, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	if t.shutdown {
-		return nil, nil, ErrQueryEngineShutdown
+		return 0, nil, ErrQueryEngineShutdown
 	}
 
 	if t.MaxConcurrentQueries > 0 && len(t.queries) >= t.MaxConcurrentQueries {
-		return nil, nil, ErrMaxConcurrentQueriesLimitExceeded(len(t.queries), t.MaxConcurrentQueries)
+		return 0, nil, ErrMaxConcurrentQueriesLimitExceeded(len(t.queries), t.MaxConcurrentQueries)
 	}
 
 	qid := t.nextID
-	query := &Task{
+	query := &QueryTask{
 		query:     q.String(),
-		database:  opt.Database,
+		database:  database,
 		status:    RunningTask,
 		startTime: time.Now(),
 		closing:   make(chan struct{}),
@@ -188,15 +189,7 @@ func (t *TaskManager) AttachQuery(q *influxql.Query, opt ExecutionOptions, inter
 		})
 	}
 	t.nextID++
-
-	ctx := &ExecutionContext{
-		Context:          context.Background(),
-		QueryID:          qid,
-		task:             query,
-		ExecutionOptions: opt,
-	}
-	ctx.watch()
-	return ctx, func() { t.DetachQuery(qid) }, nil
+	return qid, query, nil
 }
 
 // KillQuery enters a query into the killed state and closes the channel

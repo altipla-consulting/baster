@@ -109,7 +109,7 @@ func TestSampling(t *testing.T) {
 				SpanID:       sid,
 				TraceOptions: test.parentTraceOptions,
 			}
-			ctx, _ = StartSpanWithRemoteParent(context.Background(), "foo", sc, StartOptions{
+			ctx, _ = startSpanWithRemoteParent(context.Background(), "foo", sc, StartOptions{
 				Sampler: test.sampler,
 			})
 		} else if test.localParent {
@@ -117,12 +117,12 @@ func TestSampling(t *testing.T) {
 			if test.parentTraceOptions == 1 {
 				sampler = AlwaysSample()
 			}
-			ctx2, _ := StartSpanWithOptions(context.Background(), "foo", StartOptions{Sampler: sampler})
-			ctx, _ = StartSpanWithOptions(ctx2, "foo", StartOptions{
+			ctx2, _ := startSpanWithOptions(context.Background(), "foo", StartOptions{Sampler: sampler})
+			ctx, _ = startSpanWithOptions(ctx2, "foo", StartOptions{
 				Sampler: test.sampler,
 			})
 		} else {
-			ctx, _ = StartSpanWithOptions(context.Background(), "foo", StartOptions{
+			ctx, _ = startSpanWithOptions(context.Background(), "foo", StartOptions{
 				Sampler: test.sampler,
 			})
 		}
@@ -159,7 +159,7 @@ func TestSampling(t *testing.T) {
 			if test.parentTraceOptions == 1 {
 				sampler = AlwaysSample()
 			}
-			ctx2, _ := StartSpanWithOptions(context.Background(), "foo", StartOptions{Sampler: sampler})
+			ctx2, _ := startSpanWithOptions(context.Background(), "foo", StartOptions{Sampler: sampler})
 			ctx, _ := StartSpan(ctx2, "foo")
 			sc := FromContext(ctx).SpanContext()
 			if (sc == SpanContext{}) {
@@ -180,7 +180,7 @@ func TestSampling(t *testing.T) {
 func TestProbabilitySampler(t *testing.T) {
 	exported := 0
 	for i := 0; i < 1000; i++ {
-		_, span := StartSpanWithOptions(context.Background(), "foo", StartOptions{
+		_, span := startSpanWithOptions(context.Background(), "foo", StartOptions{
 			Sampler: ProbabilitySampler(0.3),
 		})
 		if span.SpanContext().IsSampled() {
@@ -192,18 +192,23 @@ func TestProbabilitySampler(t *testing.T) {
 	}
 }
 
+func startSpanWithRemoteParent(ctx context.Context, name string, parent SpanContext, o StartOptions) (context.Context, *Span) {
+	span := NewSpanWithRemoteParent(name, parent, o)
+	return WithSpan(ctx, span), span
+}
+
 func TestStartSpanWithRemoteParent(t *testing.T) {
 	sc := SpanContext{
 		TraceID:      tid,
 		SpanID:       sid,
 		TraceOptions: 0x0,
 	}
-	ctx, _ := StartSpanWithRemoteParent(context.Background(), "StartSpanWithRemoteParent", sc, StartOptions{})
+	ctx, _ := startSpanWithRemoteParent(context.Background(), "startSpanWithRemoteParent", sc, StartOptions{})
 	if err := checkChild(sc, FromContext(ctx)); err != nil {
 		t.Error(err)
 	}
 
-	ctx, _ = StartSpanWithRemoteParent(context.Background(), "StartSpanWithRemoteParent", sc, StartOptions{})
+	ctx, _ = startSpanWithRemoteParent(context.Background(), "startSpanWithRemoteParent", sc, StartOptions{})
 	if err := checkChild(sc, FromContext(ctx)); err != nil {
 		t.Error(err)
 	}
@@ -213,12 +218,12 @@ func TestStartSpanWithRemoteParent(t *testing.T) {
 		SpanID:       sid,
 		TraceOptions: 0x1,
 	}
-	ctx, _ = StartSpanWithRemoteParent(context.Background(), "StartSpanWithRemoteParent", sc, StartOptions{})
+	ctx, _ = startSpanWithRemoteParent(context.Background(), "startSpanWithRemoteParent", sc, StartOptions{})
 	if err := checkChild(sc, FromContext(ctx)); err != nil {
 		t.Error(err)
 	}
 
-	ctx, _ = StartSpanWithRemoteParent(context.Background(), "StartSpanWithRemoteParent", sc, StartOptions{})
+	ctx, _ = startSpanWithRemoteParent(context.Background(), "startSpanWithRemoteParent", sc, StartOptions{})
 	if err := checkChild(sc, FromContext(ctx)); err != nil {
 		t.Error(err)
 	}
@@ -231,14 +236,15 @@ func TestStartSpanWithRemoteParent(t *testing.T) {
 }
 
 // startSpan returns a context with a new Span that is recording events and will be exported.
-func startSpan() *Span {
+func startSpan(o StartOptions) *Span {
 	return NewSpanWithRemoteParent("span0",
 		SpanContext{
 			TraceID:      tid,
 			SpanID:       sid,
 			TraceOptions: 1,
 		},
-		StartOptions{})
+		o,
+	)
 }
 
 type testExporter struct {
@@ -290,9 +296,78 @@ func checkTime(x *time.Time) bool {
 	return true
 }
 
+func TestSpanKind(t *testing.T) {
+	tests := []struct {
+		name         string
+		startOptions StartOptions
+		want         *SpanData
+	}{
+		{
+			name:         "zero StartOptions",
+			startOptions: StartOptions{},
+			want: &SpanData{
+				SpanContext: SpanContext{
+					TraceID:      tid,
+					SpanID:       SpanID{},
+					TraceOptions: 0x1,
+				},
+				ParentSpanID:    sid,
+				Name:            "span0",
+				SpanKind:        SpanKindUnspecified,
+				HasRemoteParent: true,
+			},
+		},
+		{
+			name: "client span",
+			startOptions: StartOptions{
+				SpanKind: SpanKindClient,
+			},
+			want: &SpanData{
+				SpanContext: SpanContext{
+					TraceID:      tid,
+					SpanID:       SpanID{},
+					TraceOptions: 0x1,
+				},
+				ParentSpanID:    sid,
+				Name:            "span0",
+				SpanKind:        SpanKindClient,
+				HasRemoteParent: true,
+			},
+		},
+		{
+			name: "server span",
+			startOptions: StartOptions{
+				SpanKind: SpanKindServer,
+			},
+			want: &SpanData{
+				SpanContext: SpanContext{
+					TraceID:      tid,
+					SpanID:       SpanID{},
+					TraceOptions: 0x1,
+				},
+				ParentSpanID:    sid,
+				Name:            "span0",
+				SpanKind:        SpanKindServer,
+				HasRemoteParent: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		span := startSpan(tt.startOptions)
+		got, err := endSpan(span)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(got, tt.want) {
+			t.Errorf("exporting span: got %#v want %#v", got, tt.want)
+		}
+	}
+}
+
 func TestSetSpanAttributes(t *testing.T) {
-	span := startSpan()
-	span.SetAttributes(StringAttribute{"key1", "value1"})
+	span := startSpan(StartOptions{})
+	span.AddAttributes(StringAttribute("key1", "value1"))
 	got, err := endSpan(span)
 	if err != nil {
 		t.Fatal(err)
@@ -315,9 +390,9 @@ func TestSetSpanAttributes(t *testing.T) {
 }
 
 func TestAnnotations(t *testing.T) {
-	span := startSpan()
-	span.Annotatef([]Attribute{StringAttribute{"key1", "value1"}}, "%f", 1.5)
-	span.Annotate([]Attribute{StringAttribute{"key2", "value2"}}, "Annotate")
+	span := startSpan(StartOptions{})
+	span.Annotatef([]Attribute{StringAttribute("key1", "value1")}, "%f", 1.5)
+	span.Annotate([]Attribute{StringAttribute("key2", "value2")}, "Annotate")
 	got, err := endSpan(span)
 	if err != nil {
 		t.Fatal(err)
@@ -349,7 +424,7 @@ func TestAnnotations(t *testing.T) {
 }
 
 func TestMessageEvents(t *testing.T) {
-	span := startSpan()
+	span := startSpan(StartOptions{})
 	span.AddMessageReceiveEvent(3, 400, 300)
 	span.AddMessageSendEvent(1, 200, 100)
 	got, err := endSpan(span)
@@ -383,7 +458,7 @@ func TestMessageEvents(t *testing.T) {
 }
 
 func TestSetSpanStatus(t *testing.T) {
-	span := startSpan()
+	span := startSpan(StartOptions{})
 	span.SetStatus(Status{Code: int32(1), Message: "request failed"})
 	got, err := endSpan(span)
 	if err != nil {
@@ -407,7 +482,7 @@ func TestSetSpanStatus(t *testing.T) {
 }
 
 func TestAddLink(t *testing.T) {
-	span := startSpan()
+	span := startSpan(StartOptions{})
 	span.AddLink(Link{
 		TraceID:    tid,
 		SpanID:     sid,
@@ -445,7 +520,7 @@ func TestUnregisterExporter(t *testing.T) {
 	RegisterExporter(&te)
 	UnregisterExporter(&te)
 
-	ctx := startSpan()
+	ctx := startSpan(StartOptions{})
 	endSpan(ctx)
 	if len(te.spans) != 0 {
 		t.Error("unregistered Exporter was called")
@@ -510,12 +585,18 @@ func (e exporter) ExportSpan(s *SpanData) {
 	e[s.Name] = s
 }
 
+func startSpanWithOptions(ctx context.Context, name string, o StartOptions) (context.Context, *Span) {
+	parentSpan, _ := ctx.Value(contextKey{}).(*Span)
+	span := NewSpan(name, parentSpan, o)
+	return WithSpan(ctx, span), span
+}
+
 func Test_Issue328_EndSpanTwice(t *testing.T) {
 	spans := make(exporter)
 	RegisterExporter(&spans)
 	defer UnregisterExporter(&spans)
 	ctx := context.Background()
-	ctx, span := StartSpanWithOptions(ctx, "span-1", StartOptions{Sampler: AlwaysSample()})
+	ctx, span := startSpanWithOptions(ctx, "span-1", StartOptions{Sampler: AlwaysSample()})
 	span.End()
 	span.End()
 	UnregisterExporter(&spans)
@@ -528,12 +609,12 @@ func TestStartSpanAfterEnd(t *testing.T) {
 	spans := make(exporter)
 	RegisterExporter(&spans)
 	defer UnregisterExporter(&spans)
-	ctx, span0 := StartSpanWithOptions(context.Background(), "parent", StartOptions{Sampler: AlwaysSample()})
-	ctx1, span1 := StartSpanWithOptions(ctx, "span-1", StartOptions{Sampler: AlwaysSample()})
+	ctx, span0 := startSpanWithOptions(context.Background(), "parent", StartOptions{Sampler: AlwaysSample()})
+	ctx1, span1 := startSpanWithOptions(ctx, "span-1", StartOptions{Sampler: AlwaysSample()})
 	span1.End()
 	// Start a new span with the context containing span-1
 	// even though span-1 is ended, we still add this as a new child of span-1
-	_, span2 := StartSpanWithOptions(ctx1, "span-2", StartOptions{Sampler: AlwaysSample()})
+	_, span2 := startSpanWithOptions(ctx1, "span-2", StartOptions{Sampler: AlwaysSample()})
 	span2.End()
 	span0.End()
 	UnregisterExporter(&spans)
