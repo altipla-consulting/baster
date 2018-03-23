@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/compute/metadata"
 	"github.com/segmentio/ksuid"
 	log "github.com/sirupsen/logrus"
@@ -69,7 +70,7 @@ type bqPoint struct {
 	Domain  string
 	Method  string
 	Status  int64
-	Time    time.Time
+	Time    civil.DateTime
 	Latency int64
 	URL     string
 	Tags    []string
@@ -104,7 +105,7 @@ func BigQuerySender() {
 				Domain:  m.DomainName,
 				Method:  m.Method,
 				Status:  int64(m.Status),
-				Time:    m.Time,
+				Time:    civil.DateTimeOf(m.Time),
 				Latency: m.Latency,
 				URL:     m.URL,
 				Referer: m.Referer,
