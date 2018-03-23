@@ -15,7 +15,7 @@ import (
 
 var bigqueryMeasurements = make(chan Measurement, 1000)
 
-var schema = bigquery.Schema{
+var BigQuerySchema = bigquery.Schema{
 	&bigquery.FieldSchema{
 		Name:        "domain",
 		Description: "Nombre del dominio que está emitiendo los logs",
@@ -126,7 +126,7 @@ func BigQuerySender() {
 
 			points = append(points, &bigquery.StructSaver{
 				Struct:   p,
-				Schema:   schema,
+				Schema:   BigQuerySchema,
 				InsertID: id.String(),
 			})
 
