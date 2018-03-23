@@ -21,8 +21,11 @@ import (
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/golang/protobuf/ptypes"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
 // A DocumentSnapshot contains document data and metadata.
@@ -42,15 +45,28 @@ type DocumentSnapshot struct {
 	// documents and the read time of a query.
 	UpdateTime time.Time
 
+	// Read-only. The time at which the document was read.
+	ReadTime time.Time
+
 	c     *Client
 	proto *pb.Document
+}
+
+// Exists reports whether the DocumentSnapshot represents an existing document.
+// DocumentSnapshots for deleted documents may be returned by SnapshotIterator.Next.
+func (d *DocumentSnapshot) Exists() bool {
+	return d.proto != nil
 }
 
 // Data returns the DocumentSnapshot's fields as a map.
 // It is equivalent to
 //     var m map[string]interface{}
 //     d.DataTo(&m)
+// except that it returns nil if the document does not exist.
 func (d *DocumentSnapshot) Data() map[string]interface{} {
+	if !d.Exists() {
+		return nil
+	}
 	m, err := createMapFromValueMap(d.proto.Fields, d.c)
 	// Any error here is a bug in the client.
 	if err != nil {
@@ -87,7 +103,12 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 //
 // Field names given by struct field tags are observed, as described in
 // DocumentRef.Create.
+//
+// If the document does not exist, DataTo returns a NotFound error.
 func (d *DocumentSnapshot) DataTo(p interface{}) error {
+	if !d.Exists() {
+		return status.Errorf(codes.NotFound, "document %s does not exist", d.Ref.Path)
+	}
 	return setFromProtoValue(p, &pb.Value{&pb.Value_MapValue{&pb.MapValue{d.proto.Fields}}}, d.c)
 }
 
@@ -98,7 +119,12 @@ func (d *DocumentSnapshot) DataTo(p interface{}) error {
 // such a path.
 //
 // See DocumentSnapshot.DataTo for how Firestore values are converted to Go values.
+//
+// If the document does not exist, DataAt returns a NotFound error.
 func (d *DocumentSnapshot) DataAt(path string) (interface{}, error) {
+	if !d.Exists() {
+		return nil, status.Errorf(codes.NotFound, "document %s does not exist", d.Ref.Path)
+	}
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
 		return nil, err
@@ -107,7 +133,11 @@ func (d *DocumentSnapshot) DataAt(path string) (interface{}, error) {
 }
 
 // DataAtPath returns the data value denoted by the FieldPath fp.
+// If the document does not exist, DataAtPath returns a NotFound error.
 func (d *DocumentSnapshot) DataAtPath(fp FieldPath) (interface{}, error) {
+	if !d.Exists() {
+		return nil, status.Errorf(codes.NotFound, "document %s does not exist", d.Ref.Path)
+	}
 	v, err := valueAtPath(fp, d.proto.Fields)
 	if err != nil {
 		return nil, err
@@ -241,7 +271,7 @@ func extractTransformPathsFromStruct(v reflect.Value, prefix FieldPath) ([]Field
 	return paths, nil
 }
 
-func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client) (*DocumentSnapshot, error) {
+func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client, readTime *tspb.Timestamp) (*DocumentSnapshot, error) {
 	d := &DocumentSnapshot{
 		Ref:   ref,
 		c:     c,
@@ -257,5 +287,13 @@ func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client) (*Docu
 		return nil, err
 	}
 	d.UpdateTime = ts
+	// TODO(jba): remove nil check when all callers pass a read time.
+	if readTime != nil {
+		ts, err = ptypes.Timestamp(readTime)
+		if err != nil {
+			return nil, err
+		}
+		d.ReadTime = ts
+	}
 	return d, nil
 }

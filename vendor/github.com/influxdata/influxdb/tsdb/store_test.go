@@ -1165,7 +1165,7 @@ func TestStore_TagValues(t *testing.T) {
 		s = MustOpenStore(index)
 
 		fmtStr := `cpu1%[1]d,foo=a,ignoreme=nope,host=tv%[2]d,shard=s%[3]d value=1 %[4]d
-		cpu1%[1]d,host=nofoo value=1 %[4]d
+	cpu1%[1]d,host=nofoo value=1 %[4]d
 	mem,host=nothanks value=1 %[4]d
 	cpu%[3]d,shard=s%[3]d,foo=a value=2 %[4]d
 	`

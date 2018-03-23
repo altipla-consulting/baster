@@ -13,6 +13,10 @@ import (
 	"github.com/influxdata/influxql"
 )
 
+var DefaultTypeMapper = influxql.MultiTypeMapper(
+	FunctionTypeMapper{},
+)
+
 // SelectOptions are options that customize the select call.
 type SelectOptions struct {
 	// Authorizer is used to limit access to data
@@ -22,12 +26,13 @@ type SelectOptions struct {
 	// If zero, all nodes are used.
 	NodeID uint64
 
-	// An optional channel that, if closed, signals that the select should be
-	// interrupted.
-	InterruptCh <-chan struct{}
-
 	// Maximum number of concurrent series.
 	MaxSeriesN int
+
+	// Maximum number of points to read from the query.
+	// This requires the passed in context to have a Monitor that is
+	// created using WithMonitor.
+	MaxPointN int
 
 	// Maximum number of buckets for a statement.
 	MaxBucketsN int
@@ -57,7 +62,7 @@ type ShardGroup interface {
 // Select is a prepared statement that is ready to be executed.
 type PreparedStatement interface {
 	// Select creates the Iterators that will be used to read the query.
-	Select(ctx context.Context) ([]Iterator, []string, error)
+	Select(ctx context.Context) (Cursor, error)
 
 	// Explain outputs the explain plan for this statement.
 	Explain() (string, error)
@@ -80,10 +85,10 @@ func Prepare(stmt *influxql.SelectStatement, shardMapper ShardMapper, opt Select
 
 // Select compiles, prepares, and then initiates execution of the query using the
 // default compile options.
-func Select(ctx context.Context, stmt *influxql.SelectStatement, shardMapper ShardMapper, opt SelectOptions) ([]Iterator, []string, error) {
+func Select(ctx context.Context, stmt *influxql.SelectStatement, shardMapper ShardMapper, opt SelectOptions) (Cursor, error) {
 	s, err := Prepare(stmt, shardMapper, opt)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	// Must be deferred so it runs after Select.
 	defer s.Close()
@@ -97,20 +102,75 @@ type preparedStatement struct {
 		IteratorCreator
 		io.Closer
 	}
-	columns []string
-	now     time.Time
+	columns   []string
+	maxPointN int
+	now       time.Time
 }
 
-func (p *preparedStatement) Select(ctx context.Context) ([]Iterator, []string, error) {
+func (p *preparedStatement) Select(ctx context.Context) (Cursor, error) {
 	// TODO(jsternberg): Remove this hacky method of propagating now.
 	// Each level of the query should use a time range discovered during
 	// compilation, but that requires too large of a refactor at the moment.
 	ctx = context.WithValue(ctx, "now", p.now)
-	itrs, err := buildIterators(ctx, p.stmt, p.ic, p.opt)
+
+	opt := p.opt
+	opt.InterruptCh = ctx.Done()
+	itrs, err := buildIterators(ctx, p.stmt, p.ic, opt)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return itrs, p.columns, nil
+
+	columns := make([]influxql.VarRef, len(p.columns))
+	offset := 0
+	if !p.stmt.OmitTime {
+		columns[0] = influxql.VarRef{
+			Val:  p.columns[0],
+			Type: influxql.Time,
+		}
+		offset++
+	}
+
+	valuer := influxql.TypeValuerEval{
+		TypeMapper: DefaultTypeMapper,
+	}
+	for i, f := range p.stmt.Fields {
+		typ, _ := valuer.EvalType(f.Expr)
+		columns[i+offset] = influxql.VarRef{
+			Val:  p.columns[i+offset],
+			Type: typ,
+		}
+
+		if p.stmt.Target != nil {
+			continue
+		}
+
+		if call, ok := f.Expr.(*influxql.Call); ok && (call.Name == "top" || call.Name == "bottom") {
+			for j := 1; j < len(call.Args)-1; j++ {
+				offset++
+				typ, _ := valuer.EvalType(call.Args[j])
+				columns[i+offset] = influxql.VarRef{
+					Val:  p.columns[i+offset],
+					Type: typ,
+				}
+			}
+		}
+	}
+
+	cur := newCursor(itrs, columns, p.opt.Ascending)
+	cur.omitTime = p.stmt.OmitTime
+	if p.stmt.Location != nil {
+		cur.loc = p.stmt.Location
+	}
+
+	// If a monitor exists and we are told there is a maximum number of points,
+	// register the monitor function.
+	if m := MonitorFromContext(ctx); m != nil {
+		if p.maxPointN > 0 {
+			monitor := PointLimitMonitor(itrs, DefaultStatsInterval, p.maxPointN)
+			m.Monitor(monitor)
+		}
+	}
+	return cur, nil
 }
 
 func (p *preparedStatement) Close() error {

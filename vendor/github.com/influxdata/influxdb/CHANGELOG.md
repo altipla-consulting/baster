@@ -1,13 +1,17 @@
-v1.5.1 [2018-03-20]
+v1.6.0 [unreleased]
 -------------------
+
+### Features
+
+-	[#9429](https://github.com/influxdata/influxdb/pull/9429): Support proxy environment variables in the influx client.
 
 ### Bugfixes
 
--	[#9542](https://github.com/influxdata/influxdb/pull/9542): Allow time variable to be case insensitive again.
--	[#9564](https://github.com/influxdata/influxdb/pull/9564): Support setting the log level through the environment variable.
--	[#9575](https://github.com/influxdata/influxdb/pull/9575): Ensure correct number of tags parsed.
--	[#9566](https://github.com/influxdata/influxdb/pull/9566): Fix panic when checking fieldsets.
--	[#9587](https://github.com/influxdata/influxdb/pull/9587): Fix data race in WAL.
+-	[#9553](https://github.com/influxdata/influxdb/pull/9553): Support setting the log level through the environment variable.
+-	[#9551](https://github.com/influxdata/influxdb/pull/9551): Fix panic when checking fieldsets.
+-	[#9573](https://github.com/influxdata/influxdb/pull/9573): Ensure correct number of tags parsed when commas used.
+-	[#9580](https://github.com/influxdata/influxdb/pull/9580): Fix data race in WAL.
+-	[#9586](https://github.com/influxdata/influxdb/pull/9586): Allow SHOW SERIES kill.
 
 v1.5.0 [2018-03-06]
 -------------------

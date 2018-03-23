@@ -7,14 +7,13 @@ github.com/boltdb/bolt 4b1ebc1869ad66568b313d0dc410e2be72670dda
 github.com/cespare/xxhash 1b6d2e40c16ba0dfce5c8eac2480ad6e7394819b
 github.com/davecgh/go-spew 346938d642f2ec3594ed81d874461961cd0faa76
 github.com/dgrijalva/jwt-go 24c63f56522a87ec5339cc3567883f1039378fdb
-github.com/dgryski/go-bits 2ad8d707cc05b1815ce6ff2543bb5e8d8f9298ef
 github.com/dgryski/go-bitstream 7d46cd22db7004f0cceb6f7975824b560cf0e486
 github.com/glycerine/go-unsnap-stream 62a9a9eb44fd8932157b1a8ace2149eff5971af6
 github.com/gogo/protobuf 1c2b16bc280d6635de6c52fc1471ab962dc36ec9
 github.com/golang/protobuf 1e59b77b52bf8e4b449a57e6f79f21226d571845
 github.com/golang/snappy d9eb7a3d35ec988b8585d4a0068e462c27d28380
 github.com/google/go-cmp 18107e6c56edb2d51f965f7d68e59404f0daee54
-github.com/influxdata/influxql 21ddebb5641365d9b92234e8f5a566c41da9ab48
+github.com/influxdata/influxql 53bc9c15f65bea9e4b9f6cc5d9c5327d4077bdc5
 github.com/influxdata/usage-client 6d3895376368aa52a3a81d2a16e90f0f52371967
 github.com/influxdata/yamux 1f58ded512de5feabbe30b60c7d33a7a896c5f16
 github.com/influxdata/yarpc 036268cdec22b7074cd6d50cc6d7315c667063c7

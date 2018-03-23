@@ -1,8 +1,8 @@
-hash: 518d84b5c7e4f84fcdeeeb97150f560cf8c12e72175a67420f7d15c4c774b668
-updated: 2018-03-21T18:29:26.020699406Z
+hash: 856e520a1285545617430d3d593e909b2dbb1d18b393abf7aa3c87ceeba7685f
+updated: 2018-03-23T14:38:29.287622815Z
 imports:
 - name: cloud.google.com/go
-  version: f0945c7677b2605cceaa429f567518ad11297d87
+  version: a531c05021a787c88054446a20b7789aa4f62fe1
   subpackages:
   - bigquery
   - civil
@@ -40,8 +40,10 @@ imports:
   - json/parser
   - json/scanner
   - json/token
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: cdae4ccde4c67c3390d8ae8a1a06bd3b4cdce5c5
+  version: a65e51e295525fd4ffd03937750841e26bf89bde
   subpackages:
   - client
   - models
@@ -54,8 +56,12 @@ imports:
   version: 112f929a3020abfcd06b77c963ec919130796a35
 - name: github.com/sirupsen/logrus
   version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
+- name: github.com/spf13/cobra
+  version: 7b2c5ac9fc04fc5efafb60700713d4fa609b777b
+- name: github.com/spf13/pflag
+  version: ee5fd03fd6acfd43e44aea0b4135958546ed8e73
 - name: go.opencensus.io
-  version: b8f3b913f034c5682f7255d5d51efb6f151fb09b
+  version: d1d14e41adca2c40dd0628f80ca09e0cca204f22
   subpackages:
   - exporter/stackdriver/propagation
   - internal
@@ -70,7 +76,7 @@ imports:
   - trace
   - trace/propagation
 - name: golang.org/x/crypto
-  version: 80db560fac1fb3e6ac81dbc7f8ae4c061f5257bd
+  version: 88942b9c40a4c9d203b82b3731787b672d6e809b
   subpackages:
   - acme
   - acme/autocert
@@ -141,7 +147,7 @@ imports:
   - googleapis/rpc/status
   - googleapis/type/latlng
 - name: google.golang.org/grpc
-  version: 32d9ffabbae22e378e8643eb8ba7795684eb7789
+  version: bdb0727fa72e9f94e0b23df2b8c17561956811cd
   subpackages:
   - balancer
   - balancer/base
