@@ -39,6 +39,7 @@ var CmdCreateBigQuerySchema = &cobra.Command{
     metadata := &bigquery.TableMetadata{
       Description: "Registro de peticiones de baster",
       Schema: monitoring.BigQuerySchema,
+      TimePartitioning: new(bigquery.TimePartitioning),
     }
     if err := table.Create(ctx, metadata); err != nil {
       return errors.Trace(err)
