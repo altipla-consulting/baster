@@ -4,7 +4,7 @@
 > Reverse proxy with LetsEncrypt and Kubernetes capabilities.
 
 
-### Estado
+### Status
 
 We are actively supporting and updating this piece of software for internal use of our company.
 
