@@ -20,7 +20,7 @@ type SettingsRoot struct {
 	// Configuración para el servicio externo de redirecciones.
 	Redirects Redirects `hcl:"redirects"`
 
-	// Configuración de la monitorización usando el stack TICK.
+	// Configuración de la monitorización.
 	Monitoring Monitoring `hcl:"monitoring"`
 }
 
