@@ -22,6 +22,9 @@ type SettingsRoot struct {
 
 	// Configuración de la monitorización.
 	Monitoring Monitoring `hcl:"monitoring"`
+
+	// Configuración para la autenticación.
+	Auth Auth `hcl:"auth"`
 }
 
 type ACME struct {
@@ -123,6 +126,12 @@ type BigQuery struct {
 
 	// Nombre de la tabla donde se deben insertar los datos.
 	Table string `hcl:"table"`
+}
+
+type Auth struct {
+	// Endpoint para la autenticación externa. Se llamará a cada petición para
+	// saber si tenemos que rechazar la petición por permisos.
+	Endpoint string `hcl:"endpoint"`
 }
 
 func ParseSettings() error {

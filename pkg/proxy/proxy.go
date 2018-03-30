@@ -56,12 +56,24 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 			return
 		}
 
+		// Aplica autenticación externa si está configurada.
+		if config.Settings.Auth.Endpoint != "" {
+			if ok, err := queryAuth(w, domain.Hostname, r.URL.String()); err != nil {
+				log.WithFields(log.Fields{"error": err.Error(), "stack": errors.ErrorStack(err)}).Error("Auth failed")
+				http.Error(w, "auth failed", http.StatusInternalServerError)
+				return
+			} else if !ok {
+				return
+			}
+		}
+
 		// Aplica el servicio de redirecciones si lo hemos configurado.
 		source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
 		if config.Settings.Redirects.Apply != "" {
 			dest, err := queryRedirect(source)
 			if err != nil {
-				http.Error(w, "Redirects not working", http.StatusInternalServerError)
+				log.WithFields(log.Fields{"error": err.Error(), "stack": errors.ErrorStack(err)}).Error("Redirects failed")
+				http.Error(w, "redirects failed", http.StatusInternalServerError)
 				return
 			}
 
@@ -223,4 +235,43 @@ func queryRedirect(url string) (string, error) {
 	}
 
 	return reply.Destination, nil
+}
+
+func queryAuth(w http.ResponseWriter, hostname, calledURL string) (bool, error) {
+	authEndpoint, err := url.Parse(config.Settings.Auth.Endpoint)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+
+	qs := authEndpoint.Query()
+	qs.Set("hostname", hostname)
+	qs.Set("url", calledURL)
+	authEndpoint.RawQuery = qs.Encode()
+
+	req, err := http.NewRequest("GET", authEndpoint.String(), nil)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+	defer resp.Body.Close()
+
+	content, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+
+	if resp.StatusCode == http.StatusForbidden {
+		http.Error(w, string(content), http.StatusForbidden)
+		return false, nil
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		return true, nil
+	}
+
+	return false, errors.Errorf("unexpected auth status: %v", resp.Status)
 }

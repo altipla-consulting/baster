@@ -50,7 +50,10 @@ func run() error {
 	}
 
 	if config.Settings.Redirects.Apply != "" {
-		log.WithFields(log.Fields{"endpoint": config.Settings.Redirects}).Info("Configure redirects service")
+		log.WithField("endpoint", config.Settings.Redirects.Apply).Info("External redirects enabled")
+	}
+	if config.Settings.Auth.Endpoint != "" {
+		log.WithField("endpoint", config.Settings.Auth.Endpoint).Info("External auth enabled")
 	}
 	if config.Settings.Monitoring.InfluxDB.Address != "" {
 		log.WithFields(log.Fields{
