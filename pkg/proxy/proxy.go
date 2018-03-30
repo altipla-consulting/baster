@@ -58,7 +58,7 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 
 		// Aplica autenticación externa si está configurada.
 		if config.Settings.Auth.Endpoint != "" {
-			if ok, err := queryAuth(w, domain.Hostname, r.URL.String()); err != nil {
+			if ok, err := queryAuth(w, r); err != nil {
 				log.WithFields(log.Fields{"error": err.Error(), "stack": errors.ErrorStack(err)}).Error("Auth failed")
 				http.Error(w, "auth failed", http.StatusInternalServerError)
 				return
@@ -237,15 +237,15 @@ func queryRedirect(url string) (string, error) {
 	return reply.Destination, nil
 }
 
-func queryAuth(w http.ResponseWriter, hostname, calledURL string) (bool, error) {
+func queryAuth(w http.ResponseWriter, r *http.Request) (bool, error) {
 	authEndpoint, err := url.Parse(config.Settings.Auth.Endpoint)
 	if err != nil {
 		return false, errors.Trace(err)
 	}
 
 	qs := authEndpoint.Query()
-	qs.Set("hostname", hostname)
-	qs.Set("url", calledURL)
+	qs.Set("hostname", r.Host)
+	qs.Set("url", r.URL.String())
 	authEndpoint.RawQuery = qs.Encode()
 
 	req, err := http.NewRequest("GET", authEndpoint.String(), nil)
@@ -264,14 +264,19 @@ func queryAuth(w http.ResponseWriter, hostname, calledURL string) (bool, error) 
 		return false, errors.Trace(err)
 	}
 
-	if resp.StatusCode == http.StatusForbidden {
+	switch resp.StatusCode {
+	case http.StatusForbidden:
 		http.Error(w, string(content), http.StatusForbidden)
 		return false, nil
-	}
 
-	if resp.StatusCode == http.StatusOK {
+	case http.StatusOK:
 		return true, nil
-	}
 
-	return false, errors.Errorf("unexpected auth status: %v", resp.Status)
+	case http.StatusFound:
+		http.Redirect(w, r, resp.Header.Get("Location"), http.StatusFound)
+		return true, nil
+
+	default:
+		return false, errors.Errorf("unexpected auth status: %v", resp.Status)
+	}
 }
