@@ -246,7 +246,7 @@ func queryAuth(w http.ResponseWriter, r *http.Request) (bool, error) {
 	qs := authEndpoint.Query()
 	qs.Set("hostname", r.Host)
 	qs.Set("url", r.URL.String())
-	qs.Set("authentication", r.Header.Get("Authentication"))
+	qs.Set("authorization", r.Header.Get("Authorization"))
 	authEndpoint.RawQuery = qs.Encode()
 
 	req, err := http.NewRequest("GET", authEndpoint.String(), nil)
