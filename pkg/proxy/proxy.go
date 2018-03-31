@@ -58,11 +58,11 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 
 		// Aplica autenticación externa si está configurada.
 		if config.Settings.Auth.Endpoint != "" {
-			if ok, err := queryAuth(w, r); err != nil {
+			if keep, err := queryAuth(w, r); err != nil {
 				log.WithFields(log.Fields{"error": err.Error(), "stack": errors.ErrorStack(err)}).Error("Auth failed")
 				http.Error(w, "auth failed", http.StatusInternalServerError)
 				return
-			} else if !ok {
+			} else if !keep {
 				return
 			}
 		}
@@ -275,7 +275,7 @@ func queryAuth(w http.ResponseWriter, r *http.Request) (bool, error) {
 
 	case http.StatusFound:
 		http.Redirect(w, r, resp.Header.Get("Location"), http.StatusFound)
-		return true, nil
+		return false, nil
 
 	default:
 		return false, errors.Errorf("unexpected auth status: %v", resp.Status)
