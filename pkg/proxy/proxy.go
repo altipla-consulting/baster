@@ -47,6 +47,20 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
+		// Activa las cabeceras CORS en peticiones que cruzan dominios si coincide
+		// con un origen autorizado en la configuración.
+		origin := r.Header.Get("Origin")
+		if collections.HasString(domain.CORS.Origins, origin) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+		}
+
 		// Aplica redirecciones de dominio si están configuradas
 		if domain.Redirect != "" {
 			u := r.URL
@@ -79,20 +93,6 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 
 			if dest != source {
 				http.Redirect(w, r, dest, http.StatusMovedPermanently)
-				return
-			}
-		}
-
-		// Activa las cabeceras CORS en peticiones que cruzan dominios si coincide
-		// con un origen autorizado en la configuración.
-		origin := r.Header.Get("Origin")
-		if collections.HasString(domain.CORS.Origins, origin) {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-
-			if r.Method == "OPTIONS" {
-				w.WriteHeader(http.StatusOK)
 				return
 			}
 		}
