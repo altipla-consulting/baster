@@ -142,40 +142,42 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 		}
 		proxy.ServeHTTP(w, r)
 
-		// Intenta averiguar la longitud del contenido que estamos sirviendo.
-		length := resp.ContentLength
-		if length == -1 {
-			length, _ = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
+		if shouldLogRequest(r) {
+			// Intenta averiguar la longitud del contenido que estamos sirviendo.
+			length := resp.ContentLength
+			if length == -1 {
+				length, _ = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
+			}
+
+			latency := int64(time.Since(start) / time.Millisecond)
+			monitoring.Send(monitoring.Measurement{
+				DomainName: domain.Name,
+				Monitoring: path.Monitoring,
+				URL:        source,
+				Method:     r.Method,
+				Referer:    r.Referer(),
+				Status:     resp.StatusCode,
+				Latency:    latency,
+				Time:       time.Now(),
+			})
+
+			// Logging de la petición que hemos recibido.
+			log.WithFields(log.Fields{
+				"domain":        domain.Name,
+				"host":          host,
+				"service":       r.URL.Host,
+				"method":        r.Method,
+				"referer":       r.Header.Get("Referer"),
+				"request-size":  r.ContentLength,
+				"uri":           reqURL.String(),
+				"user-agent":    r.Header.Get("User-Agent"),
+				"authorization": r.Header.Get("Authorization"),
+				"secure":        r.TLS != nil,
+				"latency-ms":    latency,
+				"resp-size":     length,
+				"status":        resp.StatusCode,
+			}).Info("request")
 		}
-
-		latency := int64(time.Since(start) / time.Millisecond)
-		monitoring.Send(monitoring.Measurement{
-			DomainName: domain.Name,
-			Monitoring: path.Monitoring,
-			URL:        source,
-			Method:     r.Method,
-			Referer:    r.Referer(),
-			Status:     resp.StatusCode,
-			Latency:    latency,
-			Time:       time.Now(),
-		})
-
-		// Logging de la petición que hemos recibido.
-		log.WithFields(log.Fields{
-			"domain":        domain.Name,
-			"host":          host,
-			"service":       r.URL.Host,
-			"method":        r.Method,
-			"referer":       r.Header.Get("Referer"),
-			"request-size":  r.ContentLength,
-			"uri":           reqURL.String(),
-			"user-agent":    r.Header.Get("User-Agent"),
-			"authorization": r.Header.Get("Authorization"),
-			"secure":        r.TLS != nil,
-			"latency-ms":    latency,
-			"resp-size":     length,
-			"status":        resp.StatusCode,
-		}).Info("request")
 	}
 }
 
@@ -280,4 +282,8 @@ func queryAuth(w http.ResponseWriter, r *http.Request) (bool, error) {
 	default:
 		return false, errors.Errorf("unexpected auth status: %v", resp.Status)
 	}
+}
+
+func shouldLogRequest(r *http.Request) bool {
+	return r.UserAgent() != "GoogleStackdriverMonitoring-UptimeChecks(https://cloud.google.com/monitoring)"
 }
