@@ -1,7 +1,10 @@
 
-# baster
+<p align="center">
+  <img src="https://storage.googleapis.com/altipla-external-files/logos/baster.png" height="70">
+</p>
+<br>
 
-> Reverse proxy with LetsEncrypt and Kubernetes capabilities.
+Reverse proxy with LetsEncrypt and Kubernetes capabilities.
 
 
 ### Status
