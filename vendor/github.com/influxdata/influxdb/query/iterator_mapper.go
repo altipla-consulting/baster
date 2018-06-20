@@ -2,6 +2,7 @@ package query
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/influxdata/influxql"
 )
@@ -10,9 +11,20 @@ type IteratorMap interface {
 	Value(row *Row) interface{}
 }
 
-type FieldMap int
+type FieldMap struct {
+	Index int
+	Type  influxql.DataType
+}
 
-func (i FieldMap) Value(row *Row) interface{} { return row.Values[i] }
+func (f FieldMap) Value(row *Row) interface{} {
+	v := castToType(row.Values[f.Index], f.Type)
+	if v == NullFloat {
+		// If the value is a null float, then convert it back to NaN
+		// so it is treated as a float for eval.
+		v = math.NaN()
+	}
+	return v
+}
 
 type TagMap string
 
@@ -26,7 +38,7 @@ func NewIteratorMapper(cur Cursor, driver IteratorMap, fields []IteratorMap, opt
 	if driver != nil {
 		switch driver := driver.(type) {
 		case FieldMap:
-			switch typ := cur.Columns()[int(driver)].Type; typ {
+			switch driver.Type {
 			case influxql.Float:
 				return newFloatIteratorMapper(cur, driver, fields, opt)
 			case influxql.Integer:
@@ -38,7 +50,12 @@ func NewIteratorMapper(cur Cursor, driver IteratorMap, fields []IteratorMap, opt
 			case influxql.Boolean:
 				return newBooleanIteratorMapper(cur, driver, fields, opt)
 			default:
-				panic(fmt.Sprintf("unable to map iterator type: %s", typ))
+				// The driver doesn't appear to to have a valid driver type.
+				// We should close the cursor and return a blank iterator.
+				// We close the cursor because we own it and have a responsibility
+				// to close it once it is passed into this function.
+				cur.Close()
+				return &nilFloatIterator{}
 			}
 		case TagMap:
 			return newStringIteratorMapper(cur, driver, fields, opt)

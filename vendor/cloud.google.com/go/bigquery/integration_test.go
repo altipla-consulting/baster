@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All Rights Reserved.
+// Copyright 2015 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/big"
 	"net/http"
 	"os"
 	"sort"
@@ -34,6 +35,7 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
 	"google.golang.org/api/googleapi"
@@ -55,8 +57,8 @@ var (
 	testTableExpiration time.Time
 	// BigQuery does not accept hyphens in dataset or table IDs, so we create IDs
 	// with underscores.
-	datasetIDs = testutil.NewUIDSpaceSep("dataset", '_')
-	tableIDs   = testutil.NewUIDSpaceSep("table", '_')
+	datasetIDs = uid.NewSpace("dataset", &uid.Options{Sep: '_'})
+	tableIDs   = uid.NewSpace("table", &uid.Options{Sep: '_'})
 )
 
 // Note: integration tests cannot be run in parallel, because TestIntegration_Location
@@ -105,28 +107,12 @@ func initIntegrationTest() func() {
 	}
 	testTableExpiration = time.Now().Add(10 * time.Minute).Round(time.Second)
 	return func() {
-		if err := deleteDataset(ctx, dataset); err != nil {
+		if err := dataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
 		}
 	}
 }
 
-func deleteDataset(ctx context.Context, ds *Dataset) error {
-	it := ds.Tables(ctx)
-	for {
-		tbl, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return err
-		}
-		if err := tbl.Delete(ctx); err != nil {
-			return err
-		}
-	}
-	return ds.Delete(ctx)
-}
 func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
@@ -167,7 +153,9 @@ func TestIntegration_TableCreateView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("table.create: Did not expect an error, got: %v", err)
 	}
-	view.Delete(ctx)
+	if err := view.Delete(ctx); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestIntegration_TableMetadata(t *testing.T) {
@@ -309,6 +297,28 @@ func TestIntegration_DatasetDelete(t *testing.T) {
 	}
 	if err := ds.Delete(ctx); err != nil {
 		t.Fatalf("deleting dataset %s: %v", ds.DatasetID, err)
+	}
+}
+
+func TestIntegration_DatasetDeleteWithContents(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ds := client.Dataset(datasetIDs.New())
+	if err := ds.Create(ctx, nil); err != nil {
+		t.Fatalf("creating dataset %s: %v", ds.DatasetID, err)
+	}
+	table := ds.Table(tableIDs.New())
+	if err := table.Create(ctx, nil); err != nil {
+		t.Fatalf("creating table %s in dataset %s: %v", table.TableID, table.DatasetID, err)
+	}
+	// We expect failure here
+	if err := ds.Delete(ctx); err == nil {
+		t.Fatalf("non-recursive delete of dataset %s succeeded unexpectedly.", ds.DatasetID)
+	}
+	if err := ds.DeleteWithContents(ctx); err != nil {
+		t.Fatalf("deleting recursively dataset %s: %v", ds.DatasetID, err)
 	}
 }
 
@@ -663,6 +673,7 @@ type TestStruct struct {
 	Date      civil.Date
 	Time      civil.Time
 	DateTime  civil.DateTime
+	Numeric   *big.Rat
 
 	StringArray    []string
 	IntegerArray   []int64
@@ -672,6 +683,7 @@ type TestStruct struct {
 	DateArray      []civil.Date
 	TimeArray      []civil.Time
 	DateTimeArray  []civil.DateTime
+	NumericArray   []*big.Rat
 
 	Record      SubTestStruct
 	RecordArray []SubTestStruct
@@ -716,6 +728,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 			d,
 			tm,
 			dtm,
+			big.NewRat(57, 100),
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -724,6 +737,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 			[]civil.Date{d, d2},
 			[]civil.Time{tm, tm2},
 			[]civil.DateTime{dtm, dtm2},
+			[]*big.Rat{big.NewRat(1, 2), big.NewRat(3, 5)},
 			SubTestStruct{
 				"string",
 				SubSubTestStruct{24},
@@ -748,6 +762,7 @@ func TestIntegration_UploadAndReadStructs(t *testing.T) {
 			Date:      d,
 			Time:      tm,
 			DateTime:  dtm,
+			Numeric:   big.NewRat(4499, 10000),
 		},
 	}
 	var savers []*StructSaver
@@ -802,6 +817,7 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 	}
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
+	rat := big.NewRat(33, 100)
 	testUploadAndReadNullable(t, testStructNullable{}, make([]Value, len(testStructNullableSchema)))
 	testUploadAndReadNullable(t, testStructNullable{
 		String:    NullString{"x", true},
@@ -813,9 +829,10 @@ func TestIntegration_UploadAndReadNullable(t *testing.T) {
 		Date:      NullDate{testDate, true},
 		Time:      NullTime{ctm, true},
 		DateTime:  NullDateTime{cdt, true},
+		Numeric:   rat,
 		Record:    &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, []Value{int64(4)}})
 }
 
 func testUploadAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
@@ -990,9 +1007,9 @@ func TestIntegration_Load(t *testing.T) {
 	// Load the table from a reader.
 	r := strings.NewReader("a,0\nb,1\nc,2\n")
 	wantRows := [][]Value{
-		[]Value{"a", int64(0)},
-		[]Value{"b", int64(1)},
-		[]Value{"c", int64(2)},
+		{"a", int64(0)},
+		{"b", int64(1)},
+		{"c", int64(2)},
 	}
 	rs := NewReaderSource(r)
 	loader := table.LoaderFrom(rs)
@@ -1045,9 +1062,9 @@ func TestIntegration_DML(t *testing.T) {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
-		[]Value{"a", []Value{int64(0)}, []Value{true}},
-		[]Value{"b", []Value{int64(1)}, []Value{false}},
-		[]Value{"c", []Value{int64(2)}, []Value{true}},
+		{"a", []Value{int64(0)}, []Value{true}},
+		{"b", []Value{int64(1)}, []Value{false}},
+		{"c", []Value{int64(2)}, []Value{true}},
 	}
 	checkRead(t, "DML", table.Read(ctx), wantRows)
 }
@@ -1093,7 +1110,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	wantRows := [][]Value{
-		[]Value{d, tm, dtm, ts},
+		{d, tm, dtm, ts},
 	}
 	upl := table.Uploader()
 	if err := upl.Put(ctx, []*ValuesSaver{
@@ -1144,6 +1161,8 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}{
 		{"SELECT 1", ints(1)},
 		{"SELECT 1.3", []Value{1.3}},
+		{"SELECT CAST(1.3  AS NUMERIC)", []Value{big.NewRat(13, 10)}},
+		{"SELECT NUMERIC '0.25'", []Value{big.NewRat(1, 4)}},
 		{"SELECT TRUE", []Value{true}},
 		{"SELECT 'ABC'", []Value{"ABC"}},
 		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
@@ -1215,6 +1234,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	rtm.Nanosecond = 3000 // round to microseconds
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
+	rat := big.NewRat(13, 10)
 
 	type ss struct {
 		String string
@@ -1244,6 +1264,12 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{{"val", 1.3}},
 			[]Value{1.3},
 			1.3,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{{"val", rat}},
+			[]Value{rat},
+			rat,
 		},
 		{
 			"SELECT @val",
@@ -1430,9 +1456,9 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	q := client.Query("SELECT * FROM csv")
 	q.TableDefinitions = map[string]ExternalData{"csv": edc}
 	wantRows := [][]Value{
-		[]Value{"a", int64(1)},
-		[]Value{"b", int64(2)},
-		[]Value{"c", int64(3)},
+		{"a", int64(1)},
+		{"b", int64(2)},
+		{"c", int64(3)},
 	}
 	iter, err := q.Read(ctx)
 	if err != nil {
@@ -1570,7 +1596,7 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 		} else if !gotErr && test.err {
 			t.Errorf("%+v:\nsucceeded, but want error", test)
 		}
-		view.Delete(ctx)
+		_ = view.Delete(ctx)
 	}
 }
 
@@ -1692,9 +1718,9 @@ func testLocation(t *testing.T, loc string) {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
-		[]Value{"a", int64(0)},
-		[]Value{"b", int64(1)},
-		[]Value{"c", int64(2)},
+		{"a", int64(0)},
+		{"b", int64(1)},
+		{"c", int64(2)},
 	}
 	checkRead(t, "location", iter, wantRows)
 
@@ -1714,6 +1740,40 @@ func testLocation(t *testing.T, loc string) {
 	e.Location = loc
 	if _, err := e.Run(ctx); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIntegration_NumericErrors(t *testing.T) {
+	// Verify that the service returns an error for a big.Rat that's too large.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	schema := Schema{{Name: "n", Type: NumericFieldType}}
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+	tooBigRat := &big.Rat{}
+	if _, ok := tooBigRat.SetString("1e40"); !ok {
+		t.Fatal("big.Rat.SetString failed")
+	}
+	upl := table.Uploader()
+	err := upl.Put(ctx, []*ValuesSaver{{Schema: schema, Row: []Value{tooBigRat}}})
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+}
+
+func TestIntegration_QueryErrors(t *testing.T) {
+	// Verify that a bad query returns an appropriate error.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	q := client.Query("blah blah broken")
+	_, err := q.Read(ctx)
+	const want = "invalidQuery"
+	if !strings.Contains(err.Error(), want) {
+		t.Fatalf("got %q, want substring %q", err, want)
 	}
 }
 

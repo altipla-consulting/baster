@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ type DocumentSnapshot struct {
 	CreateTime time.Time
 
 	// Read-only. The time at which the document was last changed. This value
-	// is initally set to CreateTime then increases monotonically with each
+	// is initially set to CreateTime then increases monotonically with each
 	// change to the document. It can also be compared to values from other
 	// documents and the read time of a query.
 	UpdateTime time.Time
@@ -53,7 +53,8 @@ type DocumentSnapshot struct {
 }
 
 // Exists reports whether the DocumentSnapshot represents an existing document.
-// DocumentSnapshots for deleted documents may be returned by SnapshotIterator.Next.
+// Even if Exists returns false, the Ref and ReadTime fields of the DocumentSnapshot
+// are valid.
 func (d *DocumentSnapshot) Exists() bool {
 	return d.proto != nil
 }
@@ -109,7 +110,7 @@ func (d *DocumentSnapshot) DataTo(p interface{}) error {
 	if !d.Exists() {
 		return status.Errorf(codes.NotFound, "document %s does not exist", d.Ref.Path)
 	}
-	return setFromProtoValue(p, &pb.Value{&pb.Value_MapValue{&pb.MapValue{d.proto.Fields}}}, d.c)
+	return setFromProtoValue(p, &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: d.proto.Fields}}}, d.c)
 }
 
 // DataAt returns the data value denoted by path.
@@ -189,7 +190,7 @@ func toProtoDocument(x interface{}) (*pb.Document, []FieldPath, error) {
 	if pv != nil {
 		m := pv.GetMapValue()
 		if m == nil {
-			return nil, nil, fmt.Errorf("firestore: cannot covert value of type %T into a map", x)
+			return nil, nil, fmt.Errorf("firestore: cannot convert value of type %T into a map", x)
 		}
 		fields = m.Fields
 	}
@@ -277,19 +278,20 @@ func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client, readTi
 		c:     c,
 		proto: proto,
 	}
-	ts, err := ptypes.Timestamp(proto.CreateTime)
-	if err != nil {
-		return nil, err
+	if proto != nil {
+		ts, err := ptypes.Timestamp(proto.CreateTime)
+		if err != nil {
+			return nil, err
+		}
+		d.CreateTime = ts
+		ts, err = ptypes.Timestamp(proto.UpdateTime)
+		if err != nil {
+			return nil, err
+		}
+		d.UpdateTime = ts
 	}
-	d.CreateTime = ts
-	ts, err = ptypes.Timestamp(proto.UpdateTime)
-	if err != nil {
-		return nil, err
-	}
-	d.UpdateTime = ts
-	// TODO(jba): remove nil check when all callers pass a read time.
 	if readTime != nil {
-		ts, err = ptypes.Timestamp(readTime)
+		ts, err := ptypes.Timestamp(readTime)
 		if err != nil {
 			return nil, err
 		}

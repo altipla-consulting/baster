@@ -17,6 +17,7 @@ import (
 	"regexp"
 	"sort"
 	"sync"
+	"unsafe"
 
 	"github.com/influxdata/influxdb/models"
 	"github.com/influxdata/influxdb/pkg/bytesutil"
@@ -36,7 +37,7 @@ func init() {
 	tsdb.NewInmemIndex = func(name string, sfile *tsdb.SeriesFile) (interface{}, error) { return NewIndex(name, sfile), nil }
 
 	tsdb.RegisterIndex(IndexName, func(id uint64, database, path string, seriesIDSet *tsdb.SeriesIDSet, sfile *tsdb.SeriesFile, opt tsdb.EngineOptions) tsdb.Index {
-		return NewShardIndex(id, database, path, seriesIDSet, sfile, opt)
+		return NewShardIndex(id, seriesIDSet, opt)
 	})
 }
 
@@ -54,8 +55,8 @@ type Index struct {
 	measurements map[string]*measurement // measurement name to object and index
 	series       map[string]*series      // map series key to the Series object
 
-	seriesSketch, seriesTSSketch             *hll.Plus
-	measurementsSketch, measurementsTSSketch *hll.Plus
+	seriesSketch, seriesTSSketch             estimator.Sketch
+	measurementsSketch, measurementsTSSketch estimator.Sketch
 
 	// Mutex to control rebuilds of the index
 	rebuildQueue sync.Mutex
@@ -76,6 +77,40 @@ func NewIndex(database string, sfile *tsdb.SeriesFile) *Index {
 	index.measurementsTSSketch = hll.NewDefaultPlus()
 
 	return index
+}
+
+func (i *Index) UniqueReferenceID() uintptr {
+	return uintptr(unsafe.Pointer(i))
+}
+
+// Bytes estimates the memory footprint of this Index, in bytes.
+func (i *Index) Bytes() int {
+	var b int
+	i.mu.RLock()
+	b += 24 // mu RWMutex is 24 bytes
+	b += int(unsafe.Sizeof(i.database)) + len(i.database)
+	// Do not count SeriesFile because it belongs to the code that constructed this Index.
+	if i.fieldset != nil {
+		b += int(unsafe.Sizeof(i.fieldset)) + i.fieldset.Bytes()
+	}
+	b += int(unsafe.Sizeof(i.fieldset))
+	for k, v := range i.measurements {
+		b += int(unsafe.Sizeof(k)) + len(k)
+		b += int(unsafe.Sizeof(v)) + v.bytes()
+	}
+	b += int(unsafe.Sizeof(i.measurements))
+	for k, v := range i.series {
+		b += int(unsafe.Sizeof(k)) + len(k)
+		b += int(unsafe.Sizeof(v)) + v.bytes()
+	}
+	b += int(unsafe.Sizeof(i.series))
+	b += int(unsafe.Sizeof(i.seriesSketch)) + i.seriesSketch.Bytes()
+	b += int(unsafe.Sizeof(i.seriesTSSketch)) + i.seriesTSSketch.Bytes()
+	b += int(unsafe.Sizeof(i.measurementsSketch)) + i.measurementsSketch.Bytes()
+	b += int(unsafe.Sizeof(i.measurementsTSSketch)) + i.measurementsTSSketch.Bytes()
+	b += 8 // rebuildQueue Mutex is 8 bytes
+	i.mu.RUnlock()
+	return b
 }
 
 func (i *Index) Type() string      { return IndexName }
@@ -151,8 +186,8 @@ func (i *Index) MeasurementIterator() (tsdb.MeasurementIterator, error) {
 
 // CreateSeriesListIfNotExists adds the series for the given measurement to the
 // index and sets its ID or returns the existing series object
-func (i *Index) CreateSeriesListIfNotExists(shardID uint64, seriesIDSet *tsdb.SeriesIDSet, keys, names [][]byte, tagsSlice []models.Tags, opt *tsdb.EngineOptions, ignoreLimits bool) error {
-	seriesIDs, err := i.sfile.CreateSeriesListIfNotExists(names, tagsSlice, nil)
+func (i *Index) CreateSeriesListIfNotExists(seriesIDSet *tsdb.SeriesIDSet, keys, names [][]byte, tagsSlice []models.Tags, opt *tsdb.EngineOptions, ignoreLimits bool) error {
+	seriesIDs, err := i.sfile.CreateSeriesListIfNotExists(names, tagsSlice)
 	if err != nil {
 		return err
 	}
@@ -1031,11 +1066,13 @@ func (i *Index) assignExistingSeries(shardID uint64, seriesIDSet *tsdb.SeriesIDS
 		} else {
 			// Add the existing series to this shard's bitset, since this may
 			// be the first time the series is added to this shard.
-			seriesIDSet.Lock()
-			if !seriesIDSet.ContainsNoLock(ss.ID) {
-				seriesIDSet.AddNoLock(ss.ID)
+			if !seriesIDSet.Contains(ss.ID) {
+				seriesIDSet.Lock()
+				if !seriesIDSet.ContainsNoLock(ss.ID) {
+					seriesIDSet.AddNoLock(ss.ID)
+				}
+				seriesIDSet.Unlock()
 			}
-			seriesIDSet.Unlock()
 		}
 	}
 	i.mu.RUnlock()
@@ -1128,7 +1165,7 @@ func (idx *ShardIndex) CreateSeriesListIfNotExists(keys, names [][]byte, tagsSli
 		keys, names, tagsSlice = keys[:n], names[:n], tagsSlice[:n]
 	}
 
-	if err := idx.Index.CreateSeriesListIfNotExists(idx.id, idx.seriesIDSet, keys, names, tagsSlice, &idx.opt, idx.opt.Config.MaxSeriesPerDatabase == 0); err != nil {
+	if err := idx.Index.CreateSeriesListIfNotExists(idx.seriesIDSet, keys, names, tagsSlice, &idx.opt, idx.opt.Config.MaxSeriesPerDatabase == 0); err != nil {
 		reason = err.Error()
 		droppedKeys = append(droppedKeys, keys...)
 	}
@@ -1157,13 +1194,13 @@ func (idx *ShardIndex) SeriesN() int64 {
 // InitializeSeries is called during start-up.
 // This works the same as CreateSeriesListIfNotExists except it ignore limit errors.
 func (idx *ShardIndex) InitializeSeries(keys, names [][]byte, tags []models.Tags) error {
-	return idx.Index.CreateSeriesListIfNotExists(idx.id, idx.seriesIDSet, keys, names, tags, &idx.opt, true)
+	return idx.Index.CreateSeriesListIfNotExists(idx.seriesIDSet, keys, names, tags, &idx.opt, true)
 }
 
 // CreateSeriesIfNotExists creates the provided series on the index if it is not
 // already present.
 func (idx *ShardIndex) CreateSeriesIfNotExists(key, name []byte, tags models.Tags) error {
-	return idx.Index.CreateSeriesListIfNotExists(idx.id, idx.seriesIDSet, [][]byte{key}, [][]byte{name}, []models.Tags{tags}, &idx.opt, false)
+	return idx.Index.CreateSeriesListIfNotExists(idx.seriesIDSet, [][]byte{key}, [][]byte{name}, []models.Tags{tags}, &idx.opt, false)
 }
 
 // TagSets returns a list of tag sets based on series filtering.
@@ -1177,7 +1214,7 @@ func (idx *ShardIndex) SeriesIDSet() *tsdb.SeriesIDSet {
 }
 
 // NewShardIndex returns a new index for a shard.
-func NewShardIndex(id uint64, database, path string, seriesIDSet *tsdb.SeriesIDSet, sfile *tsdb.SeriesFile, opt tsdb.EngineOptions) tsdb.Index {
+func NewShardIndex(id uint64, seriesIDSet *tsdb.SeriesIDSet, opt tsdb.EngineOptions) tsdb.Index {
 	return &ShardIndex{
 		Index:       opt.InmemIndex.(*Index),
 		id:          id,

@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All Rights Reserved.
+// Copyright 2014 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -203,7 +203,7 @@ func (c *consumer) consume(t *testing.T, ctx context.Context, sub *Subscription)
 	for _, dur := range c.durations {
 		ctx2, cancel := context.WithTimeout(ctx, dur)
 		defer cancel()
-		id := sub.name[len(sub.name)-2:]
+		id := sub.name[len(sub.name)-1:]
 		log.Printf("%s: start receive", id)
 		prev := c.total
 		err := sub.Receive(ctx2, c.process)

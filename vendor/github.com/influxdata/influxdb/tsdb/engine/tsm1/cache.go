@@ -514,6 +514,38 @@ func (c *Cache) Split(n int) []*Cache {
 	return caches
 }
 
+// Type returns the series type for a key.
+func (c *Cache) Type(key []byte) (models.FieldType, error) {
+	c.mu.RLock()
+	e := c.store.entry(key)
+	if e == nil && c.snapshot != nil {
+		e = c.snapshot.store.entry(key)
+	}
+	c.mu.RUnlock()
+
+	if e != nil {
+		typ, err := e.InfluxQLType()
+		if err != nil {
+			return models.Empty, tsdb.ErrUnknownFieldType
+		}
+
+		switch typ {
+		case influxql.Float:
+			return models.Float, nil
+		case influxql.Integer:
+			return models.Integer, nil
+		case influxql.Unsigned:
+			return models.Unsigned, nil
+		case influxql.Boolean:
+			return models.Boolean, nil
+		case influxql.String:
+			return models.String, nil
+		}
+	}
+
+	return models.Empty, tsdb.ErrUnknownFieldType
+}
+
 // Values returns a copy of all values, deduped and sorted, for the given key.
 func (c *Cache) Values(key []byte) Values {
 	var snapshotEntries *entry
@@ -698,7 +730,7 @@ func (cl *CacheLoader) Load(cache *Cache) error {
 				entry, err := r.Read()
 				if err != nil {
 					n := r.Count()
-					cl.Logger.Info("File corrupt", zap.String("path", f.Name()), zap.Int64("pos", n))
+					cl.Logger.Info("File corrupt", zap.Error(err), zap.String("path", f.Name()), zap.Int64("pos", n))
 					if err := f.Truncate(n); err != nil {
 						return err
 					}

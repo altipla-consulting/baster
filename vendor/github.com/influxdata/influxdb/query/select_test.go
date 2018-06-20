@@ -19,13 +19,15 @@ const Second = int64(time.Second)
 
 func TestSelect(t *testing.T) {
 	for _, tt := range []struct {
-		name string
-		q    string
-		typ  influxql.DataType
-		expr string
-		itrs []query.Iterator
-		rows []query.Row
-		err  string
+		name   string
+		q      string
+		typ    influxql.DataType
+		fields map[string]influxql.DataType
+		expr   string
+		itrs   []query.Iterator
+		rows   []query.Row
+		now    time.Time
+		err    string
 	}{
 		{
 			name: "Min",
@@ -827,6 +829,69 @@ func TestSelect(t *testing.T) {
 			},
 		},
 		{
+			name: "Top_AuxFields_Float",
+			q:    `SELECT top(p1, 2), p2, p3 FROM cpu`,
+			fields: map[string]influxql.DataType{
+				"p1": influxql.Float,
+				"p2": influxql.Float,
+				"p3": influxql.String,
+			},
+			itrs: []query.Iterator{
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Time: 0 * Second, Value: 1, Aux: []interface{}{float64(2), "aaa"}},
+					{Name: "cpu", Time: 1 * Second, Value: 2, Aux: []interface{}{float64(3), "bbb"}},
+					{Name: "cpu", Time: 2 * Second, Value: 3, Aux: []interface{}{float64(4), "ccc"}},
+					{Name: "cpu", Time: 3 * Second, Value: 4, Aux: []interface{}{float64(5), "ddd"}},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 2 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{float64(3), float64(4), "ccc"}},
+				{Time: 3 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{float64(4), float64(5), "ddd"}},
+			},
+		},
+		{
+			name: "Top_AuxFields_Integer",
+			q:    `SELECT top(p1, 2), p2, p3 FROM cpu`,
+			fields: map[string]influxql.DataType{
+				"p1": influxql.Integer,
+				"p2": influxql.Integer,
+				"p3": influxql.String,
+			},
+			itrs: []query.Iterator{
+				&IntegerIterator{Points: []query.IntegerPoint{
+					{Name: "cpu", Time: 0 * Second, Value: 1, Aux: []interface{}{int64(2), "aaa"}},
+					{Name: "cpu", Time: 1 * Second, Value: 2, Aux: []interface{}{int64(3), "bbb"}},
+					{Name: "cpu", Time: 2 * Second, Value: 3, Aux: []interface{}{int64(4), "ccc"}},
+					{Name: "cpu", Time: 3 * Second, Value: 4, Aux: []interface{}{int64(5), "ddd"}},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 2 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{int64(3), int64(4), "ccc"}},
+				{Time: 3 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{int64(4), int64(5), "ddd"}},
+			},
+		},
+		{
+			name: "Top_AuxFields_Unsigned",
+			q:    `SELECT top(p1, 2), p2, p3 FROM cpu`,
+			fields: map[string]influxql.DataType{
+				"p1": influxql.Unsigned,
+				"p2": influxql.Unsigned,
+				"p3": influxql.String,
+			},
+			itrs: []query.Iterator{
+				&UnsignedIterator{Points: []query.UnsignedPoint{
+					{Name: "cpu", Time: 0 * Second, Value: 1, Aux: []interface{}{uint64(2), "aaa"}},
+					{Name: "cpu", Time: 1 * Second, Value: 2, Aux: []interface{}{uint64(3), "bbb"}},
+					{Name: "cpu", Time: 2 * Second, Value: 3, Aux: []interface{}{uint64(4), "ccc"}},
+					{Name: "cpu", Time: 3 * Second, Value: 4, Aux: []interface{}{uint64(5), "ddd"}},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 2 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{uint64(3), uint64(4), "ccc"}},
+				{Time: 3 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{uint64(4), uint64(5), "ddd"}},
+			},
+		},
+		{
 			name: "Bottom_NoTags_Float",
 			q:    `SELECT bottom(value::float, 2) FROM cpu WHERE time >= '1970-01-01T00:00:00Z' AND time < '1970-01-02T00:00:00Z' GROUP BY time(30s), host fill(none)`,
 			typ:  influxql.Float,
@@ -1101,6 +1166,69 @@ func TestSelect(t *testing.T) {
 				{Time: 10 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("region=east")}, Values: []interface{}{uint64(2), "A"}},
 				{Time: 11 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("region=west")}, Values: []interface{}{uint64(3), "A"}},
 				{Time: 50 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("region=west")}, Values: []interface{}{uint64(1), "B"}},
+			},
+		},
+		{
+			name: "Bottom_AuxFields_Float",
+			q:    `SELECT bottom(p1, 2), p2, p3 FROM cpu`,
+			fields: map[string]influxql.DataType{
+				"p1": influxql.Float,
+				"p2": influxql.Float,
+				"p3": influxql.String,
+			},
+			itrs: []query.Iterator{
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Time: 0 * Second, Value: 1, Aux: []interface{}{float64(2), "aaa"}},
+					{Name: "cpu", Time: 1 * Second, Value: 2, Aux: []interface{}{float64(3), "bbb"}},
+					{Name: "cpu", Time: 2 * Second, Value: 3, Aux: []interface{}{float64(4), "ccc"}},
+					{Name: "cpu", Time: 3 * Second, Value: 4, Aux: []interface{}{float64(5), "ddd"}},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 0 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{float64(1), float64(2), "aaa"}},
+				{Time: 1 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{float64(2), float64(3), "bbb"}},
+			},
+		},
+		{
+			name: "Bottom_AuxFields_Integer",
+			q:    `SELECT bottom(p1, 2), p2, p3 FROM cpu`,
+			fields: map[string]influxql.DataType{
+				"p1": influxql.Integer,
+				"p2": influxql.Integer,
+				"p3": influxql.String,
+			},
+			itrs: []query.Iterator{
+				&IntegerIterator{Points: []query.IntegerPoint{
+					{Name: "cpu", Time: 0 * Second, Value: 1, Aux: []interface{}{int64(2), "aaa"}},
+					{Name: "cpu", Time: 1 * Second, Value: 2, Aux: []interface{}{int64(3), "bbb"}},
+					{Name: "cpu", Time: 2 * Second, Value: 3, Aux: []interface{}{int64(4), "ccc"}},
+					{Name: "cpu", Time: 3 * Second, Value: 4, Aux: []interface{}{int64(5), "ddd"}},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 0 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{int64(1), int64(2), "aaa"}},
+				{Time: 1 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{int64(2), int64(3), "bbb"}},
+			},
+		},
+		{
+			name: "Bottom_AuxFields_Unsigned",
+			q:    `SELECT bottom(p1, 2), p2, p3 FROM cpu`,
+			fields: map[string]influxql.DataType{
+				"p1": influxql.Unsigned,
+				"p2": influxql.Unsigned,
+				"p3": influxql.String,
+			},
+			itrs: []query.Iterator{
+				&UnsignedIterator{Points: []query.UnsignedPoint{
+					{Name: "cpu", Time: 0 * Second, Value: 1, Aux: []interface{}{uint64(2), "aaa"}},
+					{Name: "cpu", Time: 1 * Second, Value: 2, Aux: []interface{}{uint64(3), "bbb"}},
+					{Name: "cpu", Time: 2 * Second, Value: 3, Aux: []interface{}{uint64(4), "ccc"}},
+					{Name: "cpu", Time: 3 * Second, Value: 4, Aux: []interface{}{uint64(5), "ddd"}},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 0 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{uint64(1), uint64(2), "aaa"}},
+				{Time: 1 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{uint64(2), uint64(3), "bbb"}},
 			},
 		},
 		{
@@ -1389,8 +1517,8 @@ func TestSelect(t *testing.T) {
 			rows: []query.Row{
 				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{0.7071067811865476}},
 				{Time: 10 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{0.7071067811865476}},
-				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{nil}},
-				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{nil}},
+				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{query.NullFloat}},
+				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{query.NullFloat}},
 				{Time: 50 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{1.5811388300841898}},
 			},
 		},
@@ -1420,8 +1548,8 @@ func TestSelect(t *testing.T) {
 			rows: []query.Row{
 				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{0.7071067811865476}},
 				{Time: 10 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{0.7071067811865476}},
-				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{nil}},
-				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{nil}},
+				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{query.NullFloat}},
+				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{query.NullFloat}},
 				{Time: 50 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{1.5811388300841898}},
 			},
 		},
@@ -1451,8 +1579,8 @@ func TestSelect(t *testing.T) {
 			rows: []query.Row{
 				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{0.7071067811865476}},
 				{Time: 10 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{0.7071067811865476}},
-				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{nil}},
-				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{nil}},
+				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{query.NullFloat}},
+				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{query.NullFloat}},
 				{Time: 50 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{1.5811388300841898}},
 			},
 		},
@@ -2631,14 +2759,65 @@ func TestSelect(t *testing.T) {
 				{Time: 22 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{7.953140268154609}},
 			},
 		},
+		{
+			name: "DuplicateSelectors",
+			q:    `SELECT min(value) * 2, min(value) / 2 FROM cpu WHERE time >= '1970-01-01T00:00:00Z' AND time < '1970-01-02T00:00:00Z' GROUP BY time(10s), host fill(none)`,
+			typ:  influxql.Float,
+			expr: `min(value::float)`,
+			itrs: []query.Iterator{
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Tags: ParseTags("region=west,host=A"), Time: 0 * Second, Value: 20},
+					{Name: "cpu", Tags: ParseTags("region=west,host=A"), Time: 11 * Second, Value: 3},
+					{Name: "cpu", Tags: ParseTags("region=west,host=A"), Time: 31 * Second, Value: 100},
+				}},
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Tags: ParseTags("region=east,host=A"), Time: 9 * Second, Value: 19},
+					{Name: "cpu", Tags: ParseTags("region=east,host=A"), Time: 10 * Second, Value: 2},
+				}},
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Tags: ParseTags("region=west,host=B"), Time: 5 * Second, Value: 10},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{float64(38), float64(19) / 2}},
+				{Time: 10 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{float64(4), float64(1)}},
+				{Time: 30 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=A")}, Values: []interface{}{float64(200), float64(50)}},
+				{Time: 0 * Second, Series: query.Series{Name: "cpu", Tags: ParseTags("host=B")}, Values: []interface{}{float64(20), float64(5)}},
+			},
+		},
+		{
+			name: "GroupByOffset",
+			q:    `SELECT mean(value) FROM cpu WHERE time >= now() - 2m AND time < now() GROUP BY time(1m, now())`,
+			typ:  influxql.Float,
+			expr: `mean(value::float)`,
+			itrs: []query.Iterator{
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Tags: ParseTags("region=west,host=A"), Time: 34 * Second, Value: 20},
+					{Name: "cpu", Tags: ParseTags("region=west,host=A"), Time: 57 * Second, Value: 3},
+					{Name: "cpu", Tags: ParseTags("region=west,host=A"), Time: 92 * Second, Value: 100},
+				}},
+				&FloatIterator{Points: []query.FloatPoint{
+					{Name: "cpu", Tags: ParseTags("region=west,host=B"), Time: 45 * Second, Value: 10},
+				}},
+			},
+			rows: []query.Row{
+				{Time: 30 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{float64(11)}},
+				{Time: 90 * Second, Series: query.Series{Name: "cpu"}, Values: []interface{}{float64(100)}},
+			},
+			now: mustParseTime("1970-01-01T00:02:30Z"),
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			shardMapper := ShardMapper{
 				MapShardsFn: func(sources influxql.Sources, _ influxql.TimeRange) query.ShardGroup {
+					var fields map[string]influxql.DataType
+					if tt.typ != influxql.Unknown {
+						fields = map[string]influxql.DataType{"value": tt.typ}
+					} else {
+						fields = tt.fields
+					}
 					return &ShardGroup{
-						Fields: map[string]influxql.DataType{
-							"value": tt.typ,
-						},
+						Fields:     fields,
 						Dimensions: []string{"host", "region"},
 						CreateIteratorFn: func(ctx context.Context, m *influxql.Measurement, opt query.IteratorOptions) (query.Iterator, error) {
 							if m.Name != "cpu" {
@@ -2666,7 +2845,20 @@ func TestSelect(t *testing.T) {
 
 			stmt := MustParseSelectStatement(tt.q)
 			stmt.OmitTime = true
-			cur, err := query.Select(context.Background(), stmt, &shardMapper, query.SelectOptions{})
+			cur, err := func(stmt *influxql.SelectStatement) (query.Cursor, error) {
+				c, err := query.Compile(stmt, query.CompileOptions{
+					Now: tt.now,
+				})
+				if err != nil {
+					return nil, err
+				}
+
+				p, err := c.Prepare(&shardMapper, query.SelectOptions{})
+				if err != nil {
+					return nil, err
+				}
+				return p.Select(context.Background())
+			}(stmt)
 			if err != nil {
 				if tt.err == "" {
 					t.Fatal(err)
@@ -2677,7 +2869,7 @@ func TestSelect(t *testing.T) {
 				t.Fatal("expected error")
 			} else if a, err := ReadCursor(cur); err != nil {
 				t.Fatalf("unexpected point: %s", err)
-			} else if diff := cmp.Diff(a, tt.rows); diff != "" {
+			} else if diff := cmp.Diff(tt.rows, a); diff != "" {
 				t.Fatalf("unexpected points:\n%s", diff)
 			}
 		})
@@ -2729,7 +2921,7 @@ func TestSelect_Raw(t *testing.T) {
 		t.Errorf("parse error: %s", err)
 	} else if a, err := ReadCursor(cur); err != nil {
 		t.Fatalf("unexpected error: %s", err)
-	} else if diff := cmp.Diff(a, []query.Row{
+	} else if diff := cmp.Diff([]query.Row{
 		{
 			Time: 0 * Second,
 			Series: query.Series{
@@ -2751,7 +2943,7 @@ func TestSelect_Raw(t *testing.T) {
 			},
 			Values: []interface{}{float64(19), int64(19), uint64(19), "c", true},
 		},
-	}); diff != "" {
+	}, a); diff != "" {
 		t.Errorf("unexpected points:\n%s", diff)
 	}
 }
@@ -2866,7 +3058,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_AdditionRHS_Unsigned",
 			Statement: `SELECT i + 9223372036854775808 FROM cpu`,
-			Err:       `cannot use + with an integer and unsigned`,
+			Err:       `type error: i::integer + 9223372036854775808: cannot use + with an integer and unsigned literal`,
 		},
 		{
 			Name:      "Unsigned_AdditionRHS_Unsigned",
@@ -2943,7 +3135,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_AdditionLHS_Unsigned",
 			Statement: `SELECT 9223372036854775808 + i FROM cpu`,
-			Err:       `cannot use + with unsigned and an integer`,
+			Err:       `type error: 9223372036854775808 + i::integer: cannot use + with an integer and unsigned literal`,
 		},
 		{
 			Name:      "Unsigned_AdditionLHS_Unsigned",
@@ -3002,7 +3194,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_Add_Unsigned",
 			Statement: `SELECT i + u FROM cpu`,
-			Err:       `cannot use + between an integer and unsigned, an explicit cast is required`,
+			Err:       `type error: i::integer + u::unsigned: cannot use + between an integer and unsigned, an explicit cast is required`,
 		},
 		{
 			Name:      "Float_MultiplicationRHS_Number",
@@ -3167,7 +3359,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_Multiply_Unsigned",
 			Statement: `SELECT i * u FROM cpu`,
-			Err:       `cannot use * between an integer and unsigned, an explicit cast is required`,
+			Err:       `type error: i::integer * u::unsigned: cannot use * between an integer and unsigned, an explicit cast is required`,
 		},
 		{
 			Name:      "Float_SubtractionRHS_Number",
@@ -3235,7 +3427,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_SubtractionRHS_Unsigned",
 			Statement: `SELECT i - 9223372036854775808 FROM cpu`,
-			Err:       `cannot use - with an integer and unsigned`,
+			Err:       `type error: i::integer - 9223372036854775808: cannot use - with an integer and unsigned literal`,
 		},
 		// Skip Unsigned_SubtractionRHS_Integer because it would result in underflow.
 		{
@@ -3304,7 +3496,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_SubtractionLHS_Unsigned",
 			Statement: `SELECT 9223372036854775808 - i FROM cpu`,
-			Err:       `cannot use - with unsigned and an integer`,
+			Err:       `type error: 9223372036854775808 - i::integer: cannot use - with an integer and unsigned literal`,
 		},
 		{
 			Name:      "Unsigned_SubtractionLHS_Unsigned",
@@ -3363,7 +3555,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_Subtract_Unsigned",
 			Statement: `SELECT i - u FROM cpu`,
-			Err:       `cannot use - between an integer and unsigned, an explicit cast is required`,
+			Err:       `type error: i::integer - u::unsigned: cannot use - between an integer and unsigned, an explicit cast is required`,
 		},
 		{
 			Name:      "Float_DivisionRHS_Number",
@@ -3431,7 +3623,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_DivisionRHS_Unsigned",
 			Statement: `SELECT i / 9223372036854775808 FROM cpu`,
-			Err:       `cannot use / with an integer and unsigned`,
+			Err:       `type error: i::integer / 9223372036854775808: cannot use / with an integer and unsigned literal`,
 		},
 		{
 			Name:      "Unsigned_DivisionRHS_Unsigned",
@@ -3508,7 +3700,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_DivisionLHS_Unsigned",
 			Statement: `SELECT 9223372036854775808 / i FROM cpu`,
-			Err:       `cannot use / with unsigned and an integer`,
+			Err:       `type error: 9223372036854775808 / i::integer: cannot use / with an integer and unsigned literal`,
 		},
 		{
 			Name:      "Unsigned_DivisionLHS_Unsigned",
@@ -3567,7 +3759,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 		{
 			Name:      "Integer_Divide_Unsigned",
 			Statement: `SELECT i / u FROM cpu`,
-			Err:       `cannot use / between an integer and unsigned, an explicit cast is required`,
+			Err:       `type error: i::integer / u::unsigned: cannot use / between an integer and unsigned, an explicit cast is required`,
 		},
 		{
 			Name:      "Integer_BitwiseAndRHS",
@@ -3640,7 +3832,7 @@ func TestSelect_BinaryExpr(t *testing.T) {
 				t.Fatalf("%s: expected error", test.Name)
 			} else if a, err := ReadCursor(cur); err != nil {
 				t.Fatalf("%s: unexpected error: %s", test.Name, err)
-			} else if diff := cmp.Diff(a, test.Rows); diff != "" {
+			} else if diff := cmp.Diff(test.Rows, a); diff != "" {
 				t.Errorf("%s: unexpected points:\n%s", test.Name, diff)
 			}
 		})
@@ -3718,7 +3910,7 @@ func TestSelect_BinaryExpr_Boolean(t *testing.T) {
 				t.Errorf("%s: parse error: %s", test.Name, err)
 			} else if a, err := ReadCursor(cur); err != nil {
 				t.Fatalf("%s: unexpected error: %s", test.Name, err)
-			} else if diff := cmp.Diff(a, test.Rows); diff != "" {
+			} else if diff := cmp.Diff(test.Rows, a); diff != "" {
 				t.Errorf("%s: unexpected points:\n%s", test.Name, diff)
 			}
 		})
@@ -3741,9 +3933,9 @@ func TestSelect_BinaryExpr_NilValues(t *testing.T) {
 						t.Fatalf("unexpected source: %s", m.Name)
 					}
 					return &FloatIterator{Points: []query.FloatPoint{
-						{Name: "cpu", Time: 0 * Second, Value: 20, Aux: []interface{}{float64(20), nil}},
-						{Name: "cpu", Time: 5 * Second, Value: 10, Aux: []interface{}{float64(10), float64(15)}},
-						{Name: "cpu", Time: 9 * Second, Value: 19, Aux: []interface{}{nil, float64(5)}},
+						{Name: "cpu", Time: 0 * Second, Aux: []interface{}{float64(20), nil}},
+						{Name: "cpu", Time: 5 * Second, Aux: []interface{}{float64(10), float64(15)}},
+						{Name: "cpu", Time: 9 * Second, Aux: []interface{}{nil, float64(5)}},
 					}}, nil
 				},
 			}
@@ -3800,7 +3992,7 @@ func TestSelect_BinaryExpr_NilValues(t *testing.T) {
 				t.Errorf("%s: parse error: %s", test.Name, err)
 			} else if a, err := ReadCursor(cur); err != nil {
 				t.Fatalf("%s: unexpected error: %s", test.Name, err)
-			} else if diff := cmp.Diff(a, test.Rows); diff != "" {
+			} else if diff := cmp.Diff(test.Rows, a); diff != "" {
 				t.Errorf("%s: unexpected points:\n%s", test.Name, diff)
 			}
 		})

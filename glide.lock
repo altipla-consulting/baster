@@ -1,8 +1,8 @@
 hash: 856e520a1285545617430d3d593e909b2dbb1d18b393abf7aa3c87ceeba7685f
-updated: 2018-03-23T14:38:29.287622815Z
+updated: 2018-06-19T15:23:26.02702001Z
 imports:
 - name: cloud.google.com/go
-  version: a531c05021a787c88054446a20b7789aa4f62fe1
+  version: 051b66c26e5365aa663f004673ad999edff83f30
   subpackages:
   - bigquery
   - civil
@@ -15,9 +15,13 @@ imports:
   - internal/trace
   - internal/version
 - name: github.com/altipla-consulting/collections
-  version: dd5d53544f186d0686932b72559b0818ac78d5cc
+  version: c1467dee8cfb5daf935ba8c5725dfeb9543063e4
+- name: github.com/golang/crypto
+  version: 027cca12c2d63e3d62b670d901e8a2c95854feec
+  subpackages:
+  - acme/autocert
 - name: github.com/golang/protobuf
-  version: 925541529c1fa6821df4e44ce2723319eb2be768
+  version: 9f81198da99b79e14d70ca2c3cc1bbe44c6e69b6
   subpackages:
   - proto
   - protoc-gen-go/descriptor
@@ -28,9 +32,9 @@ imports:
   - ptypes/timestamp
   - ptypes/wrappers
 - name: github.com/googleapis/gax-go
-  version: 317e0006254c44a0ac427cc52a0e083ff0b9622f
+  version: 254b60fe060127b9fd3c420fadd0906bf0382227
 - name: github.com/hashicorp/hcl
-  version: f40e974e75af4e271d97ce0fc917af5898ae7bda
+  version: ef8a98b0bbce4a65b5aa4c368430a80ddc533168
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -43,11 +47,9 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: a65e51e295525fd4ffd03937750841e26bf89bde
+  version: ff05f89bf284621c754aafe7bba709dd2371fe9c
   subpackages:
   - client
-  - models
-  - pkg/escape
 - name: github.com/juju/errors
   version: c7d06af17c68cd34c835053720b21f6549d9b0ee
 - name: github.com/julienschmidt/httprouter
@@ -57,11 +59,11 @@ imports:
 - name: github.com/sirupsen/logrus
   version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
 - name: github.com/spf13/cobra
-  version: 7b2c5ac9fc04fc5efafb60700713d4fa609b777b
+  version: ef82de70bb3f60c65fb8eebacbb2d122ef517385
 - name: github.com/spf13/pflag
-  version: ee5fd03fd6acfd43e44aea0b4135958546ed8e73
+  version: 3ebe029320b2676d667ae88da602a5f854788a8a
 - name: go.opencensus.io
-  version: d1d14e41adca2c40dd0628f80ca09e0cca204f22
+  version: f886faf58fcce7e69458b5c7bc1f228d0063033b
   subpackages:
   - exporter/stackdriver/propagation
   - internal
@@ -74,33 +76,34 @@ imports:
   - stats/view
   - tag
   - trace
+  - trace/internal
   - trace/propagation
 - name: golang.org/x/crypto
-  version: 88942b9c40a4c9d203b82b3731787b672d6e809b
+  version: 027cca12c2d63e3d62b670d901e8a2c95854feec
   subpackages:
   - acme
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/net
-  version: 92b859f39abd2d91a854c9f9c4621b2f5054a92d
+  version: db08ff08e8622530d9ed3a0e8ac279f6d4c02196
   subpackages:
   - context
   - context/ctxhttp
+  - http/httpguts
   - http2
   - http2/hpack
   - idna
   - internal/timeseries
-  - lex/httplex
   - trace
 - name: golang.org/x/oauth2
-  version: fdc9e635145ae97e6c2cb777c48305600cf515cb
+  version: 113ce6928c4638e14fd5eba69b9e6ec899d5dd83
   subpackages:
   - google
   - internal
   - jws
   - jwt
 - name: golang.org/x/sys
-  version: d8e400bc7db4870d786864138af681469693d18c
+  version: f24d3d461d02f3f840cb4ff4ae1c6b3dd9f93db9
   subpackages:
   - unix
   - windows
@@ -112,7 +115,7 @@ imports:
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/api
-  version: 24928b980e6919be4c72647aacd53ebcbb8c4bab
+  version: 2eea9ba0a3d94f6ab46508083e299a00bbbc65f6
   subpackages:
   - bigquery/v2
   - gensupport
@@ -125,7 +128,7 @@ imports:
   - transport/grpc
   - transport/http
 - name: google.golang.org/appengine
-  version: 5bee14b453b4c71be47ec1781b0fa61c2ea182db
+  version: b1f26356af11148e710935ed1ac8a7f5702c7612
   subpackages:
   - internal
   - internal/app_identity
@@ -139,7 +142,7 @@ imports:
   - socket
   - urlfetch
 - name: google.golang.org/genproto
-  version: f8c8703595236ae70fdf8789ecb656ea0bcdcf46
+  version: 32ee49c4dd805befd833990acba36cb75042378c
   subpackages:
   - googleapis/api/annotations
   - googleapis/datastore/v1
@@ -147,7 +150,7 @@ imports:
   - googleapis/rpc/status
   - googleapis/type/latlng
 - name: google.golang.org/grpc
-  version: bdb0727fa72e9f94e0b23df2b8c17561956811cd
+  version: b28608a9dbfcc585a10c13222c50cfeb50b7ac7a
   subpackages:
   - balancer
   - balancer/base
@@ -158,9 +161,11 @@ imports:
   - credentials/oauth
   - encoding
   - encoding/proto
-  - grpclb/grpc_lb_v1/messages
   - grpclog
   - internal
+  - internal/backoff
+  - internal/channelz
+  - internal/grpcrand
   - keepalive
   - metadata
   - naming

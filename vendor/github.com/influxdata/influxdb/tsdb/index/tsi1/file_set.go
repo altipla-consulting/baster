@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"sync"
+	"unsafe"
 
 	"github.com/influxdata/influxdb/pkg/estimator"
 	"github.com/influxdata/influxdb/pkg/estimator/hll"
@@ -17,18 +18,30 @@ type FileSet struct {
 	levels       []CompactionLevel
 	sfile        *tsdb.SeriesFile
 	files        []File
-	database     string
 	manifestSize int64 // Size of the manifest file in bytes.
 }
 
 // NewFileSet returns a new instance of FileSet.
-func NewFileSet(database string, levels []CompactionLevel, sfile *tsdb.SeriesFile, files []File) (*FileSet, error) {
+func NewFileSet(levels []CompactionLevel, sfile *tsdb.SeriesFile, files []File) (*FileSet, error) {
 	return &FileSet{
-		levels:   levels,
-		sfile:    sfile,
-		files:    files,
-		database: database,
+		levels: levels,
+		sfile:  sfile,
+		files:  files,
 	}, nil
+}
+
+// bytes estimates the memory footprint of this FileSet, in bytes.
+func (fs *FileSet) bytes() int {
+	var b int
+	for _, level := range fs.levels {
+		b += int(unsafe.Sizeof(level))
+	}
+	// Do not count SeriesFile because it belongs to the code that constructed this FileSet.
+	for _, file := range fs.files {
+		b += file.bytes()
+	}
+	b += int(unsafe.Sizeof(*fs))
+	return b
 }
 
 // Close closes all the files in the file set.
@@ -63,10 +76,9 @@ func (fs *FileSet) SeriesFile() *tsdb.SeriesFile { return fs.sfile }
 // Filters do not need to be rebuilt because log files have no bloom filter.
 func (fs *FileSet) PrependLogFile(f *LogFile) *FileSet {
 	return &FileSet{
-		database: fs.database,
-		levels:   fs.levels,
-		sfile:    fs.sfile,
-		files:    append([]File{f}, fs.files...),
+		levels: fs.levels,
+		sfile:  fs.sfile,
+		files:  append([]File{f}, fs.files...),
 	}
 }
 
@@ -109,9 +121,8 @@ func (fs *FileSet) MustReplace(oldFiles []File, newFile File) *FileSet {
 
 	// Build new fileset and rebuild changed filters.
 	return &FileSet{
-		levels:   fs.levels,
-		files:    other,
-		database: fs.database,
+		levels: fs.levels,
+		files:  other,
 	}
 }
 
@@ -458,6 +469,9 @@ type File interface {
 
 	// Size of file on disk
 	Size() int64
+
+	// Estimated memory footprint
+	bytes() int
 }
 
 type Files []File

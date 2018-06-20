@@ -16,14 +16,14 @@ import (
 	"time"
 
 	"github.com/influxdata/influxdb/logger"
-	"github.com/influxdata/influxdb/pkg/estimator/hll"
-
 	"github.com/influxdata/influxdb/models"
 	"github.com/influxdata/influxdb/pkg/estimator"
+	"github.com/influxdata/influxdb/pkg/estimator/hll"
 	"github.com/influxdata/influxdb/pkg/limiter"
 	"github.com/influxdata/influxdb/query"
 	"github.com/influxdata/influxql"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var (
@@ -31,6 +31,8 @@ var (
 	ErrShardNotFound = fmt.Errorf("shard not found")
 	// ErrStoreClosed is returned when trying to use a closed Store.
 	ErrStoreClosed = fmt.Errorf("store is closed")
+	// ErrShardDeletion is returned when trying to create a shard that is being deleted
+	ErrShardDeletion = errors.New("shard is being deleted")
 )
 
 // Statistics gathered by the store.
@@ -133,6 +135,32 @@ func (s *Store) Statistics(tags map[string]string) []models.Statistic {
 	return statistics
 }
 
+func (s *Store) IndexBytes() int {
+	// Build index set to work on.
+	is := IndexSet{Indexes: make([]Index, 0, len(s.shardIDs()))}
+	s.mu.RLock()
+	for _, sid := range s.shardIDs() {
+		shard, ok := s.shards[sid]
+		if !ok {
+			continue
+		}
+
+		if is.SeriesFile == nil {
+			is.SeriesFile = shard.sfile
+		}
+		is.Indexes = append(is.Indexes, shard.index)
+	}
+	s.mu.RUnlock()
+	is = is.DedupeInmemIndexes()
+
+	var b int
+	for _, idx := range is.Indexes {
+		b += idx.Bytes()
+	}
+
+	return b
+}
+
 // Path returns the store's root path.
 func (s *Store) Path() string { return s.path }
 
@@ -163,7 +191,10 @@ func (s *Store) Open() error {
 
 	s.opened = true
 	s.wg.Add(1)
-	go s.monitorShards()
+
+	if !s.EngineOptions.MonitorDisabled {
+		go s.monitorShards()
+	}
 
 	return nil
 }
@@ -224,6 +255,11 @@ func (s *Store) loadShards() error {
 			continue
 		}
 
+		if s.EngineOptions.DatabaseFilter != nil && !s.EngineOptions.DatabaseFilter(db.Name()) {
+			log.Info("Skipping database dir", logger.Database(db.Name()), zap.String("reason", "failed database filter"))
+			continue
+		}
+
 		// Load series file.
 		sfile, err := s.openSeriesFile(db.Name())
 		if err != nil {
@@ -254,6 +290,11 @@ func (s *Store) loadShards() error {
 				continue
 			}
 
+			if s.EngineOptions.RetentionPolicyFilter != nil && !s.EngineOptions.RetentionPolicyFilter(db.Name(), rp.Name()) {
+				log.Info("Skipping retention policy dir", logger.RetentionPolicy(rp.Name()), zap.String("reason", "failed retention policy filter"))
+				continue
+			}
+
 			shardDirs, err := ioutil.ReadDir(rpPath)
 			if err != nil {
 				return err
@@ -274,6 +315,12 @@ func (s *Store) loadShards() error {
 					if err != nil {
 						log.Info("invalid shard ID found at path", zap.String("path", path))
 						resC <- &res{err: fmt.Errorf("%s is not a valid ID. Skipping shard.", sh)}
+						return
+					}
+
+					if s.EngineOptions.ShardFilter != nil && !s.EngineOptions.ShardFilter(db, rp, shardID) {
+						log.Info("skipping shard", zap.String("path", path), logger.Shard(shardID))
+						resC <- &res{}
 						return
 					}
 
@@ -304,23 +351,43 @@ func (s *Store) loadShards() error {
 					}
 
 					resC <- &res{s: shard}
-					log.Info("Opened shard", zap.String("path", path), zap.Duration("duration", time.Since(start)))
+					log.Info("Opened shard", zap.String("index_version", shard.IndexType()), zap.String("path", path), zap.Duration("duration", time.Since(start)))
 				}(db.Name(), rp.Name(), sh.Name())
 			}
 		}
 	}
 
+	// indexVersions tracks counts of the number of different types of index
+	// being used within each database.
+	indexVersions := make(map[string]map[string]int)
+
 	// Gather results of opening shards concurrently, keeping track of how
 	// many databases we are managing.
 	for i := 0; i < n; i++ {
 		res := <-resC
-		if res.err != nil {
+		if res.s == nil || res.err != nil {
 			continue
 		}
 		s.shards[res.s.id] = res.s
 		s.databases[res.s.database] = struct{}{}
+
+		if _, ok := indexVersions[res.s.database]; !ok {
+			indexVersions[res.s.database] = make(map[string]int, 2)
+		}
+		indexVersions[res.s.database][res.s.IndexType()]++
 	}
 	close(resC)
+
+	// Check if any databases are running multiple index types.
+	for db, idxVersions := range indexVersions {
+		if len(idxVersions) > 1 {
+			var fields []zapcore.Field
+			for idx, cnt := range idxVersions {
+				fields = append(fields, zap.Int(fmt.Sprintf("%s_count", idx), cnt))
+			}
+			s.Logger.Warn("Mixed shard index types", append(fields, logger.Database(db))...)
+		}
+	}
 
 	// Enable all shards
 	for _, sh := range s.shards {
@@ -363,8 +430,11 @@ func (s *Store) Close() error {
 		}
 	}
 
-	s.shards = nil
+	s.databases = make(map[string]struct{})
 	s.sfiles = map[string]*SeriesFile{}
+	s.indexes = make(map[string]interface{})
+	s.pendingShardDeletes = make(map[uint64]struct{})
+	s.shards = nil
 	s.opened = false // Store may now be opened again.
 	s.mu.Unlock()
 	return nil
@@ -481,7 +551,7 @@ func (s *Store) CreateShard(database, retentionPolicy string, shardID uint64, en
 	// Shard may be undergoing a pending deletion. While the shard can be
 	// recreated, it must wait for the pending delete to finish.
 	if _, ok := s.pendingShardDeletes[shardID]; ok {
-		return fmt.Errorf("shard %d is pending deletion and cannot be created again until finished", shardID)
+		return ErrShardDeletion
 	}
 
 	// Create the db and retention policy directories if they don't exist.
@@ -585,12 +655,7 @@ func (s *Store) DeleteShard(shardID uint64) error {
 		return err
 	}
 
-	var ss *SeriesIDSet
-	if i, ok := index.(interface {
-		SeriesIDSet() *SeriesIDSet
-	}); ok {
-		ss = i.SeriesIDSet()
-	}
+	ss := index.SeriesIDSet()
 
 	db := sh.Database()
 	if err := sh.Close(); err != nil {
@@ -607,13 +672,7 @@ func (s *Store) DeleteShard(shardID uint64) error {
 			return err
 		}
 
-		if i, ok := index.(interface {
-			SeriesIDSet() *SeriesIDSet
-		}); ok {
-			ss.Diff(i.SeriesIDSet())
-		} else {
-			return fmt.Errorf("unable to get series id set for index in shard at %s", sh.Path())
-		}
+		ss.Diff(index.SeriesIDSet())
 		return nil
 	})
 
@@ -945,16 +1004,11 @@ func (s *Store) SeriesCardinality(database string) (int64, error) {
 			return err
 		}
 
-		if i, ok := index.(interface {
-			SeriesIDSet() *SeriesIDSet
-		}); ok {
-			seriesIDs := i.SeriesIDSet()
-			setMu.Lock()
-			others = append(others, seriesIDs)
-			setMu.Unlock()
-		} else {
-			return fmt.Errorf("unable to get series id set for index in shard at %s", sh.Path())
-		}
+		seriesIDs := index.SeriesIDSet()
+		setMu.Lock()
+		others = append(others, seriesIDs)
+		setMu.Unlock()
+
 		return nil
 	})
 
@@ -1859,11 +1913,7 @@ func (s shardSet) ForEach(f func(ids *SeriesIDSet)) error {
 			return err
 		}
 
-		if t, ok := idx.(interface {
-			SeriesIDSet() *SeriesIDSet
-		}); ok {
-			f(t.SeriesIDSet())
-		}
+		f(idx.SeriesIDSet())
 	}
 	return nil
 }

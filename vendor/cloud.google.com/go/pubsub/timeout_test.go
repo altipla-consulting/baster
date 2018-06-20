@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,7 +81,6 @@ func TestStreamTimeout(t *testing.T) {
 		t.Fatal(err)
 	}
 	n := atomic.LoadInt64(&nSeen)
-	t.Logf("Receive returned %v after seeing %d messages\n", err, n)
 	if n < nPublish {
 		t.Errorf("got %d messages, want %d", n, nPublish)
 	}

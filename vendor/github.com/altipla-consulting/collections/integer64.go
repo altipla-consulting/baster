@@ -26,7 +26,7 @@ func UniqueIntegers64(list []int64) []int64 {
 }
 
 // CompareInts64 returns true if the values of both lhs & rhs are the same.
-func CompareInts64(lhs, rhs []int32) bool {
+func CompareInts64(lhs, rhs []int64) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}

@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ func (q Query) Offset(n int) Query {
 // Limit returns a new Query that specifies the maximum number of results to return.
 // It must not be negative.
 func (q Query) Limit(n int) Query {
-	q.limit = &wrappers.Int32Value{trunc32(n)}
+	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
 	return q
 }
 
@@ -363,7 +363,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 			if !ok {
 				return nil, fmt.Errorf("firestore: expected doc ID for DocumentID field, got %T", fval)
 			}
-			vals[i] = &pb.Value{&pb.Value_ReferenceValue{q.collectionPath() + "/" + docID}}
+			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.collectionPath() + "/" + docID}}
 		} else {
 			var sawTransform bool
 			vals[i], sawTransform, err = toProtoValue(reflect.ValueOf(fval))
@@ -387,7 +387,7 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 			if dp != qp {
 				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
 			}
-			vals[i] = &pb.Value{&pb.Value_ReferenceValue{ds.Ref.Path}}
+			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ds.Ref.Path}}
 		} else {
 			val, err := valueAtPath(ord.fieldPath, ds.proto.Fields)
 			if err != nil {
@@ -534,7 +534,7 @@ func (r order) toProto() (*pb.StructuredQuery_Order, error) {
 }
 
 func fref(fp FieldPath) *pb.StructuredQuery_FieldReference {
-	return &pb.StructuredQuery_FieldReference{fp.toServiceFieldPath()}
+	return &pb.StructuredQuery_FieldReference{FieldPath: fp.toServiceFieldPath()}
 }
 
 func trunc32(i int) int32 {
@@ -547,11 +547,8 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: &queryDocumentIterator{
-			ctx: withResourceHeader(ctx, q.c.path()),
-			q:   &q,
-		},
-		err: checkTransaction(ctx),
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil),
+		err:  checkTransaction(ctx),
 	}
 }
 
@@ -568,6 +565,7 @@ type DocumentIterator struct {
 // is an internal detail.
 type docIterator interface {
 	next() (*DocumentSnapshot, error)
+	stop()
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there
@@ -584,8 +582,22 @@ func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 	return ds, err
 }
 
+// Stop stops the iterator, freeing its resources.
+// Always call Stop when you are done with an iterator.
+// It is not safe to call Stop concurrently with Next.
+func (it *DocumentIterator) Stop() {
+	if it.iter != nil { // possible in error cases
+		it.iter.stop()
+	}
+	if it.err == nil {
+		it.err = iterator.Done
+	}
+}
+
 // GetAll returns all the documents remaining from the iterator.
+// It is not necessary to call Stop on the iterator after calling GetAll.
 func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
+	defer it.Stop()
 	var docs []*DocumentSnapshot
 	for {
 		doc, err := it.Next()
@@ -600,13 +612,22 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 	return docs, nil
 }
 
-// TODO(jba): The iterator needs a Stop method.
-
 type queryDocumentIterator struct {
 	ctx          context.Context
+	cancel       func()
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
+}
+
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryDocumentIterator {
+	ctx, cancel := context.WithCancel(ctx)
+	return &queryDocumentIterator{
+		ctx:    ctx,
+		cancel: cancel,
+		q:      q,
+		tid:    tid,
+	}
 }
 
 func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
@@ -654,6 +675,10 @@ func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
 	return doc, nil
 }
 
+func (it *queryDocumentIterator) stop() {
+	it.cancel()
+}
+
 // Snapshots returns an iterator over snapshots of the query. Each time the query
 // results change, a new snapshot will be generated.
 func (q Query) Snapshots(ctx context.Context) *QuerySnapshotIterator {
@@ -682,6 +707,9 @@ type QuerySnapshotIterator struct {
 	// The number of results in the most recent snapshot.
 	Size int
 
+	// The changes since the previous snapshot.
+	Changes []DocumentChange
+
 	ws  *watchStream
 	err error
 }
@@ -694,7 +722,7 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 	if it.err != nil {
 		return nil, it.err
 	}
-	btree, readTime, err := it.ws.nextSnapshot()
+	btree, changes, readTime, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
 			err = iterator.Done
@@ -702,6 +730,7 @@ func (it *QuerySnapshotIterator) Next() (*DocumentIterator, error) {
 		it.err = err
 		return nil, it.err
 	}
+	it.Changes = changes
 	it.ReadTime = readTime
 	it.Size = btree.Len()
 	return &DocumentIterator{
@@ -724,3 +753,5 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 	}
 	return it.Key.(*DocumentSnapshot), nil
 }
+
+func (*btreeDocumentIterator) stop() {}

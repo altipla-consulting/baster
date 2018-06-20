@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -169,6 +169,20 @@ func checkAckDeadline(ads int32) error {
 		return status.Errorf(codes.Unknown, "bad ack_deadline_seconds: %d", ads)
 	}
 	return nil
+}
+
+func (s *fakeServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest) (*emptypb.Empty, error) {
+	for _, id := range req.AckIds {
+		s.Acked[id] = true
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (s *fakeServer) ModifyAckDeadline(ctx context.Context, req *pb.ModifyAckDeadlineRequest) (*emptypb.Empty, error) {
+	for _, id := range req.AckIds {
+		s.Deadlines[id] = req.AckDeadlineSeconds
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (s *fakeServer) CreateSubscription(ctx context.Context, sub *pb.Subscription) (*pb.Subscription, error) {

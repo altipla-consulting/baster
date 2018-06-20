@@ -37,6 +37,7 @@ type Index interface {
 	MeasurementsSketches() (estimator.Sketch, estimator.Sketch, error)
 	SeriesN() int64
 	SeriesSketches() (estimator.Sketch, estimator.Sketch, error)
+	SeriesIDSet() *SeriesIDSet
 
 	HasTagKey(name, key []byte) (bool, error)
 	HasTagValue(name, key, value []byte) (bool, error)
@@ -60,10 +61,16 @@ type Index interface {
 	// Size of the index on disk, if applicable.
 	DiskSizeBytes() int64
 
+	// Bytes estimates the memory footprint of this Index, in bytes.
+	Bytes() int
+
 	// To be removed w/ tsi1.
 	SetFieldName(measurement []byte, name string)
 
 	Type() string
+	// Returns a unique reference ID to the index instance.
+	// For inmem, returns a reference to the backing Index, not ShardIndex.
+	UniqueReferenceID() uintptr
 
 	Rebuild()
 }
@@ -765,6 +772,7 @@ func (itr *seriesPointIterator) readSeriesKeys(name []byte) error {
 			select {
 			case <-itr.opt.InterruptCh:
 				return itr.Close()
+			default:
 			}
 		}
 
@@ -1096,7 +1104,7 @@ func (itr *tagValueMergeIterator) Next() (_ []byte, err error) {
 	return value, nil
 }
 
-// IndexSet represents a list of indexes.
+// IndexSet represents a list of indexes, all belonging to one database.
 type IndexSet struct {
 	Indexes    []Index                // The set of indexes comprising this IndexSet.
 	SeriesFile *SeriesFile            // The Series File associated with the db for this set.
@@ -1134,7 +1142,8 @@ func (is IndexSet) HasField(measurement []byte, field string) bool {
 	return false
 }
 
-// DedupeInmemIndexes returns an index set which removes duplicate in-memory indexes.
+// DedupeInmemIndexes returns an index set which removes duplicate indexes.
+// Useful because inmem indexes are shared by shards per database.
 func (is IndexSet) DedupeInmemIndexes() IndexSet {
 	other := IndexSet{
 		Indexes:    make([]Index, 0, len(is.Indexes)),
@@ -1142,18 +1151,16 @@ func (is IndexSet) DedupeInmemIndexes() IndexSet {
 		fieldSets:  make([]*MeasurementFieldSet, 0, len(is.Indexes)),
 	}
 
-	var hasInmem bool
+	uniqueIndexes := make(map[uintptr]Index)
 	for _, idx := range is.Indexes {
-		other.fieldSets = append(other.fieldSets, idx.FieldSet())
-		if idx.Type() == "inmem" {
-			if !hasInmem {
-				other.Indexes = append(other.Indexes, idx)
-				hasInmem = true
-			}
-			continue
-		}
-		other.Indexes = append(other.Indexes, idx)
+		uniqueIndexes[idx.UniqueReferenceID()] = idx
 	}
+
+	for _, idx := range uniqueIndexes {
+		other.Indexes = append(other.Indexes, idx)
+		other.fieldSets = append(other.fieldSets, idx.FieldSet())
+	}
+
 	return other
 }
 
@@ -1850,7 +1857,13 @@ func (is IndexSet) seriesByBinaryExprIterator(name []byte, n *influxql.BinaryExp
 	if !ok {
 		key, ok = n.RHS.(*influxql.VarRef)
 		if !ok {
-			return nil, fmt.Errorf("invalid expression: %s", n.String())
+			// This is an expression we do not know how to evaluate. Let the
+			// query engine take care of this.
+			itr, err := is.measurementSeriesIDIterator(name)
+			if err != nil {
+				return nil, err
+			}
+			return newSeriesIDExprIterator(itr, n), nil
 		}
 		value = n.LHS
 	}
@@ -1882,10 +1895,13 @@ func (is IndexSet) seriesByBinaryExprIterator(name []byte, n *influxql.BinaryExp
 	case *influxql.VarRef:
 		return is.seriesByBinaryExprVarRefIterator(name, []byte(key.Val), value, n.Op)
 	default:
-		if n.Op == influxql.NEQ || n.Op == influxql.NEQREGEX {
-			return is.measurementSeriesIDIterator(name)
+		// We do not know how to evaluate this expression so pass it
+		// on to the query engine.
+		itr, err := is.measurementSeriesIDIterator(name)
+		if err != nil {
+			return nil, err
 		}
-		return nil, nil
+		return newSeriesIDExprIterator(itr, n), nil
 	}
 }
 

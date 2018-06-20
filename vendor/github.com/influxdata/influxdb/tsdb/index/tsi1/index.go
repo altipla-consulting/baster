@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"unsafe"
 
 	"github.com/cespare/xxhash"
 	"github.com/influxdata/influxdb/models"
@@ -39,8 +40,8 @@ func init() {
 		DefaultPartitionN = uint64(i)
 	}
 
-	tsdb.RegisterIndex(IndexName, func(_ uint64, db, path string, _ *tsdb.SeriesIDSet, sfile *tsdb.SeriesFile, _ tsdb.EngineOptions) tsdb.Index {
-		idx := NewIndex(sfile, db, WithPath(path))
+	tsdb.RegisterIndex(IndexName, func(_ uint64, db, path string, _ *tsdb.SeriesIDSet, sfile *tsdb.SeriesFile, opt tsdb.EngineOptions) tsdb.Index {
+		idx := NewIndex(sfile, db, WithPath(path), WithMaximumLogFileSize(int64(opt.Config.MaxIndexLogFileSize)))
 		return idx
 	})
 }
@@ -108,10 +109,14 @@ type Index struct {
 	PartitionN uint64
 }
 
+func (i *Index) UniqueReferenceID() uintptr {
+	return uintptr(unsafe.Pointer(i))
+}
+
 // NewIndex returns a new instance of Index.
 func NewIndex(sfile *tsdb.SeriesFile, database string, options ...IndexOption) *Index {
 	idx := &Index{
-		maxLogFileSize: DefaultMaxLogFileSize,
+		maxLogFileSize: tsdb.DefaultMaxIndexLogFileSize,
 		logger:         zap.NewNop(),
 		version:        Version,
 		sfile:          sfile,
@@ -124,6 +129,29 @@ func NewIndex(sfile *tsdb.SeriesFile, database string, options ...IndexOption) *
 	}
 
 	return idx
+}
+
+// Bytes estimates the memory footprint of this Index, in bytes.
+func (i *Index) Bytes() int {
+	var b int
+	i.mu.RLock()
+	b += 24 // mu RWMutex is 24 bytes
+	b += int(unsafe.Sizeof(i.partitions))
+	for _, p := range i.partitions {
+		b += int(unsafe.Sizeof(p)) + p.bytes()
+	}
+	b += int(unsafe.Sizeof(i.opened))
+	b += int(unsafe.Sizeof(i.path)) + len(i.path)
+	b += int(unsafe.Sizeof(i.disableCompactions))
+	b += int(unsafe.Sizeof(i.maxLogFileSize))
+	b += int(unsafe.Sizeof(i.logger))
+	b += int(unsafe.Sizeof(i.sfile))
+	// Do not count SeriesFile because it belongs to the code that constructed this Index.
+	b += int(unsafe.Sizeof(i.database)) + len(i.database)
+	b += int(unsafe.Sizeof(i.version))
+	b += int(unsafe.Sizeof(i.PartitionN))
+	i.mu.RUnlock()
+	return b
 }
 
 // Database returns the name of the database the index was initialized with.
@@ -178,7 +206,6 @@ func (i *Index) Open() error {
 	for j := 0; j < len(i.partitions); j++ {
 		p := NewPartition(i.sfile, filepath.Join(i.path, fmt.Sprint(j)))
 		p.MaxLogFileSize = i.maxLogFileSize
-		p.Database = i.database
 		p.logger = i.logger.With(zap.String("tsi1_partition", fmt.Sprint(j+1)))
 		i.partitions[j] = p
 	}
@@ -864,7 +891,7 @@ func (i *Index) RetainFileSet() (*FileSet, error) {
 	i.mu.RLock()
 	defer i.mu.RUnlock()
 
-	fs, _ := NewFileSet(i.database, nil, i.sfile, nil)
+	fs, _ := NewFileSet(nil, i.sfile, nil)
 	for _, p := range i.partitions {
 		pfs, err := p.RetainFileSet()
 		if err != nil {

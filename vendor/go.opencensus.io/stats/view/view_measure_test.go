@@ -11,8 +11,8 @@ func TestMeasureFloat64AndInt64(t *testing.T) {
 	// Recording through both a Float64Measure and Int64Measure with the
 	// same name should work.
 
-	im, _ := stats.Int64("TestMeasureFloat64AndInt64", "", stats.UnitNone)
-	fm, _ := stats.Float64("TestMeasureFloat64AndInt64", "", stats.UnitNone)
+	im := stats.Int64("TestMeasureFloat64AndInt64", "", stats.UnitDimensionless)
+	fm := stats.Float64("TestMeasureFloat64AndInt64", "", stats.UnitDimensionless)
 
 	if im == nil || fm == nil {
 		t.Fatal("Error creating Measures")
@@ -28,7 +28,7 @@ func TestMeasureFloat64AndInt64(t *testing.T) {
 		Measure:     fm,
 		Aggregation: Sum(),
 	}
-	Subscribe(v1, v2)
+	Register(v1, v2)
 
 	stats.Record(context.Background(), im.M(5))
 	stats.Record(context.Background(), fm.M(2.2))
@@ -41,10 +41,10 @@ func TestMeasureFloat64AndInt64(t *testing.T) {
 
 	// We expect both views to return 7.2, as though we recorded on a single measure.
 
-	if got, want := float64(*sum1), 7.2; got != want {
+	if got, want := sum1.Value, 7.2; got != want {
 		t.Errorf("sum1 = %v; want %v", got, want)
 	}
-	if got, want := float64(*sum2), 7.2; got != want {
+	if got, want := sum2.Value, 7.2; got != want {
 		t.Errorf("sum2 = %v; want %v", got, want)
 	}
 }

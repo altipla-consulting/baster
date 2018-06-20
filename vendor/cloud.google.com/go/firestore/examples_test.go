@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All Rights Reserved.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -468,6 +468,7 @@ func ExampleDocumentIterator_Next() {
 		Where("pop", ">", 10).
 		OrderBy("pop", firestore.Desc)
 	iter := q.Documents(ctx)
+	defer iter.Stop()
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {

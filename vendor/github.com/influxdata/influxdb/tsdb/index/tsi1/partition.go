@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unsafe"
 
 	"github.com/influxdata/influxdb/logger"
 	"github.com/influxdata/influxdb/models"
@@ -24,9 +25,6 @@ import (
 
 // Version is the current version of the TSI index.
 const Version = 1
-
-// DefaultMaxLogFileSize is the default compaction threshold.
-const DefaultMaxLogFileSize = 5 * 1024 * 1024
 
 // File extensions.
 const (
@@ -65,9 +63,6 @@ type Partition struct {
 	// Fieldset shared with engine.
 	fieldset *tsdb.MeasurementFieldSet
 
-	// Name of database.
-	Database string
-
 	// Directory of the Partition's index files.
 	path string
 	id   string // id portion of path.
@@ -97,7 +92,7 @@ func NewPartition(sfile *tsdb.SeriesFile, path string) *Partition {
 		seriesIDSet: tsdb.NewSeriesIDSet(),
 
 		// Default compaction thresholds.
-		MaxLogFileSize: DefaultMaxLogFileSize,
+		MaxLogFileSize: tsdb.DefaultMaxIndexLogFileSize,
 
 		// compactionEnabled: true,
 		compactionInterrupt: make(chan struct{}),
@@ -105,6 +100,39 @@ func NewPartition(sfile *tsdb.SeriesFile, path string) *Partition {
 		logger:  zap.NewNop(),
 		version: Version,
 	}
+}
+
+// bytes estimates the memory footprint of this Partition, in bytes.
+func (i *Partition) bytes() int {
+	var b int
+	b += 24 // mu RWMutex is 24 bytes
+	b += int(unsafe.Sizeof(i.opened))
+	// Do not count SeriesFile because it belongs to the code that constructed this Partition.
+	b += int(unsafe.Sizeof(i.activeLogFile)) + i.activeLogFile.bytes()
+	b += int(unsafe.Sizeof(i.fileSet)) + i.fileSet.bytes()
+	b += int(unsafe.Sizeof(i.seq))
+	b += int(unsafe.Sizeof(i.seriesIDSet)) + i.seriesIDSet.Bytes()
+	b += int(unsafe.Sizeof(i.levels))
+	for _, level := range i.levels {
+		b += int(unsafe.Sizeof(level))
+	}
+	b += int(unsafe.Sizeof(i.levelCompacting))
+	for _, levelCompacting := range i.levelCompacting {
+		b += int(unsafe.Sizeof(levelCompacting))
+	}
+	b += 12 // once sync.Once is 12 bytes
+	b += int(unsafe.Sizeof(i.closing))
+	b += 16 // wg sync.WaitGroup is 16 bytes
+	b += int(unsafe.Sizeof(i.fieldset)) + i.fieldset.Bytes()
+	b += int(unsafe.Sizeof(i.path)) + len(i.path)
+	b += int(unsafe.Sizeof(i.id)) + len(i.id)
+	b += int(unsafe.Sizeof(i.MaxLogFileSize))
+	b += int(unsafe.Sizeof(i.compactionInterrupt))
+	b += int(unsafe.Sizeof(i.compactionsDisabled))
+	b += int(unsafe.Sizeof(i.logger))
+	b += int(unsafe.Sizeof(i.manifestSize))
+	b += int(unsafe.Sizeof(i.version))
+	return b
 }
 
 // ErrIncompatibleVersion is returned when attempting to read from an
@@ -181,7 +209,7 @@ func (i *Partition) Open() error {
 			files = append(files, f)
 		}
 	}
-	fs, err := NewFileSet(i.Database, i.levels, i.sfile, files)
+	fs, err := NewFileSet(i.levels, i.sfile, files)
 	if err != nil {
 		return err
 	}
