@@ -1,8 +1,8 @@
-hash: 856e520a1285545617430d3d593e909b2dbb1d18b393abf7aa3c87ceeba7685f
-updated: 2018-06-19T15:23:26.02702001Z
+hash: a780774321fcf40122110f6f93425989ef7dd63839480670e90bf16ae1aa791c
+updated: 2018-06-20T01:26:25.680092547Z
 imports:
 - name: cloud.google.com/go
-  version: 051b66c26e5365aa663f004673ad999edff83f30
+  version: 88ee2dfcf9cdc4fc7e67fc1cca50ebd970c1888c
   subpackages:
   - bigquery
   - civil
@@ -17,7 +17,7 @@ imports:
 - name: github.com/altipla-consulting/collections
   version: c1467dee8cfb5daf935ba8c5725dfeb9543063e4
 - name: github.com/golang/crypto
-  version: 027cca12c2d63e3d62b670d901e8a2c95854feec
+  version: 7f39a6fea4fe9364fb61e1def6a268a51b4f3a06
   subpackages:
   - acme/autocert
 - name: github.com/golang/protobuf
@@ -46,10 +46,6 @@ imports:
   - json/token
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
-- name: github.com/influxdata/influxdb
-  version: ff05f89bf284621c754aafe7bba709dd2371fe9c
-  subpackages:
-  - client
 - name: github.com/juju/errors
   version: c7d06af17c68cd34c835053720b21f6549d9b0ee
 - name: github.com/julienschmidt/httprouter
@@ -79,7 +75,7 @@ imports:
   - trace/internal
   - trace/propagation
 - name: golang.org/x/crypto
-  version: 027cca12c2d63e3d62b670d901e8a2c95854feec
+  version: 7f39a6fea4fe9364fb61e1def6a268a51b4f3a06
   subpackages:
   - acme
   - acme/autocert
@@ -96,14 +92,14 @@ imports:
   - internal/timeseries
   - trace
 - name: golang.org/x/oauth2
-  version: 113ce6928c4638e14fd5eba69b9e6ec899d5dd83
+  version: 088f8e1d436e8d636f13cd83a345b3d6ff2f04ae
   subpackages:
   - google
   - internal
   - jws
   - jwt
 - name: golang.org/x/sys
-  version: f24d3d461d02f3f840cb4ff4ae1c6b3dd9f93db9
+  version: fc8bd948cf46f9c7af0f07d34151ce25fe90e477
   subpackages:
   - unix
   - windows
@@ -150,7 +146,7 @@ imports:
   - googleapis/rpc/status
   - googleapis/type/latlng
 - name: google.golang.org/grpc
-  version: b28608a9dbfcc585a10c13222c50cfeb50b7ac7a
+  version: 2ab07fd5cb02cfc44fd49af17dd2356ed1647ed4
   subpackages:
   - balancer
   - balancer/base

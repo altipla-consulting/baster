@@ -7,10 +7,6 @@ import:
 - package: github.com/altipla-consulting/collections
   version: ^0.3.0
 - package: github.com/hashicorp/hcl
-- package: github.com/influxdata/influxdb
-  version: ^1.5.1
-  subpackages:
-  - client
 - package: github.com/juju/errors
 - package: github.com/julienschmidt/httprouter
   version: ^1.1.0
