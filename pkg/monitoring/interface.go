@@ -6,6 +6,10 @@ import (
 	"github.com/altipla-consulting/baster/pkg/config"
 )
 
+type Interface interface {
+	Send(m Measurement)
+}
+
 type Measurement struct {
 	// Configuration data.
 	DomainName string
@@ -26,16 +30,13 @@ type Measurement struct {
 	Time time.Time
 }
 
-func Send(m Measurement) {
+func Send(instances []Interface, m Measurement) {
 	if m.Monitoring.Name != "" {
 		m.DomainName = m.Monitoring.Name
 	}
 	m.Time = time.Now()
 
-	if config.Settings.Monitoring.InfluxDB.Address != "" {
-		influxDBMeasurements <- m
-	}
-	if config.Settings.Monitoring.BigQuery.Dataset != "" {
-		bigqueryMeasurements <- m
+	for _, instance := range instances {
+		instance.Send(m)
 	}
 }

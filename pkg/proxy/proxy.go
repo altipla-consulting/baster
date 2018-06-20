@@ -20,26 +20,7 @@ import (
 	"github.com/altipla-consulting/baster/pkg/monitoring"
 )
 
-func Handler(domain *config.Domain) http.HandlerFunc {
-	f := log.Fields{
-		"name":     domain.Name,
-		"hostname": domain.Hostname,
-		"service":  domain.Service,
-	}
-	if domain.VirtualHostname != "" {
-		f["virtual-hostname"] = domain.VirtualHostname
-	}
-	if len(domain.CORS.Origins) > 0 {
-		f["cors-origins"] = domain.CORS.Origins
-	}
-	if domain.Redirect != "" {
-		f["redirect"] = domain.Redirect
-	}
-	if len(domain.HopHeaders) > 0 {
-		f["hop-headers"] = domain.HopHeaders
-	}
-	log.WithFields(f).Info("Domain configured")
-
+func proxyHandler(settings *config.Settings, domain *config.Domain, monitors []monitoring.Interface) http.HandlerFunc {
 	defaultPath := &config.Path{
 		Service: domain.Service,
 	}
@@ -71,8 +52,8 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 		}
 
 		// Aplica autenticación externa si está configurada.
-		if config.Settings.Auth.Endpoint != "" {
-			if keep, err := queryAuth(w, r); err != nil {
+		if settings.Auth.Endpoint != "" {
+			if keep, err := queryAuth(settings, w, r); err != nil {
 				log.WithFields(log.Fields{"error": err.Error(), "stack": errors.ErrorStack(err)}).Error("Auth failed")
 				http.Error(w, "auth failed", http.StatusInternalServerError)
 				return
@@ -83,8 +64,8 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 
 		// Aplica el servicio de redirecciones si lo hemos configurado.
 		source := fmt.Sprintf("https://%s%s", r.Host, r.URL.String())
-		if config.Settings.Redirects.Apply != "" {
-			dest, err := queryRedirect(source)
+		if settings.Redirects.Apply != "" {
+			dest, err := queryRedirect(settings, source)
 			if err != nil {
 				log.WithFields(log.Fields{"error": err.Error(), "stack": errors.ErrorStack(err)}).Error("Redirects failed")
 				http.Error(w, "redirects failed", http.StatusInternalServerError)
@@ -150,7 +131,7 @@ func Handler(domain *config.Domain) http.HandlerFunc {
 			}
 
 			latency := int64(time.Since(start) / time.Millisecond)
-			monitoring.Send(monitoring.Measurement{
+			monitoring.Send(monitors, monitoring.Measurement{
 				DomainName: domain.Name,
 				Monitoring: path.Monitoring,
 				URL:        source,
@@ -211,13 +192,13 @@ type redirectReply struct {
 	Destination string `json:"destination"`
 }
 
-func queryRedirect(url string) (string, error) {
+func queryRedirect(settings *config.Settings, url string) (string, error) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&redirectRequest{url}); err != nil {
 		return "", errors.Trace(err)
 	}
 
-	req, _ := http.NewRequest("POST", config.Settings.Redirects.Apply, &buf)
+	req, _ := http.NewRequest("POST", settings.Redirects.Apply, &buf)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
@@ -239,8 +220,8 @@ func queryRedirect(url string) (string, error) {
 	return reply.Destination, nil
 }
 
-func queryAuth(w http.ResponseWriter, r *http.Request) (bool, error) {
-	authEndpoint, err := url.Parse(config.Settings.Auth.Endpoint)
+func queryAuth(settings *config.Settings, w http.ResponseWriter, r *http.Request) (bool, error) {
+	authEndpoint, err := url.Parse(settings.Auth.Endpoint)
 	if err != nil {
 		return false, errors.Trace(err)
 	}

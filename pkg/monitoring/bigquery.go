@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/compute/metadata"
+	"github.com/juju/errors"
 	"github.com/segmentio/ksuid"
 	log "github.com/sirupsen/logrus"
 
@@ -77,30 +78,48 @@ type bqPoint struct {
 	Referer string
 }
 
-func BigQuerySender() {
-	ctx := context.Background()
+type BigQuery struct {
+	ch       chan Measurement
+	uploader *bigquery.Uploader
+}
+
+func NewBigQuery(settings *config.Settings) (*BigQuery, error) {
+	logger := log.WithField("monitoring", "bigquery")
 
 	project, err := metadata.ProjectID()
 	if err != nil {
-		log.WithFields(log.Fields{"err": err.Error()}).Error("Cannot get monitoring project")
-		return
+		return nil, errors.Trace(err)
 	}
+	logger.WithField("project", project).Info("Project detected from metadata server for monitoring")
 
-	log.WithFields(log.Fields{"project": project}).Info("Project detected from metadata server for monitoring")
-	client, err := bigquery.NewClient(ctx, project)
+	client, err := bigquery.NewClient(context.Background(), project)
 	if err != nil {
-		log.WithFields(log.Fields{"err": err.Error()}).Error("Cannot initialize monitoring client")
-		return
+		return nil, errors.Trace(err)
 	}
 
-	uploader := client.Dataset(config.Settings.Monitoring.BigQuery.Dataset).Table(config.Settings.Monitoring.BigQuery.Table).Uploader()
+	bq := &BigQuery{
+		uploader: client.Dataset(settings.Monitoring.BigQuery.Dataset).Table(settings.Monitoring.BigQuery.Table).Uploader(),
+		ch:       make(chan Measurement, 1000),
+	}
+
+	go bq.sender()
+
+	return bq, nil
+}
+
+func (bq *BigQuery) Send(m Measurement) {
+	bq.ch <- m
+}
+
+func (bq *BigQuery) sender() {
+	logger := log.WithField("monitoring", "bigquery")
 
 	var points []*bigquery.StructSaver
 
 	t := time.Tick(10 * time.Second)
 	for {
 		select {
-		case m := <-bigqueryMeasurements:
+		case m := <-bq.ch:
 			p := &bqPoint{
 				Domain:  m.DomainName,
 				Method:  m.Method,
@@ -118,10 +137,7 @@ func BigQuerySender() {
 
 			id, err := ksuid.NewRandomWithTime(m.Time)
 			if err != nil {
-				log.WithFields(log.Fields{
-					"error":      err.Error(),
-					"monitoring": "bigquery",
-				}).Error("Cannot generate insert ID for BigQuery")
+				logger.WithField("err", err.Error()).Fatal("Cannot generate ksuid ID")
 				return
 			}
 
@@ -140,21 +156,14 @@ func BigQuerySender() {
 			// Se han ido acumulando demasiados puntos por problemas de conexión en
 			// antiguos envíos; empezamos a descartar puntos antiguos.
 			if len(points) > 1000 {
-				log.WithFields(log.Fields{
-					"points":     len(points),
-					"monitoring": "bigquery",
-				}).Warning("Discarding old points: we have too much points")
+				logger.WithField("points", len(points)).Warning("Discarding old points: we have too much points")
 				points = points[len(points)-1000:]
 			}
 
 			// Mandamos a BigQuery los datos.
-			ctxdeadline, cancel := context.WithTimeout(ctx, 20*time.Second)
-			if err := uploader.Put(ctxdeadline, points); err != nil {
-				log.WithFields(log.Fields{
-					"err":        err.Error(),
-					"points":     len(points),
-					"monitoring": "bigquery",
-				}).Error("Cannot write monitoring points")
+			ctxdeadline, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+			if err := bq.uploader.Put(ctxdeadline, points); err != nil {
+				logger.WithFields(log.Fields{"err": err.Error(), "points": len(points)}).Error("Cannot write monitoring points")
 				cancel()
 			} else {
 				points = nil

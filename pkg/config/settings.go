@@ -8,9 +8,7 @@ import (
 	"github.com/juju/errors"
 )
 
-var Settings *SettingsRoot
-
-type SettingsRoot struct {
+type Settings struct {
 	// Configuración de LetsEncrypt.
 	ACME ACME `hcl:"acme"`
 
@@ -33,6 +31,10 @@ type ACME struct {
 
 	// Activa el flag para usar el servidor de pruebas en lugar del real.
 	Staging bool `hcl:"staging"`
+}
+
+func (acme ACME) IsActive() bool {
+	return acme.Email != ""
 }
 
 type Domain struct {
@@ -101,23 +103,8 @@ type Redirects struct {
 }
 
 type Monitoring struct {
-	// Configuraciones para monitorizar las peticiones con InfluxDB.
-	InfluxDB InfluxDB `hcl:"influxdb"`
-
 	// Configuraciones para monitorizar las peticiones con BigQuery.
 	BigQuery BigQuery `hcl:"bigquery"`
-}
-
-type InfluxDB struct {
-	// Dirección del servicio de monitorización. Si está vacío no se enviarán mediciones
-	// de latencias a ningún servidor InfluxDB.
-	Address string `hcl:"address"`
-
-	// Nombre de usuario para mandar las mediciones de monitorización.
-	Username string `hcl:"username"`
-
-	// Contraseña para mandar las mediciones de monitorización.
-	Password string `hcl:"password"`
 }
 
 type BigQuery struct {
@@ -128,13 +115,17 @@ type BigQuery struct {
 	Table string `hcl:"table"`
 }
 
+func (bigquery *BigQuery) IsActive() bool {
+	return bigquery.Dataset != "" && bigquery.Table != ""
+}
+
 type Auth struct {
 	// Endpoint para la autenticación externa. Se llamará a cada petición para
 	// saber si tenemos que rechazar la petición por permisos.
 	Endpoint string `hcl:"endpoint"`
 }
 
-func ParseSettings() error {
+func ParseSettings() (*Settings, error) {
 	path := "/etc/baster/config.hcl"
 	if IsLocal() {
 		path = "/etc/baster/config.dev.hcl"
@@ -142,21 +133,21 @@ func ParseSettings() error {
 
 	f, err := os.Open(path)
 	if err != nil {
-		return errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 	defer f.Close()
 
 	content, err := ioutil.ReadAll(f)
 	if err != nil {
-		return errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 
-	Settings = new(SettingsRoot)
-	if err := hcl.Decode(Settings, string(content)); err != nil {
-		return errors.Trace(err)
+	settings := new(Settings)
+	if err := hcl.Decode(settings, string(content)); err != nil {
+		return nil, errors.Trace(err)
 	}
 
-	for name, domain := range Settings.Domains {
+	for name, domain := range settings.Domains {
 		domain.Name = name
 
 		for match, path := range domain.Paths {
@@ -168,5 +159,5 @@ func ParseSettings() error {
 		}
 	}
 
-	return nil
+	return settings, nil
 }
