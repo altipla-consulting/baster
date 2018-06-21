@@ -21,6 +21,8 @@ type Server struct {
 
 	manager            *autocert.Manager
 	managerHTTPHandler http.Handler
+
+	version string
 }
 
 type hostSwitch map[string]http.Handler
@@ -33,17 +35,13 @@ func (hs hostSwitch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewServer(version string) (*Server, error) {
+func NewServer(settings *config.Settings) (*Server, error) {
 	server := &Server{
 		hs: make(hostSwitch),
 	}
 
-	settings, err := config.ParseSettings()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-
-	logger := log.WithField("version", version)
+	logger := log.WithField("version", settings.Version)
+	logger.Info("Configure new server")
 
 	if settings.ACME.IsActive() && !config.IsLocal() {
 		logger.WithField("email", settings.ACME.Email).Info("Configure ACME account")

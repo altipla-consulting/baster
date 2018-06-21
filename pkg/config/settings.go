@@ -2,10 +2,11 @@ package config
 
 import (
 	"io/ioutil"
-	"os"
 
 	"github.com/hashicorp/hcl"
 	"github.com/juju/errors"
+
+	"github.com/altipla-consulting/baster/pkg/kubernetes"
 )
 
 type Settings struct {
@@ -23,6 +24,8 @@ type Settings struct {
 
 	// Configuración para la autenticación.
 	Auth Auth `hcl:"auth"`
+
+	Version string `hcl:"-"`
 }
 
 type ACME struct {
@@ -126,25 +129,32 @@ type Auth struct {
 }
 
 func ParseSettings() (*Settings, error) {
-	path := "/etc/baster/config.hcl"
-	if IsLocal() {
-		path = "/etc/baster/config.dev.hcl"
-	}
-
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	defer f.Close()
-
-	content, err := ioutil.ReadAll(f)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-
 	settings := new(Settings)
-	if err := hcl.Decode(settings, string(content)); err != nil {
-		return nil, errors.Trace(err)
+	if IsLocal() {
+		content, err := ioutil.ReadFile("/etc/baster/config.dev.hcl")
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+
+		if err := hcl.Decode(settings, string(content)); err != nil {
+			return nil, errors.Trace(err)
+		}
+	} else {
+		client, err := kubernetes.NewClient()
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+
+		configmap, err := client.GetConfigMap("baster-settings")
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+
+		if err := hcl.Decode(settings, configmap.Data["config.hcl"]); err != nil {
+			return nil, errors.Trace(err)
+		}
+
+		settings.Version = configmap.Metadata.ResourceVersion
 	}
 
 	for name, domain := range settings.Domains {

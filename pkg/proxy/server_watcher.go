@@ -23,7 +23,12 @@ type ServerWatcher struct {
 }
 
 func NewServerWatcher() (*ServerWatcher, error) {
-	server, err := NewServer("init")
+	settings, err := config.ParseSettings()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+
+	server, err := NewServer(settings)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -31,7 +36,7 @@ func NewServerWatcher() (*ServerWatcher, error) {
 	w := &ServerWatcher{
 		mx:          new(sync.RWMutex),
 		server:      server,
-		lastVersion: "init",
+		lastVersion: settings.Version,
 	}
 
 	go w.bgWatch()
@@ -53,37 +58,42 @@ func (server *ServerWatcher) bgWatch() {
 }
 
 func (w *ServerWatcher) bgUpdate() error {
-	var newVersion string = "init"
+	settings, err := config.ParseSettings()
+	if err != nil {
+		return errors.Trace(err)
+	}
 
-	// TODO(ernesto): Extraer desde Kubernetes o desde fichero.
+	if settings.Version == w.lastVersion {
+		return nil
+	}
 
-	if w.lastVersion != newVersion {
-		w.mx.Lock()
-		w.lastVersion = newVersion
-		w.mx.Unlock()
+	// Cambia la versión lo primero. En caso de error evita que se repita una
+	// y otra vez el intento de cambiar a la nueva versión provocando errores.
+	// Si el cambio va mal una vez no lo vuelve a intentar de nuevo.
+	w.mx.Lock()
+	w.lastVersion = settings.Version
+	w.mx.Unlock()
 
-		server, err := NewServer(newVersion)
+	server, err := NewServer(settings)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	secureHandler := w.server.SecureHandler()
+
+	var insecureHandler http.Handler
+	if !config.IsLocal() {
+		insecureHandler, err = w.server.InsecureHandler()
 		if err != nil {
 			return errors.Trace(err)
 		}
-
-		secureHandler := w.server.SecureHandler()
-
-		var insecureHandler http.Handler
-		if !config.IsLocal() {
-			insecureHandler, err = w.server.InsecureHandler()
-			if err != nil {
-				return errors.Trace(err)
-			}
-		}
-
-		w.mx.Lock()
-		w.server = server
-		w.secureHandler = secureHandler
-		w.insecureHandler = insecureHandler
-		w.lastVersion = newVersion
-		w.mx.Unlock()
 	}
+
+	w.mx.Lock()
+	w.server = server
+	w.secureHandler = secureHandler
+	w.insecureHandler = insecureHandler
+	w.mx.Unlock()
 
 	return nil
 }
