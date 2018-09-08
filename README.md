@@ -11,7 +11,7 @@ Reverse proxy with LetsEncrypt and Kubernetes capabilities.
 
 We are actively supporting and updating this piece of software for internal use of our company.
 
-To the general public we recommend [Traefik](https://traefik.io/) or [Caddy](https://caddyserver.com/).
+To the general public we recommend [Traefik](https://traefik.io/), [Caddy](https://caddyserver.com/) or [Envoy](https://www.envoyproxy.io).
 
 
 ## Docs
